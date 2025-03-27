@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="https://img.fastmirror.net/s/2024/08/16/66bf44708b1e7.png">
     <title>注册 - OUC电商</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body {
             font-family: 'Microsoft YaHei', Arial, sans-serif;
@@ -12,217 +13,522 @@
             margin: 0;
             padding: 0;
             display: flex;
-            height: 100vh;
-        }
-
-        /* 左侧背景区域 */
-        .left-container {
-            flex: 1;
-            background: url('../../_images/background1.jpg') no-repeat center center;
-            background-size: cover;
-            display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
-            color: #fff;
-            font-size: 28px;
-            text-align: center;
-            padding: 2rem;
+            min-height: 100vh;
+            background: linear-gradient(to right, #f0f2f5, #e6e9ec);
+            overflow: hidden;
         }
 
-        /* 右侧注册区域 */
-        .right-container {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: #fff;
-            padding: 2rem;
+        .background-gradient {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            opacity: 0.6;
+        }
+
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
         }
 
         .register-container {
-            background-color: #ffffff;
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 400px;
+            position: relative;
+            width: 850px;
+            height: 650px;
+            overflow: hidden;
         }
 
-        h1 {
-            margin-bottom: 1.5rem;
-            font-size: 28px;
+        .forms-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+        }
+
+        .signin-signup {
+            position: absolute;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            left: 25%;
+            width: 50%;
+            transition: 1s 0.7s ease-in-out;
+            display: grid;
+            grid-template-columns: 1fr;
+            z-index: 5;
+        }
+
+        form {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 0rem 5rem;
+            transition: all 0.2s 0.7s;
+            overflow: hidden;
+            grid-column: 1 / 2;
+            grid-row: 1 / 2;
+        }
+
+        .title {
+            font-size: 2.2rem;
+            color: #444;
+            margin-bottom: 10px;
+        }
+
+        .input-field {
+            max-width: 380px;
+            width: 100%;
+            background-color: #f0f0f0;
+            margin: 10px 0;
+            height: 55px;
+            border-radius: 55px;
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+
+        .input-field i {
             text-align: center;
-            color: #333;
+            line-height: 55px;
+            color: #acacac;
+            transition: 0.5s;
+            font-size: 1.1rem;
+            margin-left: 20px;
         }
 
-        input[type="text"],
-        input[type="password"],
-        input[type="email"],
-        input[type="submit"] {
-            width: 100%;
-            padding: 0.9rem;
-            margin-bottom: 1.3rem;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-            box-sizing: border-box;
-        }
-
-        input[type="text"]:focus,
-        input[type="password"]:focus,
-        input[type="email"]:focus {
-            border-color: #007bff;
-            box-shadow: 0 0 5px rgba(0, 123, 255, 0.25);
+        .input-field input {
+            background: none;
             outline: none;
-        }
-
-        input[type="submit"] {
-            background: linear-gradient(45deg, #007bff, #0056b3);
-            color: white;
             border: none;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s ease;
-        }
-
-        input[type="submit"]:hover {
-            background: linear-gradient(45deg, #0056b3, #003f7f);
+            line-height: 1;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #333;
+            width: 100%;
+            padding: 0 15px;
         }
 
         .captcha-container {
+            max-width: 380px;
+            width: 100%;
+            margin: 10px 0;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            gap: 1rem;
-        }
-
-        .captcha-container input[type="text"] {
-            flex: 1;
+            gap: 15px;
         }
 
         .captcha img {
-            width: 120px; /* 固定宽度 */
-            height: 44px; /* 和输入框高度一致 */
+            height: 45px;
+            border-radius: 10px;
             cursor: pointer;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            transition: transform 0.3s ease;
+        }
+
+        .captcha img:hover {
+            transform: scale(1.05);
+        }
+
+        .btn {
+            width: 150px;
+            background-color: #5995fd;
+            border: none;
+            outline: none;
+            height: 49px;
+            border-radius: 49px;
+            color: #fff;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin: 10px 0;
+            cursor: pointer;
+            transition: 0.5s;
+        }
+
+        .btn:hover {
+            background-color: #4d84e2;
+        }
+
+        .panels-container {
+            position: absolute;
+            height: 100%;
+            width: 100%;
+            top: 0;
+            left: 0;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .panel {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            z-index: 6;
+        }
+
+        .left-panel {
+            pointer-events: none;
+            padding: 3rem 17% 2rem 12%;
+        }
+
+        .right-panel {
+            pointer-events: all;
+            padding: 3rem 12% 2rem 17%;
+        }
+
+        .panel .content {
+            color: #fff;
+            transition: transform 0.9s ease-in-out;
+            transition-delay: 0.6s;
+        }
+
+        .panel h3 {
+            font-weight: 600;
+            line-height: 1;
+            font-size: 1.5rem;
+        }
+
+        .panel p {
+            font-size: 0.95rem;
+            padding: 0.7rem 0;
+        }
+
+        .btn.transparent {
+            margin: 0;
+            background: none;
+            border: 2px solid #fff;
+            width: 130px;
+            height: 41px;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        .image {
+            width: 80%;
+            transition: transform 1.1s ease-in-out;
+            transition-delay: 0.4s;
+        }
+
+        .left-panel .image,
+        .left-panel .content {
+            transform: translateX(-800px);
         }
 
         .error-message {
-            color: red;
+            color: #dc3545;
             font-size: 14px;
-            margin-bottom: 1rem;
-            display: block;
-            text-align: center;
-        }
-
-        p {
-            font-size: 14px;
-            text-align: center;
-            margin-top: 1.5rem;
-        }
-
-        a {
-            color: #007bff;
-            text-decoration: none;
-        }
-
-        a:hover {
-            text-decoration: underline;
+            margin: 5px 0;
         }
 
         .status-success { color: #28a745; }
         .status-error { color: #dc3545; }
-        .captcha img {
-            transition: transform 0.3s ease;
-        }
-        .captcha img:hover {
-            transform: scale(1.05);
-            cursor: pointer;
+
+        /* 自定义表单样式 */
+        .custom-form {
+            width: 100%;
+            max-width: 380px;
         }
 
-        .captcha img {
-            transition: transform 0.3s ease;
+        .custom-form p {
+            margin: 0;
+            padding: 0;
+            width: 100%;
         }
-        .captcha img:hover {
-            transform: scale(1.05);
+
+        .custom-form label {
+            display: none;
+        }
+
+        .custom-form input {
+            width: 100%;
+            background-color: #f0f0f0;
+            margin: 10px 0;
+            height: 55px;
+            border-radius: 55px;
+            padding: 0 25px;
+            border: none;
+            outline: none;
+            font-size: 16px;
+        }
+
+        .password-strength {
+            width: 100%;
+            height: 5px;
+            background-color: #eee;
+            margin-top: 5px;
+            border-radius: 10px;
+        }
+
+        .strength-bar {
+            height: 100%;
+            width: 0%;
+            border-radius: 10px;
+            transition: width 0.3s, background-color 0.3s;
+        }
+
+        .password-tips {
+            width: 100%;
+            margin: 10px 0;
+        }
+
+        .tip-item {
+            display: flex;
+            align-items: center;
+            margin: 5px 0;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .tip-item i {
+            margin-right: 5px;
+            color: #ccc;
+        }
+
+        .tip-item.valid i {
+            color: #28a745;
+        }
+
+        .password-message {
+            font-size: 14px;
+            margin: 5px 0;
+            color: #dc3545;
         }
     </style>
 </head>
 <body>
-<!-- 左侧背景 -->
-<div class="left-container">
-    <h2>欢迎来到 OUC 电商平台</h2>
-    <p>专注优质商品与卓越购物体验，为您提供最贴心的服务。</p>
-</div>
+<div class="background-gradient"></div>
 
-<!-- 右侧注册表单 -->
-<div class="right-container">
-    <div class="register-container">
-        <form action="" method="post">
-            <h1>注册</h1>
-            {% csrf_token %}
+<div class="register-container glass-effect">
+    <div class="forms-container">
+        <div class="signin-signup">
+            <!-- 注册表单 -->
+            <form action="" method="post" class="sign-up-form">
+                <h2 class="title">注册</h2>
+                {% csrf_token %}
 
-            <!-- 输入框 -->
-            {{ reg_form.as_p }}
+                <div class="custom-form">
+                    {{ reg_form.as_p }}
+                </div>
 
-            <div class="captcha-container">
-                {{ captcha.captcha }}
-                <span id="captcha_status" class="status-text"></span>
+                <div class="password-strength">
+                    <div class="strength-bar"></div>
+                </div>
+
+                <div class="password-tips">
+                    <div class="tip-item" id="length-tip">
+                        <i class="fas fa-check"></i>
+                        <span>至少8个字符</span>
+                    </div>
+                    <div class="tip-item" id="uppercase-tip">
+                        <i class="fas fa-check"></i>
+                        <span>包含大写字母</span>
+                    </div>
+                    <div class="tip-item" id="lowercase-tip">
+                        <i class="fas fa-check"></i>
+                        <span>包含小写字母</span>
+                    </div>
+                    <div class="tip-item" id="number-tip">
+                        <i class="fas fa-check"></i>
+                        <span>包含数字</span>
+                    </div>
+                    <div class="tip-item" id="special-tip">
+                        <i class="fas fa-check"></i>
+                        <span>包含特殊字符</span>
+                    </div>
+                </div>
+
+                <div id="password-message" class="password-message"></div>
+
+                <div class="captcha-container">
+                    {{ captcha.captcha }}
+                    <span id="captcha_status" class="status-text"></span>
+                </div>
+
+                {% if error %}
+                    <span class="error-message">{{ error }}</span>
+                {% endif %}
+
+                <input type="submit" value="注册" class="btn" id="signup-btn">
+            </form>
+        </div>
+    </div>
+
+    <div class="panels-container">
+        <div class="panel left-panel">
+            <div class="content">
+                <h3>已有账号?</h3>
+                <p>使用您的账号登录，畅享购物体验!</p>
+                <a href="/user/login" class="btn transparent">登录</a>
             </div>
-
-            {% if error %}
-                <span class="error-message">{{ error }}</span>
-            {% endif %}
-
-            <!-- 注册按钮 -->
-            <input type="submit" value="注册">
-
-            <!-- 登录引导 -->
-            <p>已有账号？ <a href="/user/login">点击登录</a></p>
-        </form>
+            <img src="https://i.ibb.co/nP8H853/Login.png" class="image" alt="" />
+        </div>
+        <div class="panel right-panel">
+            <div class="content">
+                <h3>新用户注册</h3>
+                <p>欢迎加入OUC电商平台，创建您的账户开启全新购物体验!</p>
+            </div>
+            <img src="https://i.ibb.co/6HXL6q1/Register.png" class="image" alt="" />
+        </div>
     </div>
 </div>
 
 <script>
-    $(function(){
-        // 点击验证码图片刷新功能
-        $(document).on('click', '.captcha img', function(){
-            $.getJSON("{% url 'user:refresh_captcha' %}", function(data){
-                $('.captcha-container').html(data.new_captcha_html);
-            });
+    document.addEventListener('DOMContentLoaded', function() {
+        // 添加密码输入框图标
+        const passwordInputs = document.querySelectorAll('input[type="password"]');
+        passwordInputs.forEach(input => {
+            const parent = input.parentElement;
+            if (parent.tagName === 'P') {
+                parent.classList.add('input-field');
+                parent.insertAdjacentHTML('afterbegin', '<i class="fas fa-lock"></i>');
+            }
         });
-    });
 
-    $(function(){
+        // 添加邮箱输入框图标
+        const emailInputs = document.querySelectorAll('input[type="email"]');
+        emailInputs.forEach(input => {
+            const parent = input.parentElement;
+            if (parent.tagName === 'P') {
+                parent.classList.add('input-field');
+                parent.insertAdjacentHTML('afterbegin', '<i class="fas fa-envelope"></i>');
+            }
+        });
+
+        // 添加文本输入框图标
+        const textInputs = document.querySelectorAll('input[type="text"]');
+        textInputs.forEach(input => {
+            const parent = input.parentElement;
+            if (parent.tagName === 'P' && !parent.querySelector('i')) {
+                parent.classList.add('input-field');
+                parent.insertAdjacentHTML('afterbegin', '<i class="fas fa-user"></i>');
+            }
+        });
+
         // 验证码点击刷新功能
-        $('.captcha').on('click', 'img', function(){
-            var $form = $(this).closest('form');
-            var captchaContainer = $(this).closest('.captcha-container');
-            $.getJSON("{% url 'user:ajax_val' %}", function(data) {
-                captchaContainer.html(data.new_captcha_html);
-            });
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.captcha img')) {
+                fetch("{% url 'user:refresh_captcha' %}")
+                    .then(response => response.json())
+                    .then(data => {
+                        document.querySelector('.captcha-container').innerHTML = data.new_captcha_html + 
+                            '<span id="captcha_status" class="status-text"></span>';
+                    });
+            }
         });
 
         // 验证码输入实时验证
-        $('#id_captcha_1').blur(function(){
-            var json_data = {
-                'response': $('#id_captcha_1').val(),
-                'hashkey': $('#id_captcha_0').val()
-            };
-            $.getJSON("{% url 'user:ajax_val' %}", json_data, function(data){
-                $('#captcha_status').remove();
-                var statusText = data.status ?
-                    '<span class="status-success">验证码正确</span>' :
-                    '<span class="status-error">验证码错误</span>';
-                $('#id_captcha_1').after(statusText);
+        document.addEventListener('blur', function(e) {
+            if (e.target.id === 'id_captcha_1') {
+                const response = document.getElementById('id_captcha_1').value;
+                const hashkey = document.getElementById('id_captcha_0').value;
+                
+                fetch(`{% url 'user:ajax_val' %}?response=${response}&hashkey=${hashkey}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const captchaStatus = document.getElementById('captcha_status');
+                        if (captchaStatus) captchaStatus.remove();
+                        
+                        const statusText = data.status ? 
+                            '<span class="status-success">验证码正确</span>' : 
+                            '<span class="status-error">验证码错误</span>';
+                        
+                        document.getElementById('id_captcha_1').insertAdjacentHTML('afterend', statusText);
+                        
+                        if (!data.status) {
+                            document.querySelector('.captcha img').click();
+                        }
+                    });
+            }
+        }, true);
 
-                if(!data.status) {
-                    $('.captcha img').click(); // 自动触发验证码刷新
+        // 密码强度检测
+        const passwordInput = document.querySelector('input[name="password"]');
+        const confirmPasswordInput = document.querySelector('input[name="confirm_password"]');
+        const strengthBar = document.querySelector('.strength-bar');
+        const passwordMessage = document.getElementById('password-message');
+
+        if (passwordInput) {
+            passwordInput.addEventListener('keyup', function() {
+                const password = this.value;
+                let strength = 0;
+                let tips = {
+                    length: password.length >= 8,
+                    uppercase: /[A-Z]/.test(password),
+                    lowercase: /[a-z]/.test(password),
+                    number: /[0-9]/.test(password),
+                    special: /[^A-Za-z0-9]/.test(password)
+                };
+
+                // 更新提示项状态
+                Object.keys(tips).forEach(key => {
+                    const tipElement = document.getElementById(`${key}-tip`);
+                    if (tipElement) {
+                        if (tips[key]) {
+                            tipElement.classList.add('valid');
+                            strength += 20;
+                        } else {
+                            tipElement.classList.remove('valid');
+                        }
+                    }
+                });
+
+                // 更新强度条
+                strengthBar.style.width = `${strength}%`;
+                
+                // 根据强度设置颜色
+                if (strength <= 20) {
+                    strengthBar.style.backgroundColor = '#dc3545'; // 红色
+                } else if (strength <= 40) {
+                    strengthBar.style.backgroundColor = '#ffc107'; // 黄色
+                } else if (strength <= 60) {
+                    strengthBar.style.backgroundColor = '#fd7e14'; // 橙色
+                } else if (strength <= 80) {
+                    strengthBar.style.backgroundColor = '#20c997'; // 青色
+                } else {
+                    strengthBar.style.backgroundColor = '#28a745'; // 绿色
                 }
             });
-        });
+        }
+
+        // 确认密码验证
+        if (passwordInput && confirmPasswordInput) {
+            function validatePassword() {
+                if (confirmPasswordInput.value && passwordInput.value !== confirmPasswordInput.value) {
+                    passwordMessage.textContent = "两次输入的密码不一致";
+                    passwordMessage.classList.remove('status-success');
+                    passwordMessage.classList.add('status-error');
+                    return false;
+                } else if (confirmPasswordInput.value) {
+                    passwordMessage.textContent = "密码匹配";
+                    passwordMessage.classList.remove('status-error');
+                    passwordMessage.classList.add('status-success');
+                    return true;
+                } else {
+                    passwordMessage.textContent = "";
+                    return false;
+                }
+            }
+
+            passwordInput.addEventListener('keyup', validatePassword);
+            confirmPasswordInput.addEventListener('keyup', validatePassword);
+
+            // 提交前验证
+            document.querySelector('form').addEventListener('submit', function(e) {
+                if (confirmPasswordInput.value && !validatePassword()) {
+                    e.preventDefault(); // 阻止表单提交
+                }
+            });
+        }
     });
 </script>
 </body>
