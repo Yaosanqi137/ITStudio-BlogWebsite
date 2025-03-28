@@ -129,26 +129,25 @@ def login_view(request):
                 })
 
         user = authenticate(username=user_login.account, password=user_login.password)
-        if user is None:
-            return render(request, "Login.html", {
-                "error": "不存在此账户！请先注册",
-                "captcha": new_captcha,
-                "refresh_captcha": True,
-            })
-        elif not user.is_active:
-            return render(request, "Login.html", {
-                "error": "此账户还未激活，请使用激活邮件激活！",
-                "captcha": new_captcha,
-                "refresh_captcha": True,
-            })
-        else:
+        if user is not None:
             login(request, user)
             return HttpResponseRedirect("/")
+        else:
+            user = BlogUser.objects.get(username=user_login.account)
+            if user is None or not user.check_password(user_login.password):
+                return render(request, "Login.html", {
+                    "error": "账户或密码错误，请重试！",
+                    "captcha": new_captcha,
+                    "refresh_captcha": True,
+                })
+            else:
+                return render(request, "Login.html", {
+                    "error": "此账户还未激活，请使用激活邮件激活！",
+                    "captcha": new_captcha,
+                    "refresh_captcha": True,
+                })
     else:
         user_login = UserLoginForm()
         captcha = CaptchaForm()
         return render(request, "Login.html", {
             "user_login": user_login, "captcha": captcha})
-
-
-
