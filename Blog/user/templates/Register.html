@@ -425,12 +425,19 @@
                 fetch("{% url 'user:refresh_captcha' %}")
                     .then(response => response.json())
                     .then(data => {
-                        document.querySelector('.captcha-container').innerHTML = data.new_captcha_html + 
-                            '<span id="captcha_status" class="status-text"></span>';
+                        // 找到并更新验证码图片
+                        const captchaContainer = document.querySelector('.captcha-container');
+                        // 清除容器内容
+                        captchaContainer.innerHTML = data.new_captcha_html;
+                        // 添加状态文本容器
+                        const statusSpan = document.createElement('span');
+                        statusSpan.id = 'captcha_status';
+                        statusSpan.className = 'status-text';
+                        captchaContainer.appendChild(statusSpan);
                     });
             }
         });
-
+        
         // 验证码输入实时验证
         document.addEventListener('blur', function(e) {
             if (e.target.id === 'id_captcha_1') {
@@ -442,16 +449,23 @@
                 fetch(`{% url 'user:ajax_val' %}?response=${response}&hashkey=${hashkey}`)
                     .then(response => response.json())
                     .then(data => {
-                        const captchaStatus = document.getElementById('captcha_status');
-                        if (captchaStatus) captchaStatus.remove();
+                        // 获取状态显示元素
+                        let captchaStatus = document.getElementById('captcha_status');
                         
-                        const statusText = data.status ? 
-                            '<span class="status-success">验证码正确</span>' : 
-                            '<span class="status-error">验证码错误</span>';
+                        // 如果状态元素不存在，则创建一个
+                        if (!captchaStatus) {
+                            captchaStatus = document.createElement('span');
+                            captchaStatus.id = 'captcha_status';
+                            document.querySelector('.captcha-container').appendChild(captchaStatus);
+                        }
                         
-                        document.getElementById('id_captcha_1').insertAdjacentHTML('afterend', statusText);
+                        // 清除当前内容
+                        captchaStatus.innerHTML = '';
+                        captchaStatus.className = data.status ? 'status-success' : 'status-error';
+                        captchaStatus.textContent = data.status ? '验证码正确' : '验证码错误';
                         
                         if (!data.status) {
+                            // 刷新验证码
                             document.querySelector('.captcha img').click();
                         }
                     });
