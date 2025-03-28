@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="https://img.fastmirror.net/s/2024/08/16/66bf44708b1e7.png">
-    <title>注册 - OUC电商</title>
+    <title>注册 </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body {
@@ -27,7 +27,7 @@
             width: 100%;
             height: 100%;
             z-index: -1;
-            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            background: linear-gradient(135deg, #39c5bb, #bb6688);
             opacity: 0.6;
         }
 
@@ -278,24 +278,29 @@
 
         .password-tips {
             width: 100%;
-            margin: 10px 0;
+            margin: 5px 0;
+            display: none; /* 默认隐藏所有提示 */
         }
-
+        
         .tip-item {
-            display: flex;
+            display: none; /* 默认隐藏所有提示项 */
             align-items: center;
             margin: 5px 0;
             font-size: 12px;
-            color: #666;
+            color: #dc3545; /* 默认红色 */
         }
-
+        
         .tip-item i {
             margin-right: 5px;
-            color: #ccc;
+            color: #dc3545;
         }
-
-        .tip-item.valid i {
-            color: #28a745;
+        
+        .tip-item.valid {
+            display: none; /* 有效的提示项不显示 */
+        }
+        
+        .tip-item.invalid {
+            display: flex; /* 无效的提示项才显示 */
         }
 
         .password-message {
@@ -375,7 +380,7 @@
         <div class="panel right-panel">
             <div class="content">
                 <h3>新用户注册</h3>
-                <p>欢迎加入OUC电商平台，创建您的账户开启全新购物体验!</p>
+                <p>Ciallo</p>
             </div>
             <img src="https://i.ibb.co/6HXL6q1/Register.png" class="image" alt="" />
         </div>
@@ -430,6 +435,8 @@
         document.addEventListener('blur', function(e) {
             if (e.target.id === 'id_captcha_1') {
                 const response = document.getElementById('id_captcha_1').value;
+                if (!response.trim()) return; // 如果验证码为空，不进行验证
+                
                 const hashkey = document.getElementById('id_captcha_0').value;
                 
                 fetch(`{% url 'user:ajax_val' %}?response=${response}&hashkey=${hashkey}`)
@@ -456,8 +463,14 @@
         const confirmPasswordInput = document.querySelector('input[name="confirm_password"]');
         const strengthBar = document.querySelector('.strength-bar');
         const passwordMessage = document.getElementById('password-message');
+        const passwordTips = document.querySelector('.password-tips');
 
         if (passwordInput) {
+            // 密码框获得焦点时显示密码提示容器
+            passwordInput.addEventListener('focus', function() {
+                passwordTips.style.display = 'block';
+            });
+            
             passwordInput.addEventListener('keyup', function() {
                 const password = this.value;
                 let strength = 0;
@@ -469,15 +482,25 @@
                     special: /[^A-Za-z0-9]/.test(password)
                 };
 
+                // 如果没有输入，隐藏提示
+                if (!password) {
+                    passwordTips.style.display = 'none';
+                    return;
+                } else {
+                    passwordTips.style.display = 'block';
+                }
+
                 // 更新提示项状态
                 Object.keys(tips).forEach(key => {
                     const tipElement = document.getElementById(`${key}-tip`);
                     if (tipElement) {
                         if (tips[key]) {
                             tipElement.classList.add('valid');
+                            tipElement.classList.remove('invalid');
                             strength += 20;
                         } else {
                             tipElement.classList.remove('valid');
+                            tipElement.classList.add('invalid');
                         }
                     }
                 });
@@ -496,6 +519,13 @@
                     strengthBar.style.backgroundColor = '#20c997'; // 青色
                 } else {
                     strengthBar.style.backgroundColor = '#28a745'; // 绿色
+                }
+            });
+            
+            // 密码框失去焦点时如果没有输入则隐藏提示
+            passwordInput.addEventListener('blur', function() {
+                if (!this.value) {
+                    passwordTips.style.display = 'none';
                 }
             });
         }
