@@ -419,7 +419,104 @@
             });
         }
         
-        // 封装验证码刷新函数
+        // 验证码验证函数
+        function setupCaptchaValidation() {
+            // 使用更精确的ID选择器找到验证码输入框
+            const captchaInput = document.getElementById('id_captcha_1');
+            if (!captchaInput) {
+                console.warn('验证码输入框未找到');
+                return;
+            }
+            
+            // 移除之前的事件监听器(如果有)以避免重复绑定
+            const oldValidateFunction = captchaInput._validateFunction;
+            if (oldValidateFunction) {
+                captchaInput.removeEventListener('blur', oldValidateFunction);
+            }
+            
+            // 定义新的验证函数
+            function validateCaptcha() {
+                const response = captchaInput.value.trim();
+                if (!response) return; // 如果验证码为空，不进行验证
+                
+                // --- 修改 hashkey 获取方式 ---
+                // 尝试在验证码输入框的父容器(.captcha)内查找隐藏输入框
+                const captchaContainer = captchaInput.closest('.captcha'); // 找到包含输入框的.captcha div
+                let hashkey = null;
+                if (captchaContainer) {
+                    const hiddenInput = captchaContainer.querySelector('input[type="hidden"]'); // 查找隐藏输入框
+                    if (hiddenInput) {
+                        hashkey = hiddenInput.value;
+                    }
+                }
+
+                // 如果新方法找不到，尝试旧方法作为备用（或者直接报错）
+                if (!hashkey) {
+                     console.warn('未能通过相对路径找到hashkey，尝试全局查找...');
+                     const globalHiddenInput = document.querySelector('input[name="captcha_0"]');
+                     if (globalHiddenInput) {
+                         hashkey = globalHiddenInput.value;
+                     }
+                }
+                // --- 结束修改 ---
+
+                if (!hashkey) {
+                    console.error('验证码hashkey最终未能找到!'); // 明确错误
+                    return; // 无法继续验证
+                }
+                
+                console.log('验证码验证:', response, 'Hashkey:', hashkey); // 调试用
+                
+                // 添加一个标记，表示正在验证中，防止重复验证
+                if (captchaInput._validating) return;
+                captchaInput._validating = true;
+                
+                fetch(`{% url 'user:ajax_val' %}?response=${response}&hashkey=${hashkey}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('验证码验证结果:', data); // 调试用
+                        
+                        // 获取状态显示元素
+                        let captchaStatus = document.getElementById('captcha_status');
+                        
+                        // 如果状态元素不存在，则创建一个
+                        if (!captchaStatus) {
+                            captchaStatus = document.createElement('span');
+                            captchaStatus.id = 'captcha_status';
+                             // 确保状态元素添加到正确的位置
+                            const container = captchaInput.closest('.captcha-container') || captchaInput.closest('.captcha-wrapper') || captchaInput.parentElement;
+                            if(container) {
+                                container.appendChild(captchaStatus);
+                            } else {
+                                 console.error("无法找到合适的容器来添加验证码状态");
+                            }
+                        }
+                        
+                        // 清除当前内容并设置新状态
+                        captchaStatus.innerHTML = '';
+                        captchaStatus.className = data.status ? 'status-success' : 'status-error';
+                        captchaStatus.textContent = data.status ? '验证码正确' : '验证码错误';
+                    })
+                    .catch(error => {
+                        console.error('验证码验证错误:', error);
+                    })
+                    .finally(() => {
+                        // 验证完成，移除标记
+                        captchaInput._validating = false;
+                    });
+            }
+            
+            // 保存验证函数引用，以便后续移除
+            captchaInput._validateFunction = validateCaptcha;
+            
+            // 添加新的事件监听器
+            captchaInput.addEventListener('blur', validateCaptcha);
+        }
+
+        // 初始化验证码验证
+        setupCaptchaValidation();
+
+        // 修改refreshCaptcha函数，在成功刷新后重新设置验证
         function refreshCaptcha() {
             return fetch("{% url 'user:refresh_captcha' %}")
                 .then(response => response.json())
@@ -455,46 +552,24 @@
                             captchaStatus.textContent = '';
                             captchaStatus.className = 'status-text';
                         }
+                        
+                        // 重要：清空验证码输入框
+                        setTimeout(() => {
+                            const newCaptchaInput = document.getElementById('id_captcha_1');
+                            if (newCaptchaInput) {
+                                newCaptchaInput.value = '';
+                                newCaptchaInput.focus(); // 可选：聚焦到输入框
+                            }
+                            
+                            // 重新绑定验证码验证事件
+                            setupCaptchaValidation();
+                        }, 100); // 短暂延迟确保DOM已更新
                     }
                 })
                 .catch(error => {
                     console.error('刷新验证码失败:', error);
                 });
         }
-        
-        // 验证码输入实时验证
-        document.addEventListener('blur', function(e) {
-            if (e.target.id === 'id_captcha_1') {
-                const response = document.getElementById('id_captcha_1').value;
-                if (!response.trim()) return; // 如果验证码为空，不进行验证
-                
-                const hashkey = document.getElementById('id_captcha_0').value;
-                
-                fetch(`{% url 'user:ajax_val' %}?response=${response}&hashkey=${hashkey}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        // 获取状态显示元素
-                        let captchaStatus = document.getElementById('captcha_status');
-                        
-                        // 如果状态元素不存在，则创建一个
-                        if (!captchaStatus) {
-                            captchaStatus = document.createElement('span');
-                            captchaStatus.id = 'captcha_status';
-                            document.querySelector('.captcha-container').appendChild(captchaStatus);
-                        }
-                        
-                        // 清除当前内容
-                        captchaStatus.innerHTML = '';
-                        captchaStatus.className = data.status ? 'status-success' : 'status-error';
-                        captchaStatus.textContent = data.status ? '验证码正确' : '验证码错误';
-                        
-                        if (!data.status) {
-                            // 刷新验证码
-                            document.querySelector('.captcha img').click();
-                        }
-                    });
-            }
-        }, true);
         
         // 表单提交处理
         const loginForm = document.querySelector('.sign-in-form');
