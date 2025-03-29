@@ -279,6 +279,35 @@
 
         .status-success { color: #28a745; }
         .status-error { color: #dc3545; }
+
+        /* 添加验证码刷新按钮样式 */
+        .captcha-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 5px;
+        }
+
+        .refresh-captcha-btn {
+            background-color: transparent;
+            border: none;
+            color: #5995fd;
+            font-size: 12px;
+            cursor: pointer;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: color 0.3s;
+        }
+
+        .refresh-captcha-btn:hover {
+            color: #4d84e2;
+        }
+
+        .refresh-captcha-btn i {
+            font-size: 10px;
+        }
     </style>
 </head>
 <body>
@@ -288,7 +317,7 @@
     <div class="forms-container">
         <div class="signin-signup">
             <!-- 登录表单 -->
-            <form action="" method="post" class="sign-in-form">
+            <form action="{% url 'user:login' %}" method="post" class="sign-in-form">
                 <h2 class="title">登录</h2>
                 {% csrf_token %}
                 
@@ -303,7 +332,12 @@
                 </div>
                 
                 <div class="captcha-container">
-                    {{ captcha.captcha }}
+                    <div class="captcha-wrapper">
+                        {{ captcha.captcha }}
+                        <button type="button" id="refresh-captcha" class="refresh-captcha-btn">
+                            <i class="fas fa-sync-alt"></i> <span>刷新验证码</span>
+                        </button>
+                    </div>
                     <span id="captcha_status" class="status-text"></span>
                 </div>
                 
@@ -313,11 +347,11 @@
                 
                 <input type="submit" value="登录" class="btn solid" />
                 
-                <p class="social-text">已有账户? 点击登录</p>
+                <p class="social-text">是新人？左侧进行注册</p>
             </form>
 
             <!-- 注册表单链接 -->
-            <form action="{% url 'user:Register' %}" class="sign-up-form">
+            <form action="{% url 'user:register' %}" class="sign-up-form">
                 <h2 class="title">注册</h2>
                 <p>点击下方按钮跳转到注册页面</p>
                 <input type="submit" class="btn" value="前往注册页面" />
@@ -360,24 +394,73 @@
             container.classList.remove('sign-up-mode');
         });
         
-        // 验证码点击刷新功能
-        document.addEventListener('click', function(e) {
-            if (e.target.closest('.captcha img')) {
-                fetch("{% url 'user:refresh_captcha' %}")
-                    .then(response => response.json())
-                    .then(data => {
-                        // 找到并更新验证码图片
-                        const captchaContainer = document.querySelector('.captcha-container');
-                        // 清除容器内容
-                        captchaContainer.innerHTML = data.new_captcha_html;
-                        // 添加状态文本容器
-                        const statusSpan = document.createElement('span');
-                        statusSpan.id = 'captcha_status';
-                        statusSpan.className = 'status-text';
-                        captchaContainer.appendChild(statusSpan);
-                    });
-            }
-        });
+        // 验证码刷新按钮功能
+        const refreshCaptchaBtn = document.getElementById('refresh-captcha');
+        if (refreshCaptchaBtn) {
+            refreshCaptchaBtn.addEventListener('click', function() {
+                // 添加旋转动画表示正在加载
+                const icon = this.querySelector('i');
+                if (icon) {
+                    icon.classList.add('fa-spin');
+                }
+                this.disabled = true;
+                
+                refreshCaptcha().finally(() => {
+                    // 无论成功失败，停止旋转并启用按钮
+                    if (icon) {
+                        setTimeout(() => {
+                            icon.classList.remove('fa-spin');
+                            this.disabled = false;
+                        }, 500);
+                    } else {
+                        this.disabled = false;
+                    }
+                });
+            });
+        }
+        
+        // 封装验证码刷新函数
+        function refreshCaptcha() {
+            return fetch("{% url 'user:refresh_captcha' %}")
+                .then(response => response.json())
+                .then(data => {
+                    // 找到验证码容器
+                    const captchaWrapper = document.querySelector('.captcha-wrapper');
+                    if (captchaWrapper) {
+                        // 获取当前的验证码元素
+                        const oldCaptcha = captchaWrapper.querySelector('.captcha');
+                        
+                        // 创建临时div解析新的验证码HTML
+                        const tempDiv = document.createElement('div');
+                        tempDiv.innerHTML = data.new_captcha_html;
+                        const newCaptcha = tempDiv.querySelector('.captcha');
+                        
+                        if (oldCaptcha && newCaptcha) {
+                            // 替换旧的验证码元素
+                            oldCaptcha.parentNode.replaceChild(newCaptcha, oldCaptcha);
+                        } else if (newCaptcha) {
+                            // 如果没有找到旧的验证码元素，但有新的，则插入到按钮前面
+                            const refreshButton = captchaWrapper.querySelector('#refresh-captcha');
+                            if (refreshButton) {
+                                captchaWrapper.insertBefore(newCaptcha, refreshButton);
+                            } else {
+                                // 如果连按钮都找不到，就直接添加到容器中
+                                captchaWrapper.appendChild(newCaptcha);
+                            }
+                        }
+                        
+                        // 重置验证码状态
+                        const captchaStatus = document.getElementById('captcha_status');
+                        if (captchaStatus) {
+                            captchaStatus.textContent = '';
+                            captchaStatus.className = 'status-text';
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('刷新验证码失败:', error);
+                });
+        }
         
         // 验证码输入实时验证
         document.addEventListener('blur', function(e) {
@@ -412,6 +495,25 @@
                     });
             }
         }, true);
+        
+        // 表单提交处理
+        const loginForm = document.querySelector('.sign-in-form');
+        if (loginForm) {
+            loginForm.addEventListener('submit', function(e) {
+                // 验证验证码是否正确
+                const captchaStatus = document.getElementById('captcha_status');
+                if (captchaStatus && captchaStatus.className === 'status-error') {
+                    e.preventDefault(); // 如果验证码错误，阻止提交
+                    alert('请输入正确的验证码');
+                    return;
+                }
+                
+                // 可以在这里添加其他前端验证
+                
+                // 如果需要，可以使用fetch API提交表单并处理重定向
+                // 但通常后端会处理重定向，所以这里不需要额外代码
+            });
+        }
     });
 </script>
 </body>
