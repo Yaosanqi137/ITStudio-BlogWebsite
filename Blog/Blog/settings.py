@@ -70,6 +70,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'user',
     'pages',
+    'article',
     'imagekit',
     'captcha',
 ]
@@ -91,6 +92,7 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [os.path.join(BASE_DIR, 'user/templates'),
                  os.path.join(BASE_DIR, 'pages/templates'),
+                 os.path.join(BASE_DIR, 'article/templates'),
                  ],
         'APP_DIRS': True,
         'OPTIONS': {
