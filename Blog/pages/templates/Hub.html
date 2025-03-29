@@ -7,6 +7,38 @@
     <title>Ciallo</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <!-- 添加内联样式作为备用，以防静态文件加载失败 -->
+    <style>
+        /* 基本样式备份，确保页面在CSS加载失败时仍然可用 */
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f2f5;
+        }
+        
+        .background-gradient {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, #39c5bb, #bb6688);
+            opacity: 0.6;
+        }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
+        
+        /* 其他基本样式... */
+    </style>
 </head>
 <body>
 <div class="background-gradient"></div>
@@ -19,7 +51,7 @@
             <li><a href="#">按钮2</a></li>
             <li><a href="#">按钮3</a></li>
             <li><a href="#">按钮4</a></li>
-            <li><a href="#" id="loginBtn">登录/注册</a></li>
+            <li><a href="/user/login">登录/注册</a></li>
         </ul>
         <div class="mobile-menu">
             <i class="fas fa-bars"></i>
@@ -108,102 +140,6 @@
     </div>
 </footer>
 
-<!-- 登录界面模态框 -->
-<div class="login-modal" id="loginModal">
-    <div class="login-container glass-effect">
-        <div class="forms-container">
-            <div class="signin-signup">
-                <form action="#" class="sign-in-form">
-                    <h2 class="title">登录</h2>
-                    <div class="input-field">
-                        <i class="fas fa-user"></i>
-                        <input type="text" placeholder="用户名" />
-                    </div>
-                    <div class="input-field">
-                        <i class="fas fa-lock"></i>
-                        <input type="password" placeholder="密码" />
-                    </div>
-                    <input type="submit" value="登录" class="btn solid" />
-                </form>
-                <form action="#" class="sign-up-form">
-                    <h2 class="title">注册</h2>
-                    <div class="input-field">
-                        <i class="fas fa-user"></i>
-                        <input type="text" placeholder="用户名" />
-                    </div>
-                    <div class="input-field">
-                        <i class="fas fa-envelope"></i>
-                        <input type="email" placeholder="电子邮箱" />
-                    </div>
-                    <div class="input-field">
-                        <i class="fas fa-lock"></i>
-                        <input type="password" id="signup-password" placeholder="密码" />
-                        <div class="password-strength">
-                            <div class="strength-bar"></div>
-                        </div>
-                    </div>
-                    <div class="password-tips">
-                        <div class="tip-item">
-                            <i class="fas fa-check"></i>
-                            <span>至少8个字符</span>
-                        </div>
-                        <div class="tip-item">
-                            <i class="fas fa-check"></i>
-                            <span>包含大写字母</span>
-                        </div>
-                        <div class="tip-item">
-                            <i class="fas fa-check"></i>
-                            <span>包含小写字母</span>
-                        </div>
-                        <div class="tip-item">
-                            <i class="fas fa-check"></i>
-                            <span>包含数字</span>
-                        </div>
-                        <div class="tip-item">
-                            <i class="fas fa-check"></i>
-                            <span>包含特殊字符</span>
-                        </div>
-                    </div>
-                    <div class="input-field">
-                        <i class="fas fa-key"></i>
-                        <input type="password" id="confirm-password" placeholder="确认密码" />
-                    </div>
-                    <div class="password-message" id="password-message"></div>
-                    <input type="submit" class="btn" value="注册" id="signup-btn" />
-                </form>
-            </div>
-        </div>
-
-        <div class="panels-container">
-            <div class="panel left-panel">
-                <div class="content">
-                    <h3>您是新用户?</h3>
-                    <button class="btn transparent" id="sign-up-btn">
-                        注册
-                    </button>
-                </div>
-                <img src="https://i.ibb.co/6HXL6q1/Register.png" class="image" alt="" />
-            </div>
-            <div class="panel right-panel">
-                <div class="content">
-                    <h3>已有账号?</h3>
-                    <p>
-                        Ciallo～(∠・ω< )⌒★
-                    </p>
-                    <button class="btn transparent" id="sign-in-btn">
-                        登录
-                    </button>
-                </div>
-                <img src="https://i.ibb.co/nP8H853/Login.png" class="image" alt="" />
-            </div>
-        </div>
-
-        <button class="close-modal">
-            <i class="fas fa-times"></i>
-        </button>
-    </div>
-</div>
-
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // 渐入效果
@@ -216,87 +152,12 @@
             });
         }, 100);
 
-        // 登录模态框功能
-        const loginBtn = document.getElementById('loginBtn');
-        const loginModal = document.getElementById('loginModal');
-        const closeModal = document.querySelector('.close-modal');
-        const signUpBtn = document.getElementById('sign-up-btn');
-        const signInBtn = document.getElementById('sign-in-btn');
-        const loginContainer = document.querySelector('.login-container');
-
-        // 打开登录模态框
-        loginBtn.addEventListener('click', () => {
-            loginModal.classList.add('open');
-        });
-
-        // 关闭登录模态框
-        closeModal.addEventListener('click', () => {
-            loginModal.classList.remove('open');
-        });
-
-        // 点击模态框外部关闭
-        loginModal.addEventListener('click', (e) => {
-            if (e.target === loginModal) {
-                loginModal.classList.remove('open');
-            }
-        });
-
-        // 切换到注册界面
-        signUpBtn.addEventListener('click', () => {
-            loginContainer.classList.add('sign-up-mode');
-        });
-
-        // 切换到登录界面
-        signInBtn.addEventListener('click', () => {
-            loginContainer.classList.remove('sign-up-mode');
-        });
-
+        // 移除所有与登录模态框相关的代码
+        // 保留移动端菜单功能
         const mobileMenu = document.querySelector('.mobile-menu');
         const navLinks = document.querySelector('.nav-links');
         mobileMenu.addEventListener('click', function() {
             navLinks.style.display = navLinks.style.display === 'flex' ? 'none' : 'flex';
-        });
-
-        // 密码验证功能
-        const password = document.getElementById('signup-password');
-        const confirmPassword = document.getElementById('confirm-password');
-        const passwordMessage = document.getElementById('password-message');
-        const signupBtn = document.getElementById('signup-btn');
-
-        // 验证密码匹配,不匹配则禁用注册按钮
-        function validatePassword() {
-            if(password.value != confirmPassword.value) {
-                passwordMessage.textContent = "两次输入的密码不一致";
-                passwordMessage.classList.remove('success');
-                signupBtn.disabled = true;
-                signupBtn.style.opacity = "0.7";
-                signupBtn.style.cursor = "not-allowed";
-                return false;
-            } else if(password.value && confirmPassword.value) {
-                passwordMessage.textContent = "密码匹配";
-                passwordMessage.classList.add('success');
-                signupBtn.disabled = false;
-                signupBtn.style.opacity = "1";
-                signupBtn.style.cursor = "pointer";
-                return true;
-            } else {
-                passwordMessage.textContent = "";
-                signupBtn.disabled = false;
-                signupBtn.style.opacity = "1";
-                signupBtn.style.cursor = "pointer";
-                return false;
-            }
-        }
-
-        // 监听密码输入
-        password.addEventListener('keyup', validatePassword);
-        confirmPassword.addEventListener('keyup', validatePassword);
-
-        // 提交前验证
-        document.querySelector('.sign-up-form').addEventListener('submit', function(e) {
-            if(!validatePassword()) {
-                e.preventDefault(); // 阻止表单提交
-            }
         });
     });
 </script>
