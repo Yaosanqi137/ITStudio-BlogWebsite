@@ -43,7 +43,7 @@ ALLOWED_HOSTS = ['*']
 
 # captcha 设置
 CAPTCHA_IMAGE_SIZE = (80, 45)   # 设置 captcha 图片大小
-CAPTCHA_LENGTH = 4   # 字符个数
+CAPTCHA_LENGTH = 1   # 字符个数
 CAPTCHA_TIMEOUT = 1   # 超时(minutes)
 
 # 邮件配置

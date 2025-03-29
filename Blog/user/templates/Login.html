@@ -158,6 +158,13 @@
 <!-- 右侧登录表单 -->
 <div class="right-container">
     <div class="login-container">
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+        </ul>
+        {% endif %}
         <form action="" method="post">
             <h1>登录</h1>
             {% csrf_token %}
