@@ -12,18 +12,20 @@ from django.template.loader import render_to_string
 
 def ajax_validate_captcha(request):
     from captcha.models import CaptchaStore
-    if request.GET:
-        captcha_response = request.GET.get('response', '')
-        captcha_hashkey = request.GET.get('hashkey', '')
-        try:
-            captcha = CaptchaStore.objects.get(hashkey=captcha_hashkey)
-            if captcha.response == captcha_response.lower():
-                captcha.delete()  # 验证成功后删除记录
-                return JsonResponse({'status': 1})
-            return JsonResponse({'status': 0})
-        except:
-            return JsonResponse({'status': 0})
-    return JsonResponse({'status': 0})
+    response = request.GET.get('response', '').strip().lower()
+    hashkey = request.GET.get('hashkey', '')
+
+    if not hashkey or not response:
+        return JsonResponse({'status': False, 'message': '验证码不能为空'})
+
+    try:
+        captcha = CaptchaStore.objects.get(hashkey=hashkey)
+        if captcha.response.lower() == response:
+            return JsonResponse({'status': True, 'message': '验证码正确'})
+    except CaptchaStore.DoesNotExist:
+        pass
+
+    return JsonResponse({'status': False, 'message': '验证码错误'})
 
 def refresh_captcha(request):
     new_captcha = CaptchaForm()
@@ -79,28 +81,31 @@ def register_view(request):
             email.content_subtype = "html"
             try:
                 email.send(fail_silently=False)
+                messages.success(request, '验证邮件已发送！请前往邮箱激活账号。')
+                return redirect('/user/login')
+
             except Exception as e:
-                messages.error(request, f'验证邮件发送失败! {e} 请重新注册！')
-                user.delete()
-                return redirect('/user/login', {})
+                # 发送失败，提示错误信息
+                messages.error(request, f'验证邮件发送失败！请稍后重试。错误详情：{e}')
+                user.delete()  # 删除未激活的用户
+                return render(request, "Register.html", {
+                    "reg_form": reg_form,  # 重新显示表单，保留输入
+                    "captcha": CaptchaForm(),  # 生成新的验证码
+                })
 
-            messages.success(request, '验证邮件发送成功！已将您重定向回登录页面!')
-            return redirect('/user/login')
-        else:
-            return render(request, 'Register.html',{
-                'reg_form': reg_form,
-                'captcha': captcha,
-            })
-    else:
-        reg_form = UserRegForm(request.POST)
-        captcha = CaptchaForm(request.POST)
-
-        # 渲染页面
+        # 注册失败
+        messages.error(request, "注册失败，请检查输入信息！")
         return render(request, 'Register.html', {
             'reg_form': reg_form,
-            'captcha': captcha,
+            'captcha': CaptchaForm(),  # 生成新验证码
         })
 
+    else:
+        # GET 请求，初始化表单
+        return render(request, 'Register.html', {
+            'reg_form': UserRegForm(),
+            'captcha': CaptchaForm(),
+        })
 
 def login_view(request):
     if request.method == "POST":
