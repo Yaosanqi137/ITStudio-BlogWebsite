@@ -1,3 +1,4 @@
-Django==5.1.4
+django==5.1.4
 django_imagekit==5.0.0
 django_simple_captcha==0.6.2
+pillow~=11.1.0
