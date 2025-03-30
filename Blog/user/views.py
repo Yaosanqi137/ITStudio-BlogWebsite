@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.http import JsonResponse, HttpResponseRedirect
 from .forms import *
 from .models import *
@@ -9,16 +9,15 @@ from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import EmailMessage
 from django.contrib import messages
 from django.template.loader import render_to_string
+from captcha.models import CaptchaStore
 
 def ajax_validate_captcha(request):
-    from captcha.models import CaptchaStore
     if request.GET:
         captcha_response = request.GET.get('response', '')
         captcha_hashkey = request.GET.get('hashkey', '')
         try:
             captcha = CaptchaStore.objects.get(hashkey=captcha_hashkey)
             if captcha.response == captcha_response.lower():
-                captcha.delete()  # 验证成功后删除记录
                 return JsonResponse({'status': 1})
             return JsonResponse({'status': 0})
         except:
@@ -92,8 +91,8 @@ def register_view(request):
                 'captcha': captcha,
             })
     else:
-        reg_form = UserRegForm(request.POST)
-        captcha = CaptchaForm(request.POST)
+        reg_form = UserRegForm()
+        captcha = CaptchaForm()
 
         # 渲染页面
         return render(request, 'Register.html', {
@@ -151,3 +150,7 @@ def login_view(request):
         captcha = CaptchaForm()
         return render(request, "Login.html", {
             "user_login": user_login, "captcha": captcha})
+
+def logout_view(request):
+    logout(request)
+    return HttpResponseRedirect("/")

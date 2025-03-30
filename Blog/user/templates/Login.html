@@ -320,17 +320,17 @@
             <form action="{% url 'user:login' %}" method="post" class="sign-in-form">
                 <h2 class="title">登录</h2>
                 {% csrf_token %}
-                
+
                 <div class="input-field">
                     <i class="fas fa-user"></i>
                     <input type="text" name="account" placeholder="请输入用户名或邮箱" required />
                 </div>
-                
+
                 <div class="input-field">
                     <i class="fas fa-lock"></i>
                     <input type="password" name="password" placeholder="请输入密码" required />
                 </div>
-                
+
                 <div class="captcha-container">
                     <div class="captcha-wrapper">
                         {{ captcha.captcha }}
@@ -340,14 +340,12 @@
                     </div>
                     <span id="captcha_status" class="status-text"></span>
                 </div>
-                
+
                 {% if error %}
                     <span class="error-message">{{ error }}</span>
                 {% endif %}
-                
+
                 <input type="submit" value="登录" class="btn solid" />
-                
-                <p class="social-text">是新人？左侧进行注册</p>
             </form>
 
             <!-- 注册表单链接 -->
@@ -385,15 +383,15 @@
         const signUpBtn = document.getElementById('sign-up-btn');
         const signInBtn = document.getElementById('sign-in-btn');
         const container = document.querySelector('.login-container');
-        
+
         signUpBtn.addEventListener('click', () => {
             container.classList.add('sign-up-mode');
         });
-        
+
         signInBtn.addEventListener('click', () => {
             container.classList.remove('sign-up-mode');
         });
-        
+
         // 验证码刷新按钮功能
         const refreshCaptchaBtn = document.getElementById('refresh-captcha');
         if (refreshCaptchaBtn) {
@@ -404,7 +402,7 @@
                     icon.classList.add('fa-spin');
                 }
                 this.disabled = true;
-                
+
                 refreshCaptcha().finally(() => {
                     // 无论成功失败，停止旋转并启用按钮
                     if (icon) {
@@ -418,98 +416,35 @@
                 });
             });
         }
-        
+
         // 验证码验证函数
         function setupCaptchaValidation() {
-            // 使用更精确的ID选择器找到验证码输入框
-            const captchaInput = document.getElementById('id_captcha_1');
-            if (!captchaInput) {
-                console.warn('验证码输入框未找到');
-                return;
-            }
-            
-            // 移除之前的事件监听器(如果有)以避免重复绑定
-            const oldValidateFunction = captchaInput._validateFunction;
-            if (oldValidateFunction) {
-                captchaInput.removeEventListener('blur', oldValidateFunction);
-            }
-            
-            // 定义新的验证函数
+            // 使用更精确的选择器定位当前激活的验证码输入
+            const captchaInput = document.querySelector('.captcha input[name="captcha_1"]');
+            if (!captchaInput) return;
+
+            // 清理旧事件监听器
+            captchaInput.removeEventListener('blur', captchaInput._validateFunction);
+
             function validateCaptcha() {
-                const response = captchaInput.value.trim();
-                if (!response) return; // 如果验证码为空，不进行验证
-                
-                // --- 修改 hashkey 获取方式 ---
-                // 尝试在验证码输入框的父容器(.captcha)内查找隐藏输入框
-                const captchaContainer = captchaInput.closest('.captcha'); // 找到包含输入框的.captcha div
-                let hashkey = null;
-                if (captchaContainer) {
-                    const hiddenInput = captchaContainer.querySelector('input[type="hidden"]'); // 查找隐藏输入框
-                    if (hiddenInput) {
-                        hashkey = hiddenInput.value;
-                    }
-                }
+                const response = this.value.trim();
+                const hashkey = document.querySelector('input[name="captcha_0"]').value;
 
-                // 如果新方法找不到，尝试旧方法作为备用（或者直接报错）
-                if (!hashkey) {
-                     console.warn('未能通过相对路径找到hashkey，尝试全局查找...');
-                     const globalHiddenInput = document.querySelector('input[name="captcha_0"]');
-                     if (globalHiddenInput) {
-                         hashkey = globalHiddenInput.value;
-                     }
-                }
-                // --- 结束修改 ---
+                if (!response || !hashkey) return;
 
-                if (!hashkey) {
-                    console.error('验证码hashkey最终未能找到!'); // 明确错误
-                    return; // 无法继续验证
-                }
-                
-                console.log('验证码验证:', response, 'Hashkey:', hashkey); // 调试用
-                
-                // 添加一个标记，表示正在验证中，防止重复验证
-                if (captchaInput._validating) return;
-                captchaInput._validating = true;
-                
                 fetch(`{% url 'user:ajax_val' %}?response=${response}&hashkey=${hashkey}`)
                     .then(response => response.json())
                     .then(data => {
-                        console.log('验证码验证结果:', data); // 调试用
-                        
-                        // 获取状态显示元素
-                        let captchaStatus = document.getElementById('captcha_status');
-                        
-                        // 如果状态元素不存在，则创建一个
-                        if (!captchaStatus) {
-                            captchaStatus = document.createElement('span');
-                            captchaStatus.id = 'captcha_status';
-                             // 确保状态元素添加到正确的位置
-                            const container = captchaInput.closest('.captcha-container') || captchaInput.closest('.captcha-wrapper') || captchaInput.parentElement;
-                            if(container) {
-                                container.appendChild(captchaStatus);
-                            } else {
-                                 console.error("无法找到合适的容器来添加验证码状态");
-                            }
-                        }
-                        
-                        // 清除当前内容并设置新状态
-                        captchaStatus.innerHTML = '';
-                        captchaStatus.className = data.status ? 'status-success' : 'status-error';
-                        captchaStatus.textContent = data.status ? '验证码正确' : '验证码错误';
-                    })
-                    .catch(error => {
-                        console.error('验证码验证错误:', error);
-                    })
-                    .finally(() => {
-                        // 验证完成，移除标记
-                        captchaInput._validating = false;
+                        const statusEl = document.getElementById('captcha_status');
+                        if (!statusEl) return;
+
+                        statusEl.className = data.status ? 'status-success' : 'status-error';
+                        statusEl.textContent = data.status ? '✓ 验证通过' : '✗ 验证码错误';
                     });
             }
-            
-            // 保存验证函数引用，以便后续移除
+
+            // 绑定新的事件并保存引用
             captchaInput._validateFunction = validateCaptcha;
-            
-            // 添加新的事件监听器
             captchaInput.addEventListener('blur', validateCaptcha);
         }
 
@@ -521,56 +456,45 @@
             return fetch("{% url 'user:refresh_captcha' %}")
                 .then(response => response.json())
                 .then(data => {
-                    // 找到验证码容器
-                    const captchaWrapper = document.querySelector('.captcha-wrapper');
-                    if (captchaWrapper) {
-                        // 获取当前的验证码元素
-                        const oldCaptcha = captchaWrapper.querySelector('.captcha');
-                        
-                        // 创建临时div解析新的验证码HTML
-                        const tempDiv = document.createElement('div');
-                        tempDiv.innerHTML = data.new_captcha_html;
-                        const newCaptcha = tempDiv.querySelector('.captcha');
-                        
-                        if (oldCaptcha && newCaptcha) {
-                            // 替换旧的验证码元素
-                            oldCaptcha.parentNode.replaceChild(newCaptcha, oldCaptcha);
-                        } else if (newCaptcha) {
-                            // 如果没有找到旧的验证码元素，但有新的，则插入到按钮前面
-                            const refreshButton = captchaWrapper.querySelector('#refresh-captcha');
-                            if (refreshButton) {
-                                captchaWrapper.insertBefore(newCaptcha, refreshButton);
-                            } else {
-                                // 如果连按钮都找不到，就直接添加到容器中
-                                captchaWrapper.appendChild(newCaptcha);
-                            }
-                        }
-                        
-                        // 重置验证码状态
-                        const captchaStatus = document.getElementById('captcha_status');
-                        if (captchaStatus) {
-                            captchaStatus.textContent = '';
-                            captchaStatus.className = 'status-text';
-                        }
-                        
-                        // 重要：清空验证码输入框
-                        setTimeout(() => {
-                            const newCaptchaInput = document.getElementById('id_captcha_1');
-                            if (newCaptchaInput) {
-                                newCaptchaInput.value = '';
-                                newCaptchaInput.focus(); // 可选：聚焦到输入框
-                            }
-                            
-                            // 重新绑定验证码验证事件
-                            setupCaptchaValidation();
-                        }, 100); // 短暂延迟确保DOM已更新
+                    // 创建临时容器解析新验证码
+                    const tempWrapper = document.createElement('div');
+                    tempWrapper.innerHTML = data.new_captcha_html;
+
+                    // 获取新的验证码元素和隐藏字段
+                    const newCaptcha = tempWrapper.querySelector('.captcha');
+                    const newHiddenInput = tempWrapper.querySelector('input[type="hidden"]');
+                    const newImage = tempWrapper.querySelector('img');
+
+                    if (!newCaptcha || !newHiddenInput || !newImage) {
+                        throw new Error('Invalid captcha HTML');
                     }
+
+                    // 替换旧的验证码元素
+                    const oldCaptcha = document.querySelector('.captcha');
+                    if (oldCaptcha) {
+                        const parent = oldCaptcha.parentNode;
+
+                        // 先插入新的再移除旧的，避免事件丢失
+                        parent.insertBefore(newCaptcha, oldCaptcha);
+                        parent.removeChild(oldCaptcha);
+                    }
+
+                    // 确保隐藏字段的值更新到DOM
+                    setTimeout(() => {
+                        const currentHidden = document.querySelector('input[name="captcha_0"]');
+                        if (currentHidden) {
+                            currentHidden.value = newHiddenInput.value;
+                        }
+
+                        // 重新绑定验证逻辑
+                        setupCaptchaValidation();
+                    }, 50);
                 })
                 .catch(error => {
                     console.error('刷新验证码失败:', error);
                 });
         }
-        
+
         // 表单提交处理
         const loginForm = document.querySelector('.sign-in-form');
         if (loginForm) {
@@ -582,9 +506,9 @@
                     alert('请输入正确的验证码');
                     return;
                 }
-                
+
                 // 可以在这里添加其他前端验证
-                
+
                 // 如果需要，可以使用fetch API提交表单并处理重定向
                 // 但通常后端会处理重定向，所以这里不需要额外代码
             });
