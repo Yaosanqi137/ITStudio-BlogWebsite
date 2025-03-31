@@ -2,6 +2,8 @@
 
 爱特工作室-网站Blog合作项目
 
+简体中文 ｜ [English](https://github.com/Yaosanqi137/ITStudio-BlogWebsite/blob/main/README_EN.md)
+
 ## 🤔 这是什么
 
 这是爱特工作室 24 届合作项目，本项目团队一共 9 人，目标是使用 Django 写一个博客论坛(类似[博客园](https://www.cnblogs.com/))网站
