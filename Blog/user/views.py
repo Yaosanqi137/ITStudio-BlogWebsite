@@ -20,9 +20,11 @@ def ajax_validate_captcha(request):
             try:
                 captcha = CaptchaStore.objects.get(hashkey=captcha_hashkey)
                 if captcha.response == captcha_response.lower():
-                    captcha.delete()
-                    return JsonResponse({'status': 1})
+                    # captcha.delete() # <--- 注释掉或删除这一行
+                    return JsonResponse({'status': 1}) # 只返回成功状态，不删除记录
                 else:
+                    # 验证失败时，可以考虑删除，防止暴力破解同一个key，但非必须
+                    # captcha.delete()
                     return JsonResponse({'status': 0, 'message': 'Incorrect captcha'})
             except CaptchaStore.DoesNotExist:
                 return JsonResponse({'status': 0, 'message': 'Captcha key not found or expired'})

@@ -577,23 +577,70 @@
         const loginForm = document.querySelector('.sign-in-form');
         if (loginForm) {
             loginForm.addEventListener('submit', function(e) {
-                // Optional: Add frontend validation before submitting if needed
+                e.preventDefault(); // --- 阻止表单实际提交 ---
+
+                console.log("--- 开始前端登录验证 ---");
+
+                let hasErrors = false;
+                let errorMessages = [];
+                let firstErrorField = null;
+
+                // 获取输入值
+                const accountInput = loginForm.querySelector('input[name="account"]');
+                const passwordInput = loginForm.querySelector('input[name="password"]');
+                const captchaInput = document.getElementById('id_captcha_1'); // 假设验证码输入框 ID 仍然是这个
                 const captchaStatus = document.getElementById('captcha_status');
-                // Prevent submission if captcha is known to be incorrect from frontend validation
-                if (captchaStatus && captchaStatus.classList.contains('status-error')) {
-                     // Check if the error message indicates an actual validation failure
-                     // Avoid blocking if it's just '验证出错' or '刷新失败'
+
+                const account = accountInput ? accountInput.value.trim() : '';
+                const password = passwordInput ? passwordInput.value : '';
+                const captchaValue = captchaInput ? captchaInput.value.trim() : '';
+
+                // 1. 验证账号
+                if (!account) {
+                    hasErrors = true;
+                    errorMessages.push('请输入账号（用户名或邮箱）');
+                    if (!firstErrorField) firstErrorField = accountInput;
+                }
+
+                // 2. 验证密码
+                if (!password) {
+                    hasErrors = true;
+                    errorMessages.push('请输入密码');
+                    if (!firstErrorField) firstErrorField = passwordInput;
+                }
+
+                // 3. 验证验证码 (基于前端状态)
+                if (!captchaValue) {
+                    hasErrors = true;
+                    errorMessages.push('请输入验证码');
+                     if (captchaStatus) {
+                         captchaStatus.textContent = '请输入验证码';
+                         captchaStatus.className = 'status-error';
+                     }
+                    if (!firstErrorField) firstErrorField = captchaInput;
+                } else if (captchaStatus && captchaStatus.classList.contains('status-error')) {
                      const errorText = captchaStatus.textContent;
-                     if (errorText.includes('错误') || errorText.includes('Incorrect')) {
-                         e.preventDefault();
-                         alert('请输入正确的验证码后再提交。');
-                         // Find the captcha input and focus it
-                         const captchaInput = document.getElementById('id_captcha_1');
-                         if(captchaInput) captchaInput.focus();
-                         return;
+                     if (errorText && !errorText.includes('请输入验证码')) { // 仅当不是"请输入"错误时
+                         hasErrors = true;
+                         errorMessages.push('验证码错误或无效');
+                         if (!firstErrorField) firstErrorField = captchaInput;
                      }
                 }
-                // Allow submission otherwise, backend will handle final validation
+
+                // --- 输出结果到控制台 ---
+                if (hasErrors) {
+                    // e.preventDefault(); // 已在开头阻止
+                    console.error("--- 登录前端验证失败 ---");
+                    console.warn("错误详情:", errorMessages);
+
+                    if (firstErrorField) {
+                        firstErrorField.focus();
+                    }
+                } else {
+                    // --- 模拟登录成功 ---
+                    console.log("--- 登录前端验证通过 ---");
+                    console.log(`模拟登录成功！账号: ${account}`);
+                }
             });
         }
         // --- End of Form Submission Logic ---
