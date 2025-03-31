@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.http import JsonResponse, HttpResponseRedirect
 from .forms import *
 from .models import *
@@ -170,3 +170,11 @@ def login_view(request):
         captcha = CaptchaForm()
         return render(request, "Login.html", {
             "user_login": user_login, "captcha": captcha})
+
+def logout_view(request):
+    """
+    处理用户登出请求
+    """
+    logout(request) # 调用 Django 内置的 logout 函数，清除 session
+    # 可以重定向到首页或登录页
+    return redirect('/') # 或者 redirect('/user/login/')
