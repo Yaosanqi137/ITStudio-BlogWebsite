@@ -61,10 +61,10 @@
             transform: translate(-50%, -50%);
             left: 25%;
             width: 50%;
-            transition: 1s 0.7s ease-in-out;
+            transition: 0.5s;
             display: grid;
             grid-template-columns: 1fr;
-            z-index: 5;
+            z-index: 10;
         }
 
         form {
@@ -77,6 +77,7 @@
             overflow: hidden;
             grid-column: 1 / 2;
             grid-row: 1 / 2;
+            pointer-events: auto !important;
         }
 
         .title {
@@ -164,26 +165,27 @@
             top: 0;
             left: 0;
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: 1fr;
         }
 
         .panel {
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: space-around;
             text-align: center;
             z-index: 6;
-        }
-
-        .left-panel {
-            pointer-events: none;
-            padding: 3rem 17% 2rem 12%;
+            transition: transform 0.9s ease-in-out;
+            pointer-events: auto;
         }
 
         .right-panel {
-            pointer-events: all;
+            position: absolute;
+            right: 0;
+            width: 50%;
+            height: 100%;
             padding: 3rem 12% 2rem 17%;
+            pointer-events: auto;
         }
 
         .panel .content {
@@ -219,9 +221,9 @@
             transition-delay: 0.4s;
         }
 
-        .left-panel .image,
-        .left-panel .content {
-            transform: translateX(-800px);
+        .right-panel .image,
+        .right-panel .content {
+            transform: translateX(0);
         }
 
         .error-message {
@@ -278,31 +280,50 @@
 
         .password-tips {
             width: 100%;
-            max-width: 380px; /* 限制最大宽度与输入框一致 */
-            margin: 5px 0;
-            display: none; /* 默认隐藏，由 JS 控制显示 */
+            max-width: 380px;
+            margin-top: 5px;
+            display: none;
+            background-color: #f8f8f8;
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
         
         .tip-item {
-            display: none; /* 默认隐藏 */
+            display: flex;
             align-items: center;
-            margin: 3px 0; /* 调整间距 */
-            font-size: 12px;
-            color: #dc3545; /* 不满足时显示红色 */
+            margin: 5px 0;
+            font-size: 0.85rem;
         }
         
         .tip-item i {
-            margin-right: 5px;
-            color: #dc3545; /* 图标也为红色 */
+            margin-right: 8px;
+            width: 16px;
+            text-align: center;
         }
-
+        
+        .tip-item.valid i {
+            color: #4caf50;
+        }
+        
+        .tip-item.invalid i {
+            color: #ff4d4d;
+        }
+        
         .password-message {
-            font-size: 14px;
-            margin: 5px 0;
-            color: #dc3545;
             width: 100%;
-            max-width: 380px; /* 限制最大宽度 */
-            text-align: left; /* 左对齐 */
+            max-width: 380px;
+            margin-top: 5px;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+        
+        .password-message.success {
+            color: #4caf50;
+        }
+        
+        .password-message.error {
+            color: #ff4d4d;
         }
 
         /* 新增：隐藏 Django 默认的字段错误列表 */
@@ -371,6 +392,48 @@
         .refresh-captcha-btn i {
             font-size: 10px;
         }
+
+        /* 控制表单显示/隐藏的样式 */
+        form.sign-up-form {
+            opacity: 1;
+            z-index: 2;
+        }
+        
+        form.sign-in-form {
+            z-index: 1;
+            opacity: 0;
+        }
+        .right-panel .btn.transparent {
+            width: 150px;
+            height: 49px;
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 10px 0;
+            transition: 0.5s;
+        }
+        
+        .right-panel .btn.transparent:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+        }
+
+        /* 使用更具体的选择器 */
+        .register-container .panels-container .panel.right-panel .content .btn.transparent {
+            width: 150px !important; /* 使用 !important 覆盖其他规则 */
+            height: 49px !important;
+            font-size: 1rem !important;
+            font-weight: 600 !important;
+            margin: 10px 0 !important;
+            transition: 0.5s !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
+        
+        .register-container .panels-container .panel.right-panel .content .btn.transparent:hover {
+            background-color: rgba(255, 255, 255, 0.2) !important;
+            transform: scale(1.05) !important;
+        }
     </style>
 </head>
 <body>
@@ -380,7 +443,7 @@
     <div class="forms-container">
         <div class="signin-signup">
             <!-- 注册表单 -->
-            <form action="" method="post" class="sign-up-form">
+            <form action="{% url 'user:register' %}" method="post" class="sign-up-form">
                 <h2 class="title">注册</h2>
                 {% csrf_token %}
                 
@@ -479,418 +542,327 @@
     </div>
 
     <div class="panels-container">
-        <div class="panel left-panel">
+        <div class="panel right-panel">
             <div class="content">
                 <h3>已有账号?</h3>
                 <p>使用您的账号登录，畅享购物体验!</p>
-                <a href="/user/login" class="btn transparent">登录</a>
+                <!-- 直接修改按钮样式 -->
+                <a href="{% url 'user:login' %}" class="btn transparent" style="width: 150px; height: 49px; font-size: 1rem; font-weight: 600; margin: 10px 0; display: flex; align-items: center; justify-content: center; transition: 0.5s;" onmouseover="this.style.backgroundColor='rgba(255,255,255,0.2)'; this.style.transform='scale(1.05)';" onmouseout="this.style.backgroundColor='transparent'; this.style.transform='scale(1)';">登录</a>
             </div>
             <img src="https://i.ibb.co/nP8H853/Login.png" class="image" alt="" />
-        </div>
-        <div class="panel right-panel">
-            <div class="content">
-                <h3>新用户注册</h3>
-                <p>Ciallo</p>
-            </div>
-            <img src="https://i.ibb.co/6HXL6q1/Register.png" class="image" alt="" />
         </div>
     </div>
 </div>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // 隐藏可能存在的文件上传字段
-        const fileInputs = document.querySelectorAll('input[type="file"]');
-        fileInputs.forEach(input => {
-            const parentParagraph = input.closest('p'); // as_p 将字段渲染在 <p> 标签中
-            if (parentParagraph) {
-                parentParagraph.style.display = 'none'; // 隐藏包含文件输入框及其标签的整个段落
-            }
-        });
 
-        // 验证码刷新按钮功能
-        const refreshCaptchaBtn = document.getElementById('refresh-captcha');
-        if (refreshCaptchaBtn) {
-            refreshCaptchaBtn.addEventListener('click', function() {
-                // 添加旋转动画表示正在加载
-                const icon = this.querySelector('i');
-                if (icon) {
-                    icon.classList.add('fa-spin');
-                }
-                this.disabled = true;
-                
-                refreshCaptcha().finally(() => {
-                    // 无论成功失败，停止旋转并启用按钮
-                    if (icon) {
-                        setTimeout(() => {
-                            icon.classList.remove('fa-spin');
-                            this.disabled = false;
-                        }, 500);
-                    } else {
-                        this.disabled = false;
-                    }
-                });
-            });
-        }
-        
-        // 验证码点击刷新功能
-        document.addEventListener('click', function(e) {
-            if (e.target.closest('.captcha img')) {
-                refreshCaptcha();
-            }
-        });
-        
-        // 验证码验证函数
-        function setupCaptchaValidation() {
-            // 使用更精确的ID选择器找到验证码输入框
-            const captchaInput = document.getElementById('id_captcha_1');
-            if (!captchaInput) {
-                console.warn('验证码输入框未找到');
-                return;
-            }
-            
-            // 移除之前的事件监听器(如果有)以避免重复绑定
-            const oldValidateFunction = captchaInput._validateFunction;
-            if (oldValidateFunction) {
-                captchaInput.removeEventListener('blur', oldValidateFunction);
-            }
-            
-            // 定义新的验证函数
-            function validateCaptcha() {
-                const response = captchaInput.value.trim();
-                if (!response) return; // 如果验证码为空，不进行验证
-                
-                // --- 修改 hashkey 获取方式 ---
-                // 尝试在验证码输入框的父容器(.captcha)内查找隐藏输入框
-                const captchaContainer = captchaInput.closest('.captcha'); // 找到包含输入框的.captcha div
-                let hashkey = null;
-                if (captchaContainer) {
-                    const hiddenInput = captchaContainer.querySelector('input[type="hidden"]'); // 查找隐藏输入框
-                    if (hiddenInput) {
-                        hashkey = hiddenInput.value;
-                    }
-                }
+        // --- Start of Captcha Logic (Working Version) ---
+        const captchaWrapper = document.querySelector('.captcha-wrapper');
+        const captchaContainer = document.querySelector('.captcha-container');
 
-                // 如果新方法找不到，尝试旧方法作为备用（或者直接报错）
-                if (!hashkey) {
-                     console.warn('未能通过相对路径找到hashkey，尝试全局查找...');
-                     const globalHiddenInput = document.querySelector('input[name="captcha_0"]');
-                     if (globalHiddenInput) {
-                         hashkey = globalHiddenInput.value;
-                     }
-                }
-                // --- 结束修改 ---
-
-                if (!hashkey) {
-                    console.error('验证码hashkey最终未能找到!'); // 明确错误
-                    return; // 无法继续验证
-                }
-
-                console.log('验证码验证:', response, 'Hashkey:', hashkey); // 调试用
-                
-                // 添加一个标记，表示正在验证中，防止重复验证
-                if (captchaInput._validating) return;
-                captchaInput._validating = true;
-                
-                fetch(`{% url 'user:ajax_val' %}?response=${response}&hashkey=${hashkey}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log('验证码验证结果:', data); // 调试用
-                        
-                        // 获取状态显示元素
-                        let captchaStatus = document.getElementById('captcha_status');
-                        
-                        // 如果状态元素不存在，则创建一个
-                        if (!captchaStatus) {
-                            captchaStatus = document.createElement('span');
-                            captchaStatus.id = 'captcha_status';
-                            // 确保状态元素添加到正确的位置
-                            const container = captchaInput.closest('.captcha-container') || captchaInput.closest('.captcha-wrapper') || captchaInput.parentElement;
-                            if(container) {
-                                container.appendChild(captchaStatus);
-                            } else {
-                                 console.error("无法找到合适的容器来添加验证码状态");
-                            }
-                        }
-                        
-                        // 清除当前内容并设置新状态
-                        captchaStatus.innerHTML = '';
-                        captchaStatus.className = data.status ? 'status-success' : 'status-error';
-                        captchaStatus.textContent = data.status ? '验证码正确' : '验证码错误';
-                    })
-                    .catch(error => {
-                        console.error('验证码验证错误:', error);
-                    })
-                    .finally(() => {
-                        // 验证完成，移除标记
-                        captchaInput._validating = false;
-                    });
-            }
-            
-            // 保存验证函数引用，以便后续移除
-            captchaInput._validateFunction = validateCaptcha;
-            
-            // 添加新的事件监听器
-            captchaInput.addEventListener('blur', validateCaptcha);
-        }
-
-        // 初始化验证码验证
-        setupCaptchaValidation();
-
-        // 修改refreshCaptcha函数，在成功刷新后重新设置验证
-        function refreshCaptcha() {
-            return fetch("{% url 'user:refresh_captcha' %}")
+        function performCaptchaValidation(captchaInput, hashkeyInput) {
+            const response = captchaInput.value.trim();
+            const hashkey = hashkeyInput.value;
+            if (!response || !hashkey) { return; }
+            console.log('正在验证验证码:', response, '使用hashkey:', hashkey);
+            if (captchaInput._validating) return;
+            captchaInput._validating = true;
+            fetch(`{% url 'user:ajax_val' %}?response=${response}&hashkey=${hashkey}`)
                 .then(response => response.json())
                 .then(data => {
-                    // 找到验证码容器
-                    const captchaWrapper = document.querySelector('.captcha-wrapper');
-                    if (captchaWrapper) {
-                        // 获取当前的验证码元素
-                        const oldCaptcha = captchaWrapper.querySelector('.captcha');
-                        
-                        // 创建临时div解析新的验证码HTML
-                        const tempDiv = document.createElement('div');
-                        tempDiv.innerHTML = data.new_captcha_html;
-                        const newCaptcha = tempDiv.querySelector('.captcha');
-                        
-                        if (oldCaptcha && newCaptcha) {
-                            // 替换旧的验证码元素
-                            oldCaptcha.parentNode.replaceChild(newCaptcha, oldCaptcha);
-                        } else if (newCaptcha) {
-                            // 如果没有找到旧的验证码元素，但有新的，则插入到按钮前面
-                            const refreshButton = captchaWrapper.querySelector('#refresh-captcha');
-                            if (refreshButton) {
-                                captchaWrapper.insertBefore(newCaptcha, refreshButton);
-                            } else {
-                                // 如果连按钮都找不到，就直接添加到容器中
-                                captchaWrapper.appendChild(newCaptcha);
-                            }
-                        }
-                        
-                        // 重置验证码状态
-                        const captchaStatus = document.getElementById('captcha_status');
-                        if (captchaStatus) {
-                            captchaStatus.textContent = '';
-                            captchaStatus.className = 'status-text';
-                        }
-                        
-                        // 重要：清空验证码输入框
-                        setTimeout(() => {
-                            const newCaptchaInput = document.getElementById('id_captcha_1');
-                            if (newCaptchaInput) {
-                                newCaptchaInput.value = '';
-                                newCaptchaInput.focus(); // 可选：聚焦到输入框
-                            }
-                            
-                            // 重新绑定验证码验证事件
-                            setupCaptchaValidation();
-                        }, 100); // 短暂延迟确保DOM已更新
+                    console.log('验证码验证结果:', data);
+                    let captchaStatus = document.getElementById('captcha_status');
+                    if (!captchaStatus && captchaContainer) {
+                        captchaStatus = document.createElement('span');
+                        captchaStatus.id = 'captcha_status';
+                        captchaContainer.appendChild(captchaStatus);
+                    }
+                    if (captchaStatus) {
+                        captchaStatus.textContent = data.status ? '验证码正确' : (data.message || '验证码错误');
+                        captchaStatus.className = data.status ? 'status-success' : 'status-error';
                     }
                 })
                 .catch(error => {
-                    console.error('刷新验证码失败:', error);
+                    console.error('验证码验证错误:', error);
+                    let captchaStatus = document.getElementById('captcha_status');
+                     if (captchaStatus) { captchaStatus.textContent = '验证出错'; captchaStatus.className = 'status-error'; }
+                })
+                .finally(() => { captchaInput._validating = false; });
+        }
+
+        if (captchaWrapper) {
+            captchaWrapper.addEventListener('blur', function(event) {
+                if (event.target && event.target.id === 'id_captcha_1') {
+                    const captchaInput = event.target;
+                    let hashkeyInput = null;
+                    const captchaDiv = captchaInput.closest('.captcha');
+                    if (captchaDiv) { hashkeyInput = captchaDiv.querySelector('input[type="hidden"][name="captcha_0"]'); }
+                    if (!hashkeyInput) { hashkeyInput = captchaWrapper.querySelector('input[type="hidden"][name="captcha_0"]'); }
+                    if (captchaInput && hashkeyInput) { performCaptchaValidation(captchaInput, hashkeyInput); }
+                    else { console.error("无法在 'blur' 事件中找到 hashkey 输入。"); }
+                }
+            }, true);
+            console.log("验证码 'blur' 事件监听器已设置 (委托)。");
+        } else { console.error("未能找到 '.captcha-wrapper' 元素来设置事件委托。"); }
+
+        function refreshCaptcha() {
+            const refreshButton = document.getElementById('refresh-captcha');
+            const icon = refreshButton ? refreshButton.querySelector('i') : null;
+            console.log("Attempting to find elements for refresh...");
+            const currentCaptchaWrapper = document.querySelector('.captcha-wrapper');
+            const captchaImage = currentCaptchaWrapper ? currentCaptchaWrapper.querySelector('img') : null;
+            const hashkeyInput = currentCaptchaWrapper ? currentCaptchaWrapper.querySelector('input[type="hidden"][name="captcha_0"]') : null;
+            const textInput = currentCaptchaWrapper ? currentCaptchaWrapper.querySelector('input[type="text"][id="id_captcha_1"]') : null;
+            console.log("captchaWrapper:", currentCaptchaWrapper, "captchaImage:", captchaImage, "hashkeyInput:", hashkeyInput, "textInput:", textInput);
+            if (!currentCaptchaWrapper || !captchaImage || !hashkeyInput || !textInput) {
+                 if (!currentCaptchaWrapper) console.error("刷新失败: 未找到 .captcha-wrapper");
+                 if (!captchaImage) console.error("刷新失败: 未找到 img 元素在 .captcha-wrapper 内");
+                 if (!hashkeyInput) console.error("刷新失败: 未找到 input[name='captcha_0']");
+                 if (!textInput) console.error("刷新失败: 未找到 input[id='id_captcha_1']");
+                 console.error("未能找到所有必要的验证码元素。");
+                 return Promise.reject("Missing captcha elements");
+            }
+            if (refreshButton) refreshButton.disabled = true;
+            if (icon) icon.classList.add('fa-spin');
+            const captchaStatus = document.getElementById('captcha_status');
+            if (captchaStatus) { captchaStatus.textContent = ''; captchaStatus.className = 'status-text'; }
+            return fetch("{% url 'user:refresh_captcha' %}")
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 1 && data.new_cptch_key && data.new_cptch_image_url) {
+                        hashkeyInput.value = data.new_cptch_key;
+                        captchaImage.src = data.new_cptch_image_url;
+                        textInput.value = '';
+                        console.log("验证码已通过更新 src 和 value 刷新。 新 Key:", data.new_cptch_key);
+                    } else {
+                        console.error("刷新请求失败或返回数据无效:", data.message || '未知错误');
+                        if (captchaStatus) { captchaStatus.textContent = '刷新失败'; captchaStatus.className = 'status-error'; }
+                        throw new Error(data.message || '刷新失败');
+                    }
+                })
+                .catch(error => {
+                    console.error('刷新验证码 fetch 错误:', error);
+                     if (captchaStatus) { captchaStatus.textContent = '刷新出错'; captchaStatus.className = 'status-error'; }
+                })
+                .finally(() => {
+                    if (icon) { setTimeout(() => { icon.classList.remove('fa-spin'); if (refreshButton) refreshButton.disabled = false; }, 300); }
+                    else { if (refreshButton) refreshButton.disabled = false; }
                 });
         }
-        
-        // 表单提交处理
-        document.querySelector('form').addEventListener('submit', function(e) {
-            // 已有的密码验证逻辑保持不变
-            
-            // 表单提交成功后，可以在这里添加重定向逻辑
-            // 注意：这里不需要添加代码，因为后端应该处理重定向
-            // 如果需要前端处理，可以使用fetch提交表单并在成功后重定向
-        });
-        
-        // 密码强度检测
+
+        const refreshCaptchaBtn = document.getElementById('refresh-captcha');
+        if (refreshCaptchaBtn) { refreshCaptchaBtn.addEventListener('click', refreshCaptcha); }
+        if (captchaWrapper) {
+            captchaWrapper.addEventListener('click', function(event) {
+                if (event.target && event.target.tagName === 'IMG' && (event.target.classList.contains('captcha-image') || event.target.closest('.captcha'))) {
+                    refreshCaptcha();
+                }
+            });
+        }
+        // --- End of Captcha Logic ---
+
+
+        // --- Start of Password Strength Logic (Re-integrated and Checked) ---
         const passwordInput = document.querySelector('input[name="password"]');
         const confirmPasswordInput = document.querySelector('input[name="confirm_password"]');
         const strengthBar = document.querySelector('.strength-bar');
-        const passwordMessage = document.getElementById('password-message');
         const passwordTips = document.querySelector('.password-tips');
+        const passwordMessage = document.getElementById('password-message');
 
-        if (passwordInput) {
-            // 辅助函数：检查所有密码规则是否满足
-            function checkAllPasswordRules(password) {
-                if (!password) return false; // 如果密码为空，不算满足所有规则
-                const rules = {
-                    length: password.length >= 8,
-                    uppercase: /[A-Z]/.test(password),
-                    lowercase: /[a-z]/.test(password),
-                    number: /[0-9]/.test(password),
-                    special: /[^A-Za-z0-9]/.test(password)
-                };
-                return Object.values(rules).every(Boolean);
+        // Tip elements
+        const lengthTip = document.getElementById('length-tip');
+        const uppercaseTip = document.getElementById('uppercase-tip');
+        const lowercaseTip = document.getElementById('lowercase-tip');
+        const numberTip = document.getElementById('number-tip');
+        const specialTip = document.getElementById('special-tip');
+
+        // Function to update tip item UI
+        function updateTipItem(tipElement, isValid) {
+            if (!tipElement) return;
+            const icon = tipElement.querySelector('i');
+            if (isValid) {
+                tipElement.classList.add('valid');
+                tipElement.classList.remove('invalid');
+                icon.className = 'fas fa-check';
+            } else {
+                tipElement.classList.add('invalid');
+                tipElement.classList.remove('valid');
+                icon.className = 'fas fa-times';
+            }
+        }
+
+        // Function to check password criteria and update UI
+        function checkPasswordStrength() {
+            if (!passwordInput || !strengthBar || !passwordTips) {
+                console.warn("Password strength elements not found.");
+                return;
             }
 
-            passwordInput.addEventListener('keyup', function() {
-                const password = this.value;
-                let strength = 0;
-                let allValid = true;
+            const password = passwordInput.value;
+            let score = 0;
+            let criteriaMet = {
+                length: password.length >= 8,
+                uppercase: /[A-Z]/.test(password),
+                lowercase: /[a-z]/.test(password),
+                number: /[0-9]/.test(password),
+                special: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/.test(password)
+            };
 
-                // 先隐藏所有提示项
-                document.querySelectorAll('.tip-item').forEach(tip => {
-                    tip.style.display = 'none';
-                });
+            // 更新提示项 UI
+            updateTipItem(lengthTip, criteriaMet.length);
+            updateTipItem(uppercaseTip, criteriaMet.uppercase);
+            updateTipItem(lowercaseTip, criteriaMet.lowercase);
+            updateTipItem(numberTip, criteriaMet.number);
+            updateTipItem(specialTip, criteriaMet.special);
 
-                // 如果密码为空，重置并隐藏提示
-                if (!password) {
-                    passwordTips.style.display = 'none';
-                    strengthBar.style.width = '0%';
-                    strengthBar.style.backgroundColor = '#eee';
-                    return;
-                }
+            // 计算分数
+            if (criteriaMet.length) score++;
+            if (criteriaMet.uppercase) score++;
+            if (criteriaMet.lowercase) score++;
+            if (criteriaMet.number) score++;
+            if (criteriaMet.special) score++;
 
-                // 只有当密码不为空时才可能显示提示容器
+            // 更新强度条
+            const strengthPercentage = (score / 5) * 100;
+            strengthBar.style.width = strengthPercentage + '%';
+
+            if (score <= 1) {
+                strengthBar.style.backgroundColor = '#ff4d4d'; // 弱 (红色)
+            } else if (score <= 3) {
+                strengthBar.style.backgroundColor = '#ffa500'; // 中 (橙色)
+            } else if (score === 4) {
+                strengthBar.style.backgroundColor = '#ffd700'; // 良好 (黄色)
+            } else {
+                strengthBar.style.backgroundColor = '#4caf50'; // 强 (绿色)
+            }
+
+            // 显示/隐藏提示
+            if (password.length > 0) {
                 passwordTips.style.display = 'block';
-
-                let tips = {
-                    length: password.length >= 8,
-                    uppercase: /[A-Z]/.test(password),
-                    lowercase: /[a-z]/.test(password),
-                    number: /[0-9]/.test(password),
-                    special: /[^A-Za-z0-9]/.test(password)
-                };
-
-                // 检查每个条件，仅显示不满足的提示
-                Object.keys(tips).forEach(key => {
-                    const tipElement = document.getElementById(`${key}-tip`);
-                    if (tipElement) {
-                        if (tips[key]) {
-                            strength += 20; // 满足条件则增加强度
-                            tipElement.style.display = 'none'; // 满足条件则隐藏
-                        } else {
-                            tipElement.style.display = 'flex'; // 不满足条件则显示
-                            allValid = false; // 标记至少有一条不满足
-                        }
-                    }
-                });
-
-                // 更新强度条
-                strengthBar.style.width = `${strength}%`;
-
-                // 根据强度设置颜色
-                if (strength <= 20) {
-                    strengthBar.style.backgroundColor = '#dc3545'; // 红色
-                } else if (strength <= 40) {
-                    strengthBar.style.backgroundColor = '#ffc107'; // 黄色
-                } else if (strength <= 60) {
-                    strengthBar.style.backgroundColor = '#fd7e14'; // 橙色
-                } else if (strength <= 80) {
-                    strengthBar.style.backgroundColor = '#20c997'; // 青色
-                } else {
-                    strengthBar.style.backgroundColor = '#28a745'; // 绿色
-                }
-
-                // 如果所有条件都满足，隐藏提示区域
-                if (allValid) {
-                    passwordTips.style.display = 'none';
-                }
-            });
-            
-            // 密码框失去焦点时，如果密码为空则隐藏提示
-            passwordInput.addEventListener('blur', function() {
-                if (!this.value) {
-                    passwordTips.style.display = 'none';
-                    strengthBar.style.width = '0%';
-                    strengthBar.style.backgroundColor = '#eee';
-                }
-            });
-        }
-
-        // 确认密码验证
-        if (passwordInput && confirmPasswordInput) {
-            function validatePassword() {
-                if (confirmPasswordInput.value && passwordInput.value !== confirmPasswordInput.value) {
-                    passwordMessage.textContent = "两次输入的密码不一致";
-                    passwordMessage.classList.remove('status-success');
-                    passwordMessage.classList.add('status-error');
-                    return false;
-                } else if (confirmPasswordInput.value) {
-                    passwordMessage.textContent = "密码匹配";
-                    passwordMessage.classList.remove('status-error');
-                    passwordMessage.classList.add('status-success');
-                    return true;
-                } else {
-                    passwordMessage.textContent = "";
-                    return false;
-                }
+            } else {
+                passwordTips.style.display = 'none';
             }
+        }
 
-            passwordInput.addEventListener('keyup', validatePassword);
-            confirmPasswordInput.addEventListener('keyup', validatePassword);
+        // Function to check if passwords match
+        function checkPasswordMatch() {
+             if (!passwordInput || !confirmPasswordInput || !passwordMessage) {
+                 console.warn("Password confirmation elements not found.");
+                 return; // Exit if elements are missing
+             }
+            const password = passwordInput.value;
+            const confirmPassword = confirmPasswordInput.value;
 
-            // 提交前验证
-            document.querySelector('form').addEventListener('submit', function(e) {
-                if (confirmPasswordInput.value && !validatePassword()) {
-                    e.preventDefault(); // 阻止表单提交
+            if (confirmPassword.length === 0) {
+                passwordMessage.textContent = '';
+                passwordMessage.className = 'password-message'; // Reset class
+                confirmPasswordInput.style.borderColor = ''; // Reset border
+            } else if (password === confirmPassword) {
+                passwordMessage.textContent = '密码匹配';
+                passwordMessage.className = 'password-message success';
+                confirmPasswordInput.style.borderColor = '#4caf50'; // Green border
+            } else {
+                passwordMessage.textContent = '密码不匹配';
+                passwordMessage.className = 'password-message error';
+                confirmPasswordInput.style.borderColor = '#ff4d4d'; // Red border
+            }
+        }
+
+        // Add event listeners if elements exist
+        if (passwordInput) {
+            passwordInput.addEventListener('input', checkPasswordStrength);
+            passwordInput.addEventListener('input', checkPasswordMatch);
+            passwordInput.addEventListener('focus', () => {
+                if (passwordInput.value.length > 0) {
+                    passwordTips.style.display = 'block';
+                }
+            });
+            passwordInput.addEventListener('blur', () => {
+                if (passwordInput.value.length === 0) {
+                    passwordTips.style.display = 'none';
                 }
             });
         }
+        if (confirmPasswordInput) {
+            confirmPasswordInput.addEventListener('input', checkPasswordMatch);
+        }
+        // --- End of Password Strength Logic ---
 
-        // 用户名验证
+
+        // --- Other JS (Username/Email validation, Form submission prevention) ---
+        // Username validation (Example - keep if needed)
         const usernameInput = document.querySelector('input[name="username"]');
         const usernameTips = document.getElementById('username-tips');
         const usernameLengthTip = document.getElementById('username-length-tip');
         const usernameCharsTip = document.getElementById('username-chars-tip');
 
-        if (usernameInput) {
+        if (usernameInput && usernameTips && usernameLengthTip && usernameCharsTip) {
             usernameInput.addEventListener('input', function() {
                 const username = this.value;
                 let showTips = false;
-                
-                // 检查长度
-                if (username.length > 150) {
-                    usernameLengthTip.style.display = 'flex';
-                    showTips = true;
-                } else {
-                    usernameLengthTip.style.display = 'none';
-                }
-                
-                // 检查字符
-                if (username && !/^[\w\d@.+-_]+$/.test(username)) {
-                    usernameCharsTip.style.display = 'flex';
-                    showTips = true;
-                } else {
-                    usernameCharsTip.style.display = 'none';
-                }
-                
-                // 显示或隐藏提示容器
+                // Length check
+                if (username && (username.length < 4 || username.length > 20)) {
+                    usernameLengthTip.style.display = 'flex'; showTips = true;
+                } else { usernameLengthTip.style.display = 'none'; }
+                // Character check
+                if (username && !/^[a-zA-Z0-9_]+$/.test(username)) {
+                    usernameCharsTip.style.display = 'flex'; showTips = true;
+                } else { usernameCharsTip.style.display = 'none'; }
                 usernameTips.style.display = showTips ? 'block' : 'none';
             });
-            
-            // 失去焦点时也验证一次
-            usernameInput.addEventListener('blur', function() {
-                if (!this.value) {
-                    usernameTips.style.display = 'none';
-                }
-            });
+            usernameInput.addEventListener('blur', function() { if (!this.value) usernameTips.style.display = 'none'; });
         }
 
-        // 邮箱验证
+        // Email validation (Example - keep if needed)
         const emailInput = document.querySelector('input[name="email"]');
         const emailTips = document.getElementById('email-tips');
         const emailFormatTip = document.getElementById('email-format-tip');
 
-        if (emailInput) {
+        if (emailInput && emailTips && emailFormatTip) {
             emailInput.addEventListener('input', function() {
                 const email = this.value;
-                
                 if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-                    emailFormatTip.style.display = 'flex';
-                    emailTips.style.display = 'block';
+                    emailFormatTip.style.display = 'flex'; emailTips.style.display = 'block';
                 } else {
-                    emailFormatTip.style.display = 'none';
-                    emailTips.style.display = 'none';
+                    emailFormatTip.style.display = 'none'; emailTips.style.display = 'none';
                 }
             });
-            
-            // 失去焦点时也验证一次
-            emailInput.addEventListener('blur', function() {
-                if (!this.value) {
-                    emailTips.style.display = 'none';
+            emailInput.addEventListener('blur', function() { if (!this.value) emailTips.style.display = 'none'; });
+        }
+
+        // Prevent form submission if passwords don't match or captcha is invalid
+        const registerForm = document.querySelector('.sign-up-form'); // Make sure this selector matches your register form
+        if (registerForm) {
+            registerForm.addEventListener('submit', function(e) {
+                const password = passwordInput ? passwordInput.value : '';
+                const confirmPassword = confirmPasswordInput ? confirmPasswordInput.value : '';
+                const captchaStatus = document.getElementById('captcha_status');
+
+                // Check password match
+                if (password !== confirmPassword && confirmPassword.length > 0) {
+                    e.preventDefault();
+                    alert('两次输入的密码不匹配，请检查。');
+                    confirmPasswordInput.focus();
+                    return;
                 }
+
+                // Check captcha status (similar to login page)
+                if (captchaStatus && captchaStatus.classList.contains('status-error')) {
+                     const errorText = captchaStatus.textContent;
+                     if (errorText.includes('错误') || errorText.includes('Incorrect')) {
+                         e.preventDefault();
+                         alert('请输入正确的验证码后再提交。');
+                         const captchaInput = document.getElementById('id_captcha_1');
+                         if(captchaInput) captchaInput.focus();
+                         return;
+                     }
+                }
+                // Add other frontend validation checks here if needed (e.g., username format, email format)
             });
         }
+        // --- End of Other JS ---
+
     });
 </script>
 </body>
