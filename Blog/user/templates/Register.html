@@ -454,14 +454,14 @@
                         <i class="fas fa-user"></i>
                         {{ reg_form.username }}
                     </p>
-                    <div class="field-tips" id="username-tips">
-                        <div class="field-tip-item" id="username-length-tip">
-                            <i class="fas fa-times"></i>
-                            <span>用户名长度不能超过150个字符</span>
+                    <div id="username-tips" class="field-tips">
+                        <div id="username-length-tip" class="field-tip-item">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span>用户名长度应为2-150个字符</span>
                         </div>
-                        <div class="field-tip-item" id="username-chars-tip">
-                            <i class="fas fa-times"></i>
-                            <span>用户名只能包含字母、数字和特殊字符</span>
+                        <div id="username-chars-tip" class="field-tip-item">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span>用户名只能包含字母、数字和下划线</span>
                         </div>
                     </div>
                     
@@ -801,17 +801,32 @@
             usernameInput.addEventListener('input', function() {
                 const username = this.value;
                 let showTips = false;
-                // Length check
-                if (username && (username.length < 4 || username.length > 20)) {
-                    usernameLengthTip.style.display = 'flex'; showTips = true;
-                } else { usernameLengthTip.style.display = 'none'; }
-                // Character check
+                
+                // 长度检查 - 修改为2-150字符
+                if (username && (username.length < 2 || username.length > 150)) {
+                    usernameLengthTip.textContent = username.length < 2 ? 
+                        '用户名长度不能少于2个字符' : '用户名长度不能超过150个字符';
+                    usernameLengthTip.style.display = 'flex'; 
+                    showTips = true;
+                } else { 
+                    usernameLengthTip.style.display = 'none'; 
+                }
+                
+                // 字符检查 - 只允许字母、数字和下划线
                 if (username && !/^[a-zA-Z0-9_]+$/.test(username)) {
-                    usernameCharsTip.style.display = 'flex'; showTips = true;
-                } else { usernameCharsTip.style.display = 'none'; }
+                    usernameCharsTip.style.display = 'flex'; 
+                    showTips = true;
+                } else { 
+                    usernameCharsTip.style.display = 'none'; 
+                }
+                
                 usernameTips.style.display = showTips ? 'block' : 'none';
             });
-            usernameInput.addEventListener('blur', function() { if (!this.value) usernameTips.style.display = 'none'; });
+            
+            // 失去焦点时隐藏提示（如果输入为空）
+            usernameInput.addEventListener('blur', function() { 
+                if (!this.value) usernameTips.style.display = 'none'; 
+            });
         }
 
         // Email validation (Example - keep if needed)
