@@ -455,6 +455,10 @@
                         {{ reg_form.username }}
                     </p>
                     <div id="username-tips" class="field-tips">
+                        <div id="username-empty-tip" class="field-tip-item">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span>请输入用户名</span>
+                        </div>
                         <div id="username-length-tip" class="field-tip-item">
                             <i class="fas fa-exclamation-circle"></i>
                             <span>用户名长度应为2-150个字符</span>
@@ -471,8 +475,12 @@
                         {{ reg_form.email }}
                     </p>
                     <div class="field-tips" id="email-tips">
+                        <div class="field-tip-item" id="email-empty-tip">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span>请输入电子邮箱</span>
+                        </div>
                         <div class="field-tip-item" id="email-format-tip">
-                            <i class="fas fa-times"></i>
+                            <i class="fas fa-exclamation-circle"></i>
                             <span>请输入有效的电子邮箱地址</span>
                         </div>
                     </div>
@@ -796,36 +804,48 @@
         const usernameTips = document.getElementById('username-tips');
         const usernameLengthTip = document.getElementById('username-length-tip');
         const usernameCharsTip = document.getElementById('username-chars-tip');
+        const usernameEmptyTip = document.getElementById('username-empty-tip'); // 新增空值提示元素
 
-        if (usernameInput && usernameTips && usernameLengthTip && usernameCharsTip) {
+        if (usernameInput && usernameTips && usernameLengthTip && usernameCharsTip && usernameEmptyTip) {
             usernameInput.addEventListener('input', function() {
                 const username = this.value;
                 let showTips = false;
                 
-                // 长度检查 - 修改为2-150字符
-                if (username && (username.length < 2 || username.length > 150)) {
-                    usernameLengthTip.textContent = username.length < 2 ? 
-                        '用户名长度不能少于2个字符' : '用户名长度不能超过150个字符';
-                    usernameLengthTip.style.display = 'flex'; 
+                // 空值检查
+                if (!username || username.trim() === '') {
+                    usernameEmptyTip.style.display = 'flex';
                     showTips = true;
-                } else { 
-                    usernameLengthTip.style.display = 'none'; 
-                }
-                
-                // 字符检查 - 只允许字母、数字和下划线
-                if (username && !/^[a-zA-Z0-9_]+$/.test(username)) {
-                    usernameCharsTip.style.display = 'flex'; 
-                    showTips = true;
-                } else { 
-                    usernameCharsTip.style.display = 'none'; 
+                } else {
+                    usernameEmptyTip.style.display = 'none';
+                    
+                    // 长度检查 - 2-150字符
+                    if (username.length < 2 || username.length > 150) {
+                        usernameLengthTip.textContent = username.length < 2 ? 
+                            '用户名长度不能少于2个字符' : '用户名长度不能超过150个字符';
+                        usernameLengthTip.style.display = 'flex'; 
+                        showTips = true;
+                    } else { 
+                        usernameLengthTip.style.display = 'none'; 
+                    }
+                    
+                    // 字符检查 - 只允许字母、数字和下划线
+                    if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+                        usernameCharsTip.style.display = 'flex'; 
+                        showTips = true;
+                    } else { 
+                        usernameCharsTip.style.display = 'none'; 
+                    }
                 }
                 
                 usernameTips.style.display = showTips ? 'block' : 'none';
             });
             
-            // 失去焦点时隐藏提示（如果输入为空）
+            // 失去焦点时检查空值
             usernameInput.addEventListener('blur', function() { 
-                if (!this.value) usernameTips.style.display = 'none'; 
+                if (!this.value || this.value.trim() === '') {
+                    usernameEmptyTip.style.display = 'flex';
+                    usernameTips.style.display = 'block';
+                }
             });
         }
 
@@ -833,47 +853,147 @@
         const emailInput = document.querySelector('input[name="email"]');
         const emailTips = document.getElementById('email-tips');
         const emailFormatTip = document.getElementById('email-format-tip');
+        const emailEmptyTip = document.getElementById('email-empty-tip'); // 新增空值提示元素
 
-        if (emailInput && emailTips && emailFormatTip) {
+        if (emailInput && emailTips && emailFormatTip && emailEmptyTip) {
             emailInput.addEventListener('input', function() {
                 const email = this.value;
-                if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-                    emailFormatTip.style.display = 'flex'; emailTips.style.display = 'block';
+                let showTips = false;
+                
+                // 空值检查
+                if (!email || email.trim() === '') {
+                    emailEmptyTip.style.display = 'flex';
+                    showTips = true;
                 } else {
-                    emailFormatTip.style.display = 'none'; emailTips.style.display = 'none';
+                    emailEmptyTip.style.display = 'none';
+                    
+                    // 格式检查
+                    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                        emailFormatTip.style.display = 'flex';
+                        showTips = true;
+                    } else {
+                        emailFormatTip.style.display = 'none';
+                    }
+                }
+                
+                emailTips.style.display = showTips ? 'block' : 'none';
+            });
+            
+            // 失去焦点时检查空值
+            emailInput.addEventListener('blur', function() {
+                if (!this.value || this.value.trim() === '') {
+                    emailEmptyTip.style.display = 'flex';
+                    emailTips.style.display = 'block';
                 }
             });
-            emailInput.addEventListener('blur', function() { if (!this.value) emailTips.style.display = 'none'; });
         }
 
-        // Prevent form submission if passwords don't match or captcha is invalid
-        const registerForm = document.querySelector('.sign-up-form'); // Make sure this selector matches your register form
+        // 修改表单提交验证逻辑
+        const registerForm = document.querySelector('.sign-up-form');
         if (registerForm) {
             registerForm.addEventListener('submit', function(e) {
+                let hasErrors = false;
+                let errorMessages = [];
+                
+                // 1. 验证用户名
+                const username = usernameInput ? usernameInput.value.trim() : '';
+                if (!username) {
+                    hasErrors = true;
+                    errorMessages.push('请输入用户名');
+                    usernameEmptyTip.style.display = 'flex';
+                    usernameTips.style.display = 'block';
+                } else if (username.length < 2 || username.length > 150) {
+                    hasErrors = true;
+                    errorMessages.push('用户名长度应为2-150个字符');
+                    usernameLengthTip.style.display = 'flex';
+                    usernameTips.style.display = 'block';
+                } else if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+                    hasErrors = true;
+                    errorMessages.push('用户名只能包含字母、数字和下划线');
+                    usernameCharsTip.style.display = 'flex';
+                    usernameTips.style.display = 'block';
+                }
+                
+                // 2. 验证邮箱
+                const email = emailInput ? emailInput.value.trim() : '';
+                if (!email) {
+                    hasErrors = true;
+                    errorMessages.push('请输入电子邮箱');
+                    emailEmptyTip.style.display = 'flex';
+                    emailTips.style.display = 'block';
+                } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                    hasErrors = true;
+                    errorMessages.push('请输入有效的电子邮箱地址');
+                    emailFormatTip.style.display = 'flex';
+                    emailTips.style.display = 'block';
+                }
+                
+                // 3. 验证密码
                 const password = passwordInput ? passwordInput.value : '';
                 const confirmPassword = confirmPasswordInput ? confirmPasswordInput.value : '';
+                
+                if (!password) {
+                    hasErrors = true;
+                    errorMessages.push('请输入密码');
+                } else {
+                    // 检查密码强度
+                    let strengthIssues = [];
+                    if (password.length < 8) strengthIssues.push('密码长度至少为8个字符');
+                    if (!/[A-Z]/.test(password)) strengthIssues.push('密码需包含大写字母');
+                    if (!/[a-z]/.test(password)) strengthIssues.push('密码需包含小写字母');
+                    if (!/[0-9]/.test(password)) strengthIssues.push('密码需包含数字');
+                    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/.test(password)) strengthIssues.push('密码需包含特殊字符');
+                    
+                    if (strengthIssues.length > 0) {
+                        hasErrors = true;
+                        errorMessages.push('密码强度不足: ' + strengthIssues.join(', '));
+                        // 显示密码提示
+                        passwordTips.style.display = 'block';
+                    }
+                }
+                
+                // 检查密码匹配
+                if (password !== confirmPassword) {
+                    hasErrors = true;
+                    errorMessages.push('两次输入的密码不匹配');
+                    if (passwordMessage) {
+                        passwordMessage.textContent = '密码不匹配';
+                        passwordMessage.className = 'password-message error';
+                    }
+                }
+                
+                // 4. 验证验证码
                 const captchaStatus = document.getElementById('captcha_status');
-
-                // Check password match
-                if (password !== confirmPassword && confirmPassword.length > 0) {
-                    e.preventDefault();
-                    alert('两次输入的密码不匹配，请检查。');
-                    confirmPasswordInput.focus();
-                    return;
-                }
-
-                // Check captcha status (similar to login page)
                 if (captchaStatus && captchaStatus.classList.contains('status-error')) {
-                     const errorText = captchaStatus.textContent;
-                     if (errorText.includes('错误') || errorText.includes('Incorrect')) {
-                         e.preventDefault();
-                         alert('请输入正确的验证码后再提交。');
-                         const captchaInput = document.getElementById('id_captcha_1');
-                         if(captchaInput) captchaInput.focus();
-                         return;
-                     }
+                    const errorText = captchaStatus.textContent;
+                    if (errorText.includes('错误') || errorText.includes('Incorrect')) {
+                        hasErrors = true;
+                        errorMessages.push('验证码错误，请重新输入');
+                    }
                 }
-                // Add other frontend validation checks here if needed (e.g., username format, email format)
+                
+                // 如果有错误，阻止表单提交并显示错误信息
+                if (hasErrors) {
+                    e.preventDefault();
+                    
+                    // 创建错误提示
+                    let errorSummary = '注册信息有误，请检查以下问题：\n• ' + errorMessages.join('\n• ');
+                    alert(errorSummary);
+                    
+                    // 聚焦到第一个有问题的输入框
+                    if (!username || username.length < 2 || !/^[a-zA-Z0-9_]+$/.test(username)) {
+                        usernameInput.focus();
+                    } else if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                        emailInput.focus();
+                    } else if (!password || strengthIssues?.length > 0) {
+                        passwordInput.focus();
+                    } else if (password !== confirmPassword) {
+                        confirmPasswordInput.focus();
+                    } else {
+                        const captchaInput = document.getElementById('id_captcha_1');
+                        if (captchaInput) captchaInput.focus();
+                    }
+                }
             });
         }
         // --- End of Other JS ---
