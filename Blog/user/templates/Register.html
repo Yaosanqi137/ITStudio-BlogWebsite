@@ -515,7 +515,8 @@
         if (refreshCaptchaBtn) {
             refreshCaptchaBtn.addEventListener('click', function() {
                 const icon = this.querySelector('i');
-                if (icon) icon.classList.add('fa-spin');
+                if (icon) icon.classList.add('' +
+                    'fa-spin');
                 this.disabled = true;
 
                 refreshCaptcha().finally(() => {

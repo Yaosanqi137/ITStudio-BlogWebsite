@@ -44,7 +44,7 @@ ALLOWED_HOSTS = ['*']
 # captcha 设置
 CAPTCHA_IMAGE_SIZE = (80, 45)   # 设置 captcha 图片大小
 CAPTCHA_LENGTH = 4   # 字符个数
-CAPTCHA_TIMEOUT = 1   # 超时(minutes)
+CAPTCHA_TIMEOUT = 5   # 超时(minutes)
 
 # 邮件配置
 EMAIL_HOST = 'smtp.163.com'  # 163 邮箱的 SMTP 服务器地址
