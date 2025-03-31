@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>文章列表</title>
+</head>
+<body>
+
+{% for article in articles %}
+    <p><a href="{% url 'article:detail' article.id %}">{{ article.title }}</a></p>
+    <p>{{ article.author }}</p>
+    <p>{{ article.created_time }}</p>
+    <p>{{ article.updated_time }}</p>
+{% endfor %}
+</body>
+</html>

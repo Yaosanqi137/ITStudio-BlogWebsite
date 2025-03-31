@@ -45,13 +45,15 @@
 
 <header class="glass-effect">
     <nav>
-        <div class="logo">网站<span>Logo</span></div>
+        <div class="logo">OUC<span>博客网</span></div>
         <ul class="nav-links">
             <li><a href="#" class="active">按钮1</a></li>
             <li><a href="#">按钮2</a></li>
             <li><a href="#">按钮3</a></li>
-            <li><a href="#">按钮4</a></li>
+            <li><a href="https://github.com/Yaosanqi137/ITStudio-BlogWebsite">我们的 GitHub</a></li>
+            {% if not user.is_authenticated %}
             <li><a href="/user/login">登录/注册</a></li>
+            {% endif %}
         </ul>
         <div class="mobile-menu">
             <i class="fas fa-bars"></i>
@@ -60,21 +62,24 @@
 </header>
 
 <main>
+    {% if user.is_authenticated %}
     <section class="profile glass-effect">
         <div class="profile-image">
-            <img src="https://i.pravatar.cc/150?img=11" alt="头像">
+            <img src="{{ user.avatar.url }}" alt="头像">
         </div>
         <div class="profile-info">
-            <h1>网站标题</h1>
+            <h1>欢迎！{{ user.nickname }}</h1>
             <p class="tagline">网站标语</p>
             <p class="bio">网站简介</p>
             <div class="social-links">
                 <a href="#"><i class="fab fa-github"></i></a>
                 <a href="#"><i class="fas fa-envelope"></i></a>
-                <a href="#"><i class="fa  fa-warning"></i></a>
+                <a href="user/profile"><i class="fa fa-gear"></i></a>
+                <a href="user/logout"><i class="fa  fa-warning"></i></a>
             </div>
         </div>
     </section>
+    {% endif %}
 
     <div class="articles-header">
         <h2>最新文章</h2>
