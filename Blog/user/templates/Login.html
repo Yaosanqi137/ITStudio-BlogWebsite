@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="https://img.fastmirror.net/s/2024/08/16/66bf44708b1e7.png">
-    <title>登录</title>
+    <title>登录 - OUC电商</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body {
@@ -320,17 +320,17 @@
             <form action="{% url 'user:login' %}" method="post" class="sign-in-form">
                 <h2 class="title">登录</h2>
                 {% csrf_token %}
-                
+
                 <div class="input-field">
                     <i class="fas fa-user"></i>
                     <input type="text" name="account" placeholder="请输入用户名或邮箱" required />
                 </div>
-                
+
                 <div class="input-field">
                     <i class="fas fa-lock"></i>
                     <input type="password" name="password" placeholder="请输入密码" required />
                 </div>
-                
+
                 <div class="captcha-container">
                     <div class="captcha-wrapper">
                         {{ captcha.captcha }}
@@ -340,14 +340,12 @@
                     </div>
                     <span id="captcha_status" class="status-text"></span>
                 </div>
-                
+
                 {% if error %}
                     <span class="error-message">{{ error }}</span>
                 {% endif %}
-                
+
                 <input type="submit" value="登录" class="btn solid" />
-                
-                <p class="social-text">是新人？左侧进行注册</p>
             </form>
 
             <!-- 注册表单链接 -->
@@ -381,223 +379,140 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // --- Start of Captcha Logic (Copied from working Register.html) ---
-
-        const captchaWrapper = document.querySelector('.captcha-wrapper');
-        const captchaContainer = document.querySelector('.captcha-container'); // For status message
-
-        // Function to perform the actual validation AJAX call
-        function performCaptchaValidation(captchaInput, hashkeyInput) {
-            const response = captchaInput.value.trim();
-            const hashkey = hashkeyInput.value;
-
-            if (!response || !hashkey) {
-                console.log("Validation skipped: Response or Hashkey missing.");
-                return;
-            }
-            console.log('正在验证验证码:', response, '使用hashkey:', hashkey);
-            if (captchaInput._validating) return;
-            captchaInput._validating = true;
-
-            fetch(`{% url 'user:ajax_val' %}?response=${response}&hashkey=${hashkey}`)
-                .then(response => response.json())
-                .then(data => {
-                    console.log('验证码验证结果:', data);
-                    let captchaStatus = document.getElementById('captcha_status');
-                    if (!captchaStatus && captchaContainer) {
-                        captchaStatus = document.createElement('span');
-                        captchaStatus.id = 'captcha_status';
-                        captchaContainer.appendChild(captchaStatus);
-                    }
-                    if (captchaStatus) {
-                        captchaStatus.textContent = data.status ? '验证码正确' : (data.message || '验证码错误'); // Use message if available
-                        captchaStatus.className = data.status ? 'status-success' : 'status-error';
-                    }
-                })
-                .catch(error => {
-                    console.error('验证码验证错误:', error);
-                    let captchaStatus = document.getElementById('captcha_status');
-                     if (captchaStatus) {
-                         captchaStatus.textContent = '验证出错';
-                         captchaStatus.className = 'status-error';
-                     }
-                })
-                .finally(() => {
-                    captchaInput._validating = false;
-                });
-        }
-
-        // Setup Event Delegation for Captcha Validation
-        if (captchaWrapper) {
-            captchaWrapper.addEventListener('blur', function(event) {
-                if (event.target && event.target.id === 'id_captcha_1') {
-                    const captchaInput = event.target;
-                    let hashkeyInput = null;
-                    // Try finding hashkey within closest .captcha first
-                    const captchaDiv = captchaInput.closest('.captcha');
-                    if (captchaDiv) {
-                        hashkeyInput = captchaDiv.querySelector('input[type="hidden"][name="captcha_0"]');
-                    }
-                    // Fallback: search within the wrapper
-                    if (!hashkeyInput) {
-                        hashkeyInput = captchaWrapper.querySelector('input[type="hidden"][name="captcha_0"]');
-                    }
-
-                    if (captchaInput && hashkeyInput) {
-                        performCaptchaValidation(captchaInput, hashkeyInput);
-                    } else {
-                        console.error("无法在 'blur' 事件中找到 hashkey 输入。");
-                    }
-                }
-            }, true); // Use capture phase
-            console.log("验证码 'blur' 事件监听器已设置 (委托)。");
-        } else {
-             console.error("未能找到 '.captcha-wrapper' 元素来设置事件委托。");
-        }
-
-
-        // Refresh Captcha Function (Direct src/value update version)
-        function refreshCaptcha() {
-            const refreshButton = document.getElementById('refresh-captcha');
-            const icon = refreshButton ? refreshButton.querySelector('i') : null;
-
-            // Find Elements with Logging
-            console.log("Attempting to find elements for refresh...");
-            const currentCaptchaWrapper = document.querySelector('.captcha-wrapper'); // Re-query in case it changed? Unlikely but safe.
-            console.log("captchaWrapper:", currentCaptchaWrapper);
-
-            const captchaImage = currentCaptchaWrapper ? currentCaptchaWrapper.querySelector('img') : null;
-            console.log("captchaImage:", captchaImage);
-
-            const hashkeyInput = currentCaptchaWrapper ? currentCaptchaWrapper.querySelector('input[type="hidden"][name="captcha_0"]') : null;
-            console.log("hashkeyInput:", hashkeyInput);
-
-            const textInput = currentCaptchaWrapper ? currentCaptchaWrapper.querySelector('input[type="text"][id="id_captcha_1"]') : null;
-            console.log("textInput:", textInput);
-
-            // Ensure all necessary elements are found
-            if (!currentCaptchaWrapper || !captchaImage || !hashkeyInput || !textInput) {
-                 if (!currentCaptchaWrapper) console.error("刷新失败: 未找到 .captcha-wrapper");
-                 if (!captchaImage) console.error("刷新失败: 未找到 img 元素在 .captcha-wrapper 内");
-                 if (!hashkeyInput) console.error("刷新失败: 未找到 input[name='captcha_0']");
-                 if (!textInput) console.error("刷新失败: 未找到 input[id='id_captcha_1']");
-                 console.error("未能找到所有必要的验证码元素。请检查 HTML 结构和 JavaScript 选择器。");
-                 return Promise.reject("Missing captcha elements");
-            }
-
-            if (refreshButton) refreshButton.disabled = true;
-            if (icon) icon.classList.add('fa-spin');
-
-            const captchaStatus = document.getElementById('captcha_status');
-            if (captchaStatus) {
-                captchaStatus.textContent = '';
-                captchaStatus.className = 'status-text';
-            }
-
-            return fetch("{% url 'user:refresh_captcha' %}")
-                .then(response => response.json())
-                .then(data => {
-                    if (data.status === 1 && data.new_cptch_key && data.new_cptch_image_url) {
-                        hashkeyInput.value = data.new_cptch_key;
-                        captchaImage.src = data.new_cptch_image_url;
-                        textInput.value = '';
-                        console.log("验证码已通过更新 src 和 value 刷新。 新 Key:", data.new_cptch_key);
-                    } else {
-                        console.error("刷新请求失败或返回数据无效:", data.message || '未知错误');
-                        if (captchaStatus) {
-                             captchaStatus.textContent = '刷新失败';
-                             captchaStatus.className = 'status-error';
-                        }
-                        throw new Error(data.message || '刷新失败');
-                    }
-                })
-                .catch(error => {
-                    console.error('刷新验证码 fetch 错误:', error);
-                     if (captchaStatus) {
-                         captchaStatus.textContent = '刷新出错';
-                         captchaStatus.className = 'status-error';
-                     }
-                })
-                .finally(() => {
-                    if (icon) {
-                         setTimeout(() => {
-                             icon.classList.remove('fa-spin');
-                             if (refreshButton) refreshButton.disabled = false;
-                         }, 300);
-                    } else {
-                         if (refreshButton) refreshButton.disabled = false;
-                    }
-                });
-        } // --- End of refreshCaptcha function ---
-
-        // Attach click listener to the refresh button
-        const refreshCaptchaBtn = document.getElementById('refresh-captcha');
-        if (refreshCaptchaBtn) {
-            refreshCaptchaBtn.addEventListener('click', refreshCaptcha);
-        }
-
-        // Attach click listener for clicking the image itself to refresh
-        if (captchaWrapper) { // Use the initially found wrapper
-            captchaWrapper.addEventListener('click', function(event) {
-                // Make sure we are clicking the actual captcha image
-                if (event.target && event.target.tagName === 'IMG' && (event.target.classList.contains('captcha-image') || event.target.closest('.captcha'))) {
-                    refreshCaptcha();
-                }
-            });
-        }
-
-        // --- End of Captcha Logic ---
-
-
-        // --- Login/Register Panel Toggle Logic (Restored Animation) ---
+        // 切换到注册界面
         const signUpBtn = document.getElementById('sign-up-btn');
         const signInBtn = document.getElementById('sign-in-btn');
         const container = document.querySelector('.login-container');
 
-        // Event listener for the "Register" button on the LEFT panel
-        if (signUpBtn && container) {
-            signUpBtn.addEventListener('click', () => {
-                // Add class to trigger the slide animation
-                container.classList.add('sign-up-mode');
-                // DO NOT redirect here, let the user click the button on the right panel
+        signUpBtn.addEventListener('click', () => {
+            container.classList.add('sign-up-mode');
+        });
+
+        signInBtn.addEventListener('click', () => {
+            container.classList.remove('sign-up-mode');
+        });
+
+        // 验证码刷新按钮功能
+        const refreshCaptchaBtn = document.getElementById('refresh-captcha');
+        if (refreshCaptchaBtn) {
+            refreshCaptchaBtn.addEventListener('click', function() {
+                // 添加旋转动画表示正在加载
+                const icon = this.querySelector('i');
+                if (icon) {
+                    icon.classList.add('fa-spin');
+                }
+                this.disabled = true;
+
+                refreshCaptcha().finally(() => {
+                    // 无论成功失败，停止旋转并启用按钮
+                    if (icon) {
+                        setTimeout(() => {
+                            icon.classList.remove('fa-spin');
+                            this.disabled = false;
+                        }, 500);
+                    } else {
+                        this.disabled = false;
+                    }
+                });
             });
         }
 
-        // Event listener for the "Login" button on the RIGHT panel
-        if (signInBtn && container) {
-            signInBtn.addEventListener('click', () => {
-                // Remove class to slide back to the login form
-                container.classList.remove('sign-up-mode');
-            });
+        // 验证码验证函数
+        function setupCaptchaValidation() {
+            // 使用更精确的选择器定位当前激活的验证码输入
+            const captchaInput = document.querySelector('.captcha input[name="captcha_1"]');
+            if (!captchaInput) return;
+
+            // 清理旧事件监听器
+            captchaInput.removeEventListener('blur', captchaInput._validateFunction);
+
+            function validateCaptcha() {
+                const response = this.value.trim();
+                const hashkey = document.querySelector('input[name="captcha_0"]').value;
+
+                if (!response || !hashkey) return;
+
+                fetch(`{% url 'user:ajax_val' %}?response=${response}&hashkey=${hashkey}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const statusEl = document.getElementById('captcha_status');
+                        if (!statusEl) return;
+
+                        statusEl.className = data.status ? 'status-success' : 'status-error';
+                        statusEl.textContent = data.status ? '✓ 验证通过' : '✗ 验证码错误';
+                    });
+            }
+
+            // 绑定新的事件并保存引用
+            captchaInput._validateFunction = validateCaptcha;
+            captchaInput.addEventListener('blur', validateCaptcha);
         }
-        // --- End of Panel Toggle Logic ---
 
+        // 初始化验证码验证
+        setupCaptchaValidation();
 
-        // --- Form Submission Logic (Optional Enhancements) ---
+        // 修改refreshCaptcha函数，在成功刷新后重新设置验证
+        function refreshCaptcha() {
+            return fetch("{% url 'user:refresh_captcha' %}")
+                .then(response => response.json())
+                .then(data => {
+                    // 创建临时容器解析新验证码
+                    const tempWrapper = document.createElement('div');
+                    tempWrapper.innerHTML = data.new_captcha_html;
+
+                    // 获取新的验证码元素和隐藏字段
+                    const newCaptcha = tempWrapper.querySelector('.captcha');
+                    const newHiddenInput = tempWrapper.querySelector('input[type="hidden"]');
+                    const newImage = tempWrapper.querySelector('img');
+
+                    if (!newCaptcha || !newHiddenInput || !newImage) {
+                        throw new Error('Invalid captcha HTML');
+                    }
+
+                    // 替换旧的验证码元素
+                    const oldCaptcha = document.querySelector('.captcha');
+                    if (oldCaptcha) {
+                        const parent = oldCaptcha.parentNode;
+
+                        // 先插入新的再移除旧的，避免事件丢失
+                        parent.insertBefore(newCaptcha, oldCaptcha);
+                        parent.removeChild(oldCaptcha);
+                    }
+
+                    // 确保隐藏字段的值更新到DOM
+                    setTimeout(() => {
+                        const currentHidden = document.querySelector('input[name="captcha_0"]');
+                        if (currentHidden) {
+                            currentHidden.value = newHiddenInput.value;
+                        }
+
+                        // 重新绑定验证逻辑
+                        setupCaptchaValidation();
+                    }, 50);
+                })
+                .catch(error => {
+                    console.error('刷新验证码失败:', error);
+                });
+        }
+
+        // 表单提交处理
         const loginForm = document.querySelector('.sign-in-form');
         if (loginForm) {
             loginForm.addEventListener('submit', function(e) {
-                // Optional: Add frontend validation before submitting if needed
+                // 验证验证码是否正确
                 const captchaStatus = document.getElementById('captcha_status');
-                // Prevent submission if captcha is known to be incorrect from frontend validation
-                if (captchaStatus && captchaStatus.classList.contains('status-error')) {
-                     // Check if the error message indicates an actual validation failure
-                     // Avoid blocking if it's just '验证出错' or '刷新失败'
-                     const errorText = captchaStatus.textContent;
-                     if (errorText.includes('错误') || errorText.includes('Incorrect')) {
-                         e.preventDefault();
-                         alert('请输入正确的验证码后再提交。');
-                         // Find the captcha input and focus it
-                         const captchaInput = document.getElementById('id_captcha_1');
-                         if(captchaInput) captchaInput.focus();
-                         return;
-                     }
+                if (captchaStatus && captchaStatus.className === 'status-error') {
+                    e.preventDefault(); // 如果验证码错误，阻止提交
+                    alert('请输入正确的验证码');
+                    return;
                 }
-                // Allow submission otherwise, backend will handle final validation
+
+                // 可以在这里添加其他前端验证
+
+                // 如果需要，可以使用fetch API提交表单并处理重定向
+                // 但通常后端会处理重定向，所以这里不需要额外代码
             });
         }
-        // --- End of Form Submission Logic ---
-
     });
 </script>
 </body>
