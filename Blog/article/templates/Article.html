@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+{% load static %}
 <head>
     <meta charset="UTF-8">
     <title>{{ article.title }}</title>
+    <link rel="stylesheet" href="{% static 'css/monokai.css' %}">
 </head>
 <body>
 作者: {{ article.author }}
 发布时间: {{ article.created_time }}
 最后更新时间: {{ article.updated_time }}
 
-{{ article.body }}
+<p>{{ article.body|safe }}</p>
 </body>
 </html>
