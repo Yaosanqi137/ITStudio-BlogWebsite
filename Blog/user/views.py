@@ -168,3 +168,7 @@ def login_view(request):
         captcha = CaptchaForm()
         return render(request, "Login.html", {
             "user_login": user_login, "captcha": captcha})
+
+def logout_view(request):
+    logout(request)
+    return HttpResponseRedirect("/")
