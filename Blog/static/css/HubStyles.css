@@ -156,14 +156,6 @@ main {
     font-weight: 500;
 }
 
-.bio {
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 1rem;
-    line-height: 1.8;
-    margin-bottom: 20px;
-    max-width: 700px;
-}
-
 .social-links {
     display: flex;
     gap: 15px;
@@ -833,4 +825,67 @@ form.sign-in-form {
 
 .sign-up-form .password-message.success {
     color: #51cf66;
+}
+
+/* 卡片元数据区域样式 */
+.article-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 12px;
+    font-size: 0.9em;
+}
+
+.meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.meta-item {
+    display: inline-flex;
+    align-items: center;
+    background: rgba(255,255,255,0.1);
+    padding: 4px 8px;
+    border-radius: 4px;
+    min-width: 60px;
+}
+
+.meta-icon {
+    width: 16px;
+    margin-right: 6px;
+    font-size: 0.9em;
+    color: #a0a0a0;
+}
+
+/* 响应式调整 */
+@media (max-width: 480px) {
+    .meta-item {
+        padding: 3px 6px;
+        font-size: 0.85em;
+    }
+
+    .meta-icon {
+        margin-right: 4px;
+    }
+}
+
+/* 小屏幕紧凑布局 */
+@media (max-width: 360px) {
+    .meta-row {
+        gap: 6px;
+    }
+
+    .meta-item {
+        padding: 2px 4px;
+        min-width: 50px;
+    }
+}
+.meta-item {
+    transition: all 0.2s ease;
+}
+
+.meta-item:hover {
+    background: rgba(255,255,255,0.15);
+    transform: translateY(-1px);
 }
