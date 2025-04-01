@@ -10,25 +10,45 @@ from django.core.mail import EmailMessage
 from django.contrib import messages
 from django.template.loader import render_to_string
 from captcha.models import CaptchaStore
+from captcha.helpers import captcha_image_url
 
 def ajax_validate_captcha(request):
-    if request.GET:
-        captcha_response = request.GET.get('response', '')
-        captcha_hashkey = request.GET.get('hashkey', '')
-        try:
-            captcha = CaptchaStore.objects.get(hashkey=captcha_hashkey)
-            if captcha.response == captcha_response.lower():
-                return JsonResponse({'status': 1})
-            return JsonResponse({'status': 0})
-        except:
-            return JsonResponse({'status': 0})
-    return JsonResponse({'status': 0})
+    if request.method == 'GET':
+        captcha_response = request.GET.get('response', '').strip()
+        captcha_hashkey = request.GET.get('hashkey', '').strip()
+        if captcha_response and captcha_hashkey:
+            try:
+                captcha = CaptchaStore.objects.get(hashkey=captcha_hashkey)
+                if captcha.response == captcha_response.lower():
+                    # captcha.delete() # <--- 注释掉或删除这一行
+                    return JsonResponse({'status': 1}) # 只返回成功状态，不删除记录
+                else:
+                    # 验证失败时，可以考虑删除，防止暴力破解同一个key，但非必须
+                    # captcha.delete()
+                    return JsonResponse({'status': 0, 'message': 'Incorrect captcha'})
+            except CaptchaStore.DoesNotExist:
+                return JsonResponse({'status': 0, 'message': 'Captcha key not found or expired'})
+            except Exception as e:
+                print(f"Error during captcha validation: {e}")
+                return JsonResponse({'status': 0, 'message': 'Server error during validation'})
+        else:
+            return JsonResponse({'status': 0, 'message': 'Missing response or hashkey'})
+    return JsonResponse({'status': 0, 'message': 'Invalid request method'})
 
 def refresh_captcha(request):
-    new_captcha = CaptchaForm()
-    return JsonResponse({
-        'new_captcha_html': new_captcha['captcha'].as_widget()
-    })
+    if request.method == 'GET':
+        try:
+            new_key = CaptchaStore.generate_key()
+            new_image_url = captcha_image_url(new_key)
+            return JsonResponse({
+                'status': 1,
+                'new_cptch_key': new_key,
+                'new_cptch_image_url': new_image_url
+            })
+        except Exception as e:
+            print(f"Error during captcha refresh: {e}")
+            return JsonResponse({'status': 0, 'message': 'Server error during refresh'})
+    return JsonResponse({'status': 0, 'message': 'Invalid request method'})
 
 def activate(request, uidb64, token):
     try:
@@ -91,8 +111,8 @@ def register_view(request):
                 'captcha': captcha,
             })
     else:
-        reg_form = UserRegForm()
-        captcha = CaptchaForm()
+        reg_form = UserRegForm(request.POST)
+        captcha = CaptchaForm(request.POST)
 
         # 渲染页面
         return render(request, 'Register.html', {
@@ -152,5 +172,9 @@ def login_view(request):
             "user_login": user_login, "captcha": captcha})
 
 def logout_view(request):
-    logout(request)
-    return HttpResponseRedirect("/")
+    """
+    处理用户登出请求
+    """
+    logout(request) # 调用 Django 内置的 logout 函数，清除 session
+    # 可以重定向到首页或登录页
+    return redirect('/') # 或者 redirect('/user/login/')
