@@ -323,28 +323,28 @@
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             margin-bottom: 15px;
         }
-        
+
         .tip-item {
             display: flex;
             align-items: center;
             margin: 5px 0;
             font-size: 0.85rem;
         }
-        
+
         .tip-item i {
             margin-right: 8px;
             width: 16px;
             text-align: center;
         }
-        
+
         .tip-item.valid i {
             color: #4caf50;
         }
-        
+
         .tip-item.invalid i {
             color: #ff4d4d;
         }
-        
+
         .password-message {
             width: 100%;
             max-width: 380px;
@@ -352,11 +352,11 @@
             font-size: 0.85rem;
             text-align: center;
         }
-        
+
         .password-message.success {
             color: #4caf50;
         }
-        
+
         .password-message.error {
             color: #ff4d4d;
         }
@@ -433,7 +433,7 @@
             opacity: 1;
             z-index: 2;
         }
-        
+
         form.sign-in-form {
             z-index: 1;
             opacity: 0;
@@ -446,7 +446,7 @@
             margin: 10px 0;
             transition: 0.5s;
         }
-        
+
         .right-panel .btn.transparent:hover {
             background-color: rgba(255, 255, 255, 0.2);
             transform: scale(1.05);
@@ -464,7 +464,7 @@
             align-items: center !important;
             justify-content: center !important;
         }
-        
+
         .register-container .panels-container .panel.right-panel .content .btn.transparent:hover {
             background-color: rgba(255, 255, 255, 0.2) !important;
             transform: scale(1.05) !important;
@@ -481,7 +481,7 @@
             <form action="{% url 'user:register' %}" method="post" class="sign-up-form">
                 <h2 class="title">注册</h2>
                 {% csrf_token %}
-                
+
                 <!-- 手动渲染表单字段而不是使用 reg_form.as_p -->
                 <div class="custom-form">
                     <!-- 用户名字段 -->
@@ -503,7 +503,7 @@
                             <span>用户名只能包含字母、数字和下划线</span>
                         </div>
                     </div>
-                    
+
                     <!-- 邮箱字段 -->
                     <p class="input-field">
                         <i class="fas fa-envelope"></i>
@@ -519,19 +519,19 @@
                             <span>请输入有效的电子邮箱地址</span>
                         </div>
                     </div>
-                    
+
                     <!-- 密码字段 -->
                     <p class="input-field">
                         <i class="fas fa-lock"></i>
-                        <input type="password" name="password" id="id_password" placeholder="密码" required>
+                        {{ reg_form.password1 }}
                     </p>
-                    
+
                     <!-- 确认密码字段 -->
                     <p class="input-field">
                         <i class="fas fa-lock"></i>
-                        <input type="password" name="confirm_password" id="id_confirm_password" placeholder="确认密码" required>
+                        {{ reg_form.password2 }}
                     </p>
-                    
+
                     <!-- 保留验证码字段 -->
                     {{ reg_form.captcha }}
                 </div>
@@ -629,7 +629,7 @@
                 .catch(error => {
                     console.error('验证码验证错误:', error);
                     let captchaStatus = document.getElementById('captcha_status');
-                     if (captchaStatus) { captchaStatus.textContent = '验证出错'; captchaStatus.className = 'status-error'; }
+                    if (captchaStatus) { captchaStatus.textContent = '验证出错'; captchaStatus.className = 'status-error'; }
                 })
                 .finally(() => { captchaInput._validating = false; });
         }
@@ -659,12 +659,12 @@
             const textInput = currentCaptchaWrapper ? currentCaptchaWrapper.querySelector('input[type="text"][id="id_captcha_1"]') : null;
             console.log("captchaWrapper:", currentCaptchaWrapper, "captchaImage:", captchaImage, "hashkeyInput:", hashkeyInput, "textInput:", textInput);
             if (!currentCaptchaWrapper || !captchaImage || !hashkeyInput || !textInput) {
-                 if (!currentCaptchaWrapper) console.error("刷新失败: 未找到 .captcha-wrapper");
-                 if (!captchaImage) console.error("刷新失败: 未找到 img 元素在 .captcha-wrapper 内");
-                 if (!hashkeyInput) console.error("刷新失败: 未找到 input[name='captcha_0']");
-                 if (!textInput) console.error("刷新失败: 未找到 input[id='id_captcha_1']");
-                 console.error("未能找到所有必要的验证码元素。");
-                 return Promise.reject("Missing captcha elements");
+                if (!currentCaptchaWrapper) console.error("刷新失败: 未找到 .captcha-wrapper");
+                if (!captchaImage) console.error("刷新失败: 未找到 img 元素在 .captcha-wrapper 内");
+                if (!hashkeyInput) console.error("刷新失败: 未找到 input[name='captcha_0']");
+                if (!textInput) console.error("刷新失败: 未找到 input[id='id_captcha_1']");
+                console.error("未能找到所有必要的验证码元素。");
+                return Promise.reject("Missing captcha elements");
             }
             if (refreshButton) refreshButton.disabled = true;
             if (icon) icon.classList.add('fa-spin');
@@ -686,7 +686,7 @@
                 })
                 .catch(error => {
                     console.error('刷新验证码 fetch 错误:', error);
-                     if (captchaStatus) { captchaStatus.textContent = '刷新出错'; captchaStatus.className = 'status-error'; }
+                    if (captchaStatus) { captchaStatus.textContent = '刷新出错'; captchaStatus.className = 'status-error'; }
                 })
                 .finally(() => {
                     if (icon) { setTimeout(() => { icon.classList.remove('fa-spin'); if (refreshButton) refreshButton.disabled = false; }, 300); }
@@ -707,8 +707,8 @@
 
 
         // --- Start of Password Strength Logic (Re-integrated and Checked) ---
-        const passwordInput = document.querySelector('input[name="password"]');
-        const confirmPasswordInput = document.querySelector('input[name="confirm_password"]');
+        const passwordInput = document.querySelector('input[name="password1"]');
+        const confirmPasswordInput = document.querySelector('input[name="password2"]');
         const strengthBar = document.querySelector('.strength-bar');
         const passwordTips = document.querySelector('.password-tips');
         const passwordMessage = document.getElementById('password-message');
@@ -790,10 +790,10 @@
 
         // Function to check if passwords match
         function checkPasswordMatch() {
-             if (!passwordInput || !confirmPasswordInput || !passwordMessage) {
-                 console.warn("Password confirmation elements not found.");
-                 return; // Exit if elements are missing
-             }
+            if (!passwordInput || !confirmPasswordInput || !passwordMessage) {
+                console.warn("Password confirmation elements not found.");
+                return; // Exit if elements are missing
+            }
             const password = passwordInput.value;
             const confirmPassword = confirmPasswordInput.value;
 
@@ -804,7 +804,7 @@
             } else if (password === confirmPassword) {
                 passwordMessage.textContent = '密码匹配';
                 passwordMessage.className = 'password-message success';
-                confirmPasswordInput.style.borderColor = '#4caf50'; // Green border
+                confirmInput.style.borderColor = '#4caf50'; // Green border
             } else {
                 passwordMessage.textContent = '密码不匹配';
                 passwordMessage.className = 'password-message error';
@@ -845,38 +845,38 @@
             usernameInput.addEventListener('input', function() {
                 const username = this.value;
                 let showTips = false;
-                
+
                 // 空值检查
                 if (!username || username.trim() === '') {
                     usernameEmptyTip.style.display = 'flex';
                     showTips = true;
                 } else {
                     usernameEmptyTip.style.display = 'none';
-                    
+
                     // 长度检查 - 2-150字符
                     if (username.length < 2 || username.length > 150) {
-                        usernameLengthTip.textContent = username.length < 2 ? 
+                        usernameLengthTip.textContent = username.length < 2 ?
                             '用户名长度不能少于2个字符' : '用户名长度不能超过150个字符';
-                        usernameLengthTip.style.display = 'flex'; 
+                        usernameLengthTip.style.display = 'flex';
                         showTips = true;
-                    } else { 
-                        usernameLengthTip.style.display = 'none'; 
+                    } else {
+                        usernameLengthTip.style.display = 'none';
                     }
-                    
+
                     // 字符检查 - 只允许字母、数字和下划线
                     if (!/^[a-zA-Z0-9_]+$/.test(username)) {
-                        usernameCharsTip.style.display = 'flex'; 
+                        usernameCharsTip.style.display = 'flex';
                         showTips = true;
-                    } else { 
-                        usernameCharsTip.style.display = 'none'; 
+                    } else {
+                        usernameCharsTip.style.display = 'none';
                     }
                 }
-                
+
                 usernameTips.style.display = showTips ? 'block' : 'none';
             });
-            
+
             // 失去焦点时检查空值
-            usernameInput.addEventListener('blur', function() { 
+            usernameInput.addEventListener('blur', function() {
                 if (!this.value || this.value.trim() === '') {
                     usernameEmptyTip.style.display = 'flex';
                     usernameTips.style.display = 'block';
@@ -894,14 +894,14 @@
             emailInput.addEventListener('input', function() {
                 const email = this.value;
                 let showTips = false;
-                
+
                 // 空值检查
                 if (!email || email.trim() === '') {
                     emailEmptyTip.style.display = 'flex';
                     showTips = true;
                 } else {
                     emailEmptyTip.style.display = 'none';
-                    
+
                     // 格式检查
                     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
                         emailFormatTip.style.display = 'flex';
@@ -910,10 +910,10 @@
                         emailFormatTip.style.display = 'none';
                     }
                 }
-                
+
                 emailTips.style.display = showTips ? 'block' : 'none';
             });
-            
+
             // 失去焦点时检查空值
             emailInput.addEventListener('blur', function() {
                 if (!this.value || this.value.trim() === '') {
@@ -926,150 +926,146 @@
         // 修改表单提交验证逻辑
         const registerForm = document.querySelector('.sign-up-form');
         if (registerForm) {
-            registerForm.addEventListener('submit', function(e) {
-                e.preventDefault(); // --- 阻止表单实际提交 ---
+            console.log("--- 开始前端注册验证 ---"); // 添加日志
 
-                console.log("--- 开始前端注册验证 ---"); // 添加日志
+            let hasErrors = false;
+            let errorMessages = [];
+            let firstErrorField = null; // 用于聚焦
 
-                let hasErrors = false;
-                let errorMessages = [];
-                let firstErrorField = null; // 用于聚焦
+            // --- 清除之前的提示状态 ---
+            document.querySelectorAll('.field-tips').forEach(tip => tip.style.display = 'none');
+            document.querySelectorAll('.field-tip-item').forEach(item => item.style.display = 'none');
+            if (passwordMessage) passwordMessage.textContent = '';
 
-                // --- 清除之前的提示状态 ---
-                document.querySelectorAll('.field-tips').forEach(tip => tip.style.display = 'none');
-                document.querySelectorAll('.field-tip-item').forEach(item => item.style.display = 'none');
-                if (passwordMessage) passwordMessage.textContent = '';
+            // 1. 验证用户名
+            const username = usernameInput ? usernameInput.value.trim() : '';
+            if (!username) {
+                hasErrors = true; errorMessages.push('请输入用户名');
+                if (usernameEmptyTip) usernameEmptyTip.style.display = 'flex';
+                if (!firstErrorField) firstErrorField = usernameInput;
+            } else if (username.length < 2 || username.length > 150) {
+                hasErrors = true; errorMessages.push('用户名长度应为2-150个字符');
+                if (usernameLengthTip) usernameLengthTip.style.display = 'flex';
+                if (!firstErrorField) firstErrorField = usernameInput;
+            } else if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+                hasErrors = true; errorMessages.push('用户名只能包含字母、数字和下划线');
+                if (usernameCharsTip) usernameCharsTip.style.display = 'flex';
+                if (!firstErrorField) firstErrorField = usernameInput;
+            }
+            if (hasErrors && usernameTips) usernameTips.style.display = 'block'; // 显示用户名提示容器
 
-                // 1. 验证用户名
-                const username = usernameInput ? usernameInput.value.trim() : '';
-                if (!username) {
-                    hasErrors = true; errorMessages.push('请输入用户名');
-                    if (usernameEmptyTip) usernameEmptyTip.style.display = 'flex';
-                    if (!firstErrorField) firstErrorField = usernameInput;
-                } else if (username.length < 2 || username.length > 150) {
-                    hasErrors = true; errorMessages.push('用户名长度应为2-150个字符');
-                    if (usernameLengthTip) usernameLengthTip.style.display = 'flex';
-                    if (!firstErrorField) firstErrorField = usernameInput;
-                } else if (!/^[a-zA-Z0-9_]+$/.test(username)) {
-                    hasErrors = true; errorMessages.push('用户名只能包含字母、数字和下划线');
-                    if (usernameCharsTip) usernameCharsTip.style.display = 'flex';
-                    if (!firstErrorField) firstErrorField = usernameInput;
-                }
-                if (hasErrors && usernameTips) usernameTips.style.display = 'block'; // 显示用户名提示容器
-
-                // 2. 验证邮箱
-                const email = emailInput ? emailInput.value.trim() : '';
-                let emailHasError = false;
-                if (!email) {
-                    hasErrors = true; emailHasError = true; errorMessages.push('请输入电子邮箱');
-                    if (emailEmptyTip) emailEmptyTip.style.display = 'flex';
-                    if (!firstErrorField) firstErrorField = emailInput;
-                } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-                    hasErrors = true; emailHasError = true; errorMessages.push('请输入有效的电子邮箱地址');
-                    if (emailFormatTip) emailFormatTip.style.display = 'flex';
-                    if (!firstErrorField) firstErrorField = emailInput;
-                }
-                 if (emailHasError && emailTips) emailTips.style.display = 'block'; // 显示邮箱提示容器
+            // 2. 验证邮箱
+            const email = emailInput ? emailInput.value.trim() : '';
+            let emailHasError = false;
+            if (!email) {
+                hasErrors = true; emailHasError = true; errorMessages.push('请输入电子邮箱');
+                if (emailEmptyTip) emailEmptyTip.style.display = 'flex';
+                if (!firstErrorField) firstErrorField = emailInput;
+            } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                hasErrors = true; emailHasError = true; errorMessages.push('请输入有效的电子邮箱地址');
+                if (emailFormatTip) emailFormatTip.style.display = 'flex';
+                if (!firstErrorField) firstErrorField = emailInput;
+            }
+            if (emailHasError && emailTips) emailTips.style.display = 'block'; // 显示邮箱提示容器
 
 
-                // 3. 验证密码
-                const password = passwordInput ? passwordInput.value : '';
-                const confirmPassword = confirmPasswordInput ? confirmPasswordInput.value : '';
-                let passwordHasError = false;
-                let strengthIssues = []; // 重置
+            // 3. 验证密码
+            const password = passwordInput ? passwordInput.value : '';
+            const confirmPassword = confirmPasswordInput ? confirmPasswordInput.value : '';
+            let passwordHasError = false;
+            let strengthIssues = []; // 重置
 
-                if (!password) {
-                    hasErrors = true; passwordHasError = true; errorMessages.push('请输入密码');
+            if (!password) {
+                hasErrors = true; passwordHasError = true; errorMessages.push('请输入密码');
+                if (!firstErrorField) firstErrorField = passwordInput;
+            } else {
+                // 检查密码强度
+                if (password.length < 8) strengthIssues.push('密码长度至少为8个字符');
+                if (!/[A-Z]/.test(password)) strengthIssues.push('密码需包含大写字母');
+                if (!/[a-z]/.test(password)) strengthIssues.push('密码需包含小写字母');
+                if (!/[0-9]/.test(password)) strengthIssues.push('密码需包含数字');
+                if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/.test(password)) strengthIssues.push('密码需包含特殊字符');
+
+                if (strengthIssues.length > 0) {
+                    hasErrors = true; passwordHasError = true;
+                    errorMessages.push('密码强度不足: ' + strengthIssues.join(', '));
                     if (!firstErrorField) firstErrorField = passwordInput;
-                } else {
-                    // 检查密码强度
-                    if (password.length < 8) strengthIssues.push('密码长度至少为8个字符');
-                    if (!/[A-Z]/.test(password)) strengthIssues.push('密码需包含大写字母');
-                    if (!/[a-z]/.test(password)) strengthIssues.push('密码需包含小写字母');
-                    if (!/[0-9]/.test(password)) strengthIssues.push('密码需包含数字');
-                    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/.test(password)) strengthIssues.push('密码需包含特殊字符');
-
-                    if (strengthIssues.length > 0) {
-                        hasErrors = true; passwordHasError = true;
-                        errorMessages.push('密码强度不足: ' + strengthIssues.join(', '));
-                        if (!firstErrorField) firstErrorField = passwordInput;
-                    }
                 }
-                 if (passwordHasError && passwordTips) passwordTips.style.display = 'block'; // 显示密码提示容器
+            }
+            if (passwordHasError && passwordTips) passwordTips.style.display = 'block'; // 显示密码提示容器
 
 
-                // 检查密码匹配
-                let confirmPasswordHasError = false;
-                if (password !== confirmPassword) {
-                    hasErrors = true; confirmPasswordHasError = true;
-                    errorMessages.push('两次输入的密码不匹配');
-                    if (passwordMessage) {
-                        passwordMessage.textContent = '密码不匹配';
-                        passwordMessage.className = 'password-message error';
-                    }
-                    if (!firstErrorField) firstErrorField = confirmPasswordInput;
-                } else if (confirmPassword && password) { // 只有在两个都有值且匹配时才显示成功
-                     if (passwordMessage) {
-                         passwordMessage.textContent = '密码匹配';
-                         passwordMessage.className = 'password-message success';
-                     }
+            // 检查密码匹配
+            let confirmPasswordHasError = false;
+            if (password !== confirmPassword) {
+                hasErrors = true; confirmPasswordHasError = true;
+                errorMessages.push('两次输入的密码不匹配');
+                if (passwordMessage) {
+                    passwordMessage.textContent = '密码不匹配';
+                    passwordMessage.className = 'password-message error';
                 }
+                if (!firstErrorField) firstErrorField = confirmPasswordInput;
+            } else if (confirmPassword && password) { // 只有在两个都有值且匹配时才显示成功
+                if (passwordMessage) {
+                    passwordMessage.textContent = '密码匹配';
+                    passwordMessage.className = 'password-message success';
+                }
+            }
 
 
-                // 4. 验证验证码 (仅检查前端状态)
-                const captchaStatus = document.getElementById('captcha_status');
-                const captchaInput = document.getElementById('id_captcha_1');
-                let captchaHasError = false;
-                if (!captchaInput || !captchaInput.value.trim()) {
+            // 4. 验证验证码 (仅检查前端状态)
+            const captchaStatus = document.getElementById('captcha_status');
+            const captchaInput = document.getElementById('id_captcha_1');
+            let captchaHasError = false;
+            if (!captchaInput || !captchaInput.value.trim()) {
+                hasErrors = true; captchaHasError = true;
+                errorMessages.push('请输入验证码');
+                if (captchaStatus) {
+                    captchaStatus.textContent = '请输入验证码';
+                    captchaStatus.className = 'status-error';
+                }
+                if (!firstErrorField) firstErrorField = captchaInput;
+            } else if (captchaStatus && captchaStatus.classList.contains('status-error')) {
+                const errorText = captchaStatus.textContent;
+                // 只有当错误不是 "请输入验证码" 时才认为是真正的验证错误
+                if (errorText && !errorText.includes('请输入验证码')) {
                     hasErrors = true; captchaHasError = true;
-                    errorMessages.push('请输入验证码');
-                     if (captchaStatus) {
-                         captchaStatus.textContent = '请输入验证码';
-                         captchaStatus.className = 'status-error';
-                     }
+                    errorMessages.push('验证码错误或无效');
                     if (!firstErrorField) firstErrorField = captchaInput;
-                } else if (captchaStatus && captchaStatus.classList.contains('status-error')) {
-                    const errorText = captchaStatus.textContent;
-                    // 只有当错误不是 "请输入验证码" 时才认为是真正的验证错误
-                    if (errorText && !errorText.includes('请输入验证码')) {
-                         hasErrors = true; captchaHasError = true;
-                         errorMessages.push('验证码错误或无效');
-                         if (!firstErrorField) firstErrorField = captchaInput;
-                    }
                 }
-                // 注意：如果验证码状态是 'status-success'，我们假设它是正确的
+            }
+            // 注意：如果验证码状态是 'status-success'，我们假设它是正确的
 
-                // --- 输出结果到控制台 ---
-                if (hasErrors) {
-                    // e.preventDefault(); // 已在开头阻止
-                    console.error("--- 注册前端验证失败 ---");
-                    console.warn("错误详情:", errorMessages);
+            // --- 输出结果到控制台 ---
+            if (hasErrors) {
+                // e.preventDefault(); // 已在开头阻止
+                console.error("--- 注册前端验证失败 ---");
+                console.warn("错误详情:", errorMessages);
 
-                    // 创建错误提示 (可选，可以用 console 替代 alert)
-                    // let errorSummary = '注册信息有误，请检查以下问题：\n• ' + errorMessages.join('\n• ');
-                    // alert(errorSummary); // --- 移除 alert ---
+                // 创建错误提示 (可选，可以用 console 替代 alert)
+                // let errorSummary = '注册信息有误，请检查以下问题：\n• ' + errorMessages.join('\n• ');
+                // alert(errorSummary); // --- 移除 alert ---
 
-                    // 聚焦到第一个有问题的输入框
-                    if (firstErrorField) {
-                        firstErrorField.focus();
-                    }
-                } else {
-                    // --- 模拟注册成功 ---
-                    console.log("--- 注册前端验证通过 ---");
-                    console.log("模拟注册成功！");
-                    // 可以选择性地输出表单数据
-                    const formData = new FormData(registerForm);
-                    const data = {};
-                    formData.forEach((value, key) => {
-                        // 不记录密码和验证码到日志
-                        if (key !== 'password' && key !== 'confirm_password' && key !== 'captcha_1') {
-                            data[key] = value;
-                        }
-                    });
-                    console.log("模拟提交的数据 (部分):", data);
-                    // alert("模拟注册成功！请查看控制台获取详情。"); // --- 移除 alert ---
+                // 聚焦到第一个有问题的输入框
+                if (firstErrorField) {
+                    firstErrorField.focus();
                 }
-            });
+            } else {
+                // --- 模拟注册成功 ---
+                console.log("--- 注册前端验证通过 ---");
+                console.log("模拟注册成功！");
+                // 可以选择性地输出表单数据
+                const formData = new FormData(registerForm);
+                const data = {};
+                formData.forEach((value, key) => {
+                    // 不记录密码和验证码到日志
+                    if (key !== 'password' && key !== 'confirm_password' && key !== 'captcha_1') {
+                        data[key] = value;
+                    }
+                });
+                console.log("模拟提交的数据 (部分):", data);
+                // alert("模拟注册成功！请查看控制台获取详情。"); // --- 移除 alert ---
+            }
         }
         // --- End of Other JS ---
 
