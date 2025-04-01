@@ -6,6 +6,9 @@
     <title>{{ article.title }}</title>
     <link rel="stylesheet" href="{% static 'css/monokai.css' %}">
 </head>
+{% if request.user.username == article.author.username %}
+    <a href="{% url 'article:delete' article.id %}">删除文章</a>
+{% endif %}
 <body>
 作者: {{ article.author }}
 发布时间: {{ article.created_time }}
