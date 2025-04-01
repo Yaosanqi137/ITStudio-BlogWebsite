@@ -3,8 +3,22 @@ name: Django CI
 on:
   push:
     branches: [ "main" ]
+    paths-ignore:
+      - ".gitignore"
+      - "LICENSE"
+      - "README.md"
+      - "README_EN.md"
+      - ".github/pull_request_template.md"
+      - ".github/workflows/contributors_update.yml"
   pull_request:
     branches: [ "main" ]
+    paths-ignore:
+      - ".gitignore"
+      - "LICENSE"
+      - "README.md"
+      - "README_EN.md"
+      - ".github/pull_request_template.md"
+      - ".github/workflows/contributors_update.yml"
 
 jobs:
   build:

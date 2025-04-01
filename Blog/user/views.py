@@ -25,15 +25,15 @@ def ajax_validate_captcha(request):
                 else:
                     # 验证失败时，可以考虑删除，防止暴力破解同一个key，但非必须
                     # captcha.delete()
-                    return JsonResponse({'status': 0, 'message': 'Incorrect captcha'})
+                    return JsonResponse({'status': 0, 'message': '错误的验证码'})
             except CaptchaStore.DoesNotExist:
-                return JsonResponse({'status': 0, 'message': 'Captcha key not found or expired'})
+                return JsonResponse({'status': 0, 'message': '验证码不存在或过期'})
             except Exception as e:
                 print(f"Error during captcha validation: {e}")
-                return JsonResponse({'status': 0, 'message': 'Server error during validation'})
+                return JsonResponse({'status': 0, 'message': '服务器出现了错误'})
         else:
-            return JsonResponse({'status': 0, 'message': 'Missing response or hashkey'})
-    return JsonResponse({'status': 0, 'message': 'Invalid request method'})
+            return JsonResponse({'status': 0, 'message': '验证码丢失'})
+    return JsonResponse({'status': 0, 'message': '未知的请求'})
 
 def refresh_captcha(request):
     if request.method == 'GET':

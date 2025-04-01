@@ -576,9 +576,6 @@
         // --- Form Submission Logic (Optional Enhancements) ---
         const loginForm = document.querySelector('.sign-in-form');
         if (loginForm) {
-            loginForm.addEventListener('submit', function(e) {
-                e.preventDefault(); // --- 阻止表单实际提交 ---
-
                 console.log("--- 开始前端登录验证 ---");
 
                 let hasErrors = false;
@@ -641,7 +638,6 @@
                     console.log("--- 登录前端验证通过 ---");
                     console.log(`模拟登录成功！账号: ${account}`);
                 }
-            });
         }
         // --- End of Form Submission Logic ---
 
