@@ -9,6 +9,7 @@
 {% for article in articles %}
     <p><img src="{{ article.head_img.url }}" alt="文章图片"></p>
     <p><a href="{% url 'article:detail' article.id %}">{{ article.title }}</a></p>
+    <p>{{ article.category }}</p>
     <p>作者: {{ article.author }}</p>
     <p>发布时间: {{ article.created_time }}</p>
     <p>最后更新时间: {{ article.updated_time }}</p>

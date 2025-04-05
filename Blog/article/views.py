@@ -20,7 +20,7 @@ def detail_view(request, id):
     return render(request, 'Article.html', {'article': article})
 
 @login_required(login_url='/user/login/')
-def edit_view(request):
+def create_view(request):
     if request.method == 'POST':
         article_post_form = ArticlePostForm(request.POST, request.FILES)
         if article_post_form.is_valid():
@@ -41,3 +41,19 @@ def delete_view(request, id):
         return redirect('/')
     article.delete()
     return redirect('/article/list')
+
+@login_required(login_url='/user/login/')
+def edit_view(request, id):
+    article = Article.objects.get(id=id)
+    if request.user.username != article.author.username:
+        return redirect('/')
+    if request.method == 'POST':
+        article_post_form = ArticlePostForm(request.POST, request.FILES, instance=article)
+        if article_post_form.is_valid():
+            article_post_form.save()
+            return redirect('/article/list')
+        else:
+            return render(request, 'ArticlePost.html', {'article_post_form': article_post_form})
+    else:
+        article_post_form = ArticlePostForm(instance=article)
+        return render(request, 'ArticlePost.html', {'article_post_form': article_post_form})
