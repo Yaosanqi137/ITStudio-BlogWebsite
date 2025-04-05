@@ -7,6 +7,7 @@ from .forms import ArticlePostForm
 from .models import Article
 from user.models import BlogUser
 from django.db.models import Q
+from article.models import get_random_image
 
 def list_view(request):
     search_query = request.GET.get('search', '') # 获取搜索词
@@ -55,6 +56,8 @@ def create_view(request):
         if article_post_form.is_valid():
             new_article = article_post_form.save(commit=False)
             new_article.author = BlogUser.objects.get(username=request.user.username)
+            if not new_article.head_img:
+                new_article.head_img = get_random_image()
             new_article.save()
             id = new_article.id
             return redirect(f'/article/detail/{id}')
