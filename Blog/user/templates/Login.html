@@ -308,6 +308,40 @@
         .refresh-captcha-btn i {
             font-size: 10px;
         }
+        
+        /* 游客模式按钮样式 */
+        .guest-mode {
+            margin: 15px 0;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .guest-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-decoration: none;
+            color: #7b7faa;
+            background-color: rgba(255, 255, 255, 0.7);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(121, 121, 121, 0.2);
+        }
+        
+        .guest-btn:hover {
+            background-color: rgba(255, 255, 255, 0.9);
+            color: #5995fd;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .guest-btn i {
+            font-size: 1rem;
+        }
     </style>
 </head>
 <body>
@@ -346,6 +380,13 @@
                 {% endif %}
                 
                 <input type="submit" value="登录" class="btn solid" />
+                
+                <!-- 添加游客模式按钮 -->
+                <div class="guest-mode">
+                    <a href="/" class="guest-btn">
+                        <i class="fas fa-user-secret"></i> 游客模式
+                    </a>
+                </div>
                 
                 <p class="social-text">是新人？左侧进行注册</p>
             </form>

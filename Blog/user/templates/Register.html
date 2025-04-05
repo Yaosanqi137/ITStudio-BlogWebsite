@@ -591,6 +591,11 @@
                 <p>使用您的账号登录，畅享购物体验!</p>
                 <!-- 直接修改按钮样式 -->
                 <a href="{% url 'user:login' %}" class="btn transparent" style="width: 150px; height: 49px; font-size: 1rem; font-weight: 600; margin: 10px 0; display: flex; align-items: center; justify-content: center; transition: 0.5s;" onmouseover="this.style.backgroundColor='rgba(255,255,255,0.2)'; this.style.transform='scale(1.05)';" onmouseout="this.style.backgroundColor='transparent'; this.style.transform='scale(1)';">登录</a>
+                
+                <!-- 添加游客模式按钮 -->
+                <a href="/" class="btn transparent guest-btn" style="width: 150px; height: 49px; font-size: 1rem; font-weight: 600; margin: 10px 0; display: flex; align-items: center; justify-content: center; transition: 0.5s; gap: 8px;" onmouseover="this.style.backgroundColor='rgba(255,255,255,0.2)'; this.style.transform='scale(1.05)';" onmouseout="this.style.backgroundColor='transparent'; this.style.transform='scale(1)';">
+                    <i class="fas fa-user-secret"></i> 游客模式
+                </a>
             </div>
             <img src="https://i.ibb.co/nP8H853/Login.png" class="image" alt="" />
         </div>
