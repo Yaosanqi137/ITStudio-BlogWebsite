@@ -6,13 +6,42 @@ from django.shortcuts import render
 from .forms import ArticlePostForm
 from .models import Article
 from user.models import BlogUser
+from django.db.models import Q
 
 def list_view(request):
+    search_query = request.GET.get('search', '') # 获取搜索词
+    selected_category = request.GET.get('category', '') # 获取分类
+
     articles = Article.objects.all()
-    return render(request, 'ArticleList.html', {'articles': articles})
+
+    # 由搜索词筛选
+    if search_query:
+        articles = articles.filter(Q(title__icontains=search_query) | Q(body__icontains=search_query))
+
+    # 由分类筛选
+    if selected_category:
+        articles = articles.filter(category=selected_category)
+
+    # 分类选项
+    category = {
+        "生活": "生活",
+        "闲谈": "闲谈",
+        "软件": "软件",
+        "硬件": "硬件",
+        "知识": "知识",
+        "美食": "美食",
+        "其他": "其他",
+    }
+
+    return render(request, 'ArticleList.html', {
+        'articles': articles,
+        'category': category,
+    })
 
 def detail_view(request, id):
     article = Article.objects.get(id=id)
+    article.looks += 1
+    article.save()
     article.body = markdown.markdown(article.body, extensions=[
         'markdown.extensions.extra',
         'markdown.extensions.codehilite'
@@ -57,3 +86,8 @@ def edit_view(request, id):
     else:
         article_post_form = ArticlePostForm(instance=article)
         return render(request, 'ArticlePost.html', {'article_post_form': article_post_form})
+
+@login_required(login_url='/user/login/')
+def my_view(request):
+    articles = Article.objects.filter(author=request.user.id)
+    return render(request, 'MyArticle.html', {'articles': articles})

@@ -10,9 +10,9 @@ import os
 MEDIA_ADDR = "https://localhost:8000/images/"
 
 sex = {
-    "male": "男",
-    "female": "女",
-    "unknown": "保密"
+    "男": "男",
+    "女": "女",
+    "保密": "保密"
 }
 
 class BlogUser(User, models.Model):
@@ -21,7 +21,7 @@ class BlogUser(User, models.Model):
     info     = models.TextField("简介", blank=True, null=True)
     birthday = models.DateField("生日", null=True, blank=True)
     reg_time = models.DateField("注册时间", auto_now_add=True, editable=False)
-    sex      = models.CharField("性别", default="unknown", choices=sex, max_length=8)
+    sex      = models.CharField("性别", default="保密", choices=sex, max_length=8)
 
     def get_avatar(self):
         return MEDIA_ADDR + str(self.avatar)

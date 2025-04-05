@@ -286,9 +286,10 @@
         <ul class="nav-links">
             {% if user.is_authenticated %}
             <li><a href="/article/create" class="active">发表文章</a></li>
-            <li><a href="#">我的文章</a></li>
+            <li><a href="/article/my">我的文章</a></li>
             {% endif %}
             <li><a href="#">咖啡馆</a></li>
+            <li><a href="/article/list">全部文章</a></li>
             <li><a href="https://github.com/Yaosanqi137/ITStudio-BlogWebsite">我们的 GitHub</a></li>
             <li><a href="#">搜索功能(文章、评论、用户)</a></li>
             {% if not user.is_authenticated %}
@@ -320,21 +321,6 @@
 
     <div class="articles-header" style="display: flex; justify-content: space-between; align-items: baseline; position: relative;">
         <h2>热门文章 Top6</h2>
-        <div class="category-dropdown">
-            <button class="category-btn">文章分类 <i class="fas fa-caret-down"></i></button>
-            <div class="dropdown-content">
-                <div class="sub-category">开发
-                    <div class="sub-menu">
-                        <button class="sub-item">前端</button>
-                        <button class="sub-item">后端</button>
-                    </div>
-                </div>
-                <button class="category-item">文学</button>
-                <button class="category-item">新闻</button>
-                <button class="category-item">树洞</button>
-                <button class="category-item">日志</button>
-            </div>
-        </div>
     </div>
 
     <section class="articles">

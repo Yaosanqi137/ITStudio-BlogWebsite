@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人设置</title>
+    <!-- 引入 Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 800px;
+            margin-top: 20px;
+        }
+        .profile-preview img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin-bottom: 20px;
+        }
+        .bottom-buttons {
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        .bottom-buttons a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+        }
+        .bottom-buttons .btn-myarticles {
+            background-color: #4CAF50;
+        }
+        .bottom-buttons .btn-home {
+            background-color: #2196F3;
+        }
+        .bottom-buttons .btn-logout {
+            background-color: #f44336;
+        }
+        .error-message {
+            color: #dc3545;
+            font-size: 16px;
+            font-weight: bold;
+            margin: 10px 0;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2 class="mb-4">个人设置</h2>
+
+    <div class="row">
+        <div class="col-md-6">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <!-- 昵称 -->
+                <div class="mb-3">
+                    <label for="{{ profile_form.nickname.id_for_label }}" class="form-label">昵称</label>
+                    {{ profile_form.nickname }}
+                    {% if profile_form.nickname.errors %}
+                        <div class="invalid-feedback">
+                            {% for error in profile_form.nickname.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- 头像 -->
+                <div class="mb-3">
+                    <label for="{{ profile_form.avatar.id_for_label }}" class="form-label">头像</label>
+                    <div class="input-group">
+                        <input type="file" class="form-control" id="{{ profile_form.avatar.id_for_label }}" name="{{ profile_form.avatar.name }}">
+                    </div>
+                    <div class="form-text">
+                        支持上传 JPG/PNG 格式的图片，尺寸将自动调整为 160x160 像素。
+                    </div>
+                    {% if profile_form.avatar.errors %}
+                        <div class="invalid-feedback">
+                            {% for error in profile_form.avatar.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+
+                <!-- 简介 -->
+                <div class="mb-3">
+                    <label for="{{ profile_form.info.id_for_label }}" class="form-label">简介</label>
+                    {{ profile_form.info }}
+                    <div class="form-text">
+                        简单介绍一下自己吧！
+                    </div>
+                    {% if profile_form.info.errors %}
+                        <div class="invalid-feedback">
+                            {% for error in profile_form.info.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- 生日 -->
+                <div class="mb-3">
+                    <label for="{{ profile_form.birthday.id_for_label }}" class="form-label">生日</label>
+                    {{ profile_form.birthday }}
+                    <div class="form-text">
+                        格式：YYYY-MM-DD
+                    </div>
+                    {% if profile_form.birthday.errors %}
+                        <div class="invalid-feedback">
+                            {% for error in profile_form.birthday.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- 性别 -->
+                <div class="mb-3">
+                    <label for="{{ profile_form.sex.id_for_label }}" class="form-label">性别</label>
+                    {{ profile_form.sex }}
+                    {% if profile_form.sex.errors %}
+                        <div class="invalid-feedback">
+                            {% for error in profile_form.sex.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                {% if error %}
+                    <div class="error-message">{{ error }}</div>
+                {% endif %}
+
+                <!-- 提交按钮 -->
+                <button type="submit" class="btn btn-primary">保存更改</button>
+            </form>
+        </div>
+
+        <div class="col-md-6 mt-4">
+            <h4 class="mb-3">当前资料预览</h4>
+            <div class="card">
+                <div class="card-body">
+                    <div class="text-center mb-3">
+                        <img src="{{ profile_form.instance.avatar.url }}" alt="头像" class="rounded-circle profile-preview">
+                    </div>
+                    <p><strong>昵称:</strong> {{ profile_form.instance.nickname }}</p>
+                    <p><strong>简介:</strong> {{ profile_form.instance.info|default:"暂无简介" }}</p>
+                    <p><strong>生日:</strong> {{ profile_form.instance.birthday|default:"未设置" }}</p>
+                    <p><strong>性别:</strong> {{ profile_form.instance.sex }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部按钮 -->
+    <div class="bottom-buttons">
+        <a href="/article/my" class="btn-myarticles">我的文章</a>
+        <a href="/" class="btn-home">返回主界面</a>
+        <a href="/user/logout" class="btn-logout">退出登录</a>
+    </div>
+</div>
+
+<!-- 引入 Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
