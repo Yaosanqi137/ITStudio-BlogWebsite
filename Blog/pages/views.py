@@ -18,6 +18,8 @@ def homepage_view(request):
 
     if request.user.is_authenticated:
         user = BlogUser.objects.get(username=request.user.username)
+        if not user.avatar:
+            user.avatar = get_random_avatars()
         context['user'] = user
         return render(request, "Hub.html", context)
     else:
