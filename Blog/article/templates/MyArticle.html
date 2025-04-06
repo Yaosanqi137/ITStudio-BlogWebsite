@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>文章列表</title>
+</head>
+<body>
+<!-- 搜索和筛选表单 -->
+<form method="GET" action="{% url 'article:list' %}">
+    <input type="text" name="search" placeholder="搜索文章标题" value="{{ request.GET.search }}">
+    <select name="category">
+        <option value="">所有分类</option>
+        {% for key, value in category.items %}
+            <option value="{{ key }}" {% if request.GET.category == key %}selected{% endif %}>{{ value }}</option>
+        {% endfor %}
+    </select>
+    <button type="submit">搜索</button>
+</form>
+
+{% for article in articles %}
+    <p><img src="{{ article.head_img.url }}" alt="文章图片"></p>
+    <p><a href="{% url 'article:detail' article.id %}">{{ article.title }}</a></p>
+    <a href="{% url 'article:delete' article.id %}">删除文章</a>
+    <a href="{% url 'article:edit' article.id %}">编辑文章</a>
+    <p>{{ article.category }}</p>
+    <p>作者: {{ article.author }}</p>
+    <p>发布时间: {{ article.created_time }}</p>
+    <p>最后更新时间: {{ article.updated_time }}</p>
+    <p>点赞数: {{ article.likes }}</p>
+    <p>讨厌数: {{ article.dislikes }}</p>
+    <p>收藏数: {{ article.collect }}</p>
+    <p>浏览数: {{ article.looks }}</p>
+    <p>评论数: TODO</p>
+{% endfor %}
+</body>
+</html>
