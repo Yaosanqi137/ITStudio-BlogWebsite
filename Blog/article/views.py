@@ -9,6 +9,17 @@ from user.models import BlogUser
 from django.db.models import Q
 from article.models import get_random_image
 
+# 分类选项
+category = {
+    "生活": "生活",
+    "闲谈": "闲谈",
+    "软件": "软件",
+    "硬件": "硬件",
+    "知识": "知识",
+    "美食": "美食",
+    "其他": "其他",
+}
+
 def list_view(request):
     search_query = request.GET.get('search', '') # 获取搜索词
     selected_category = request.GET.get('category', '') # 获取分类
@@ -22,17 +33,6 @@ def list_view(request):
     # 由分类筛选
     if selected_category:
         articles = articles.filter(category=selected_category)
-
-    # 分类选项
-    category = {
-        "生活": "生活",
-        "闲谈": "闲谈",
-        "软件": "软件",
-        "硬件": "硬件",
-        "知识": "知识",
-        "美食": "美食",
-        "其他": "其他",
-    }
 
     return render(request, 'ArticleList.html', {
         'articles': articles,
@@ -92,5 +92,20 @@ def edit_view(request, id):
 
 @login_required(login_url='/user/login/')
 def my_view(request):
+    search_query = request.GET.get('search', '') # 获取搜索词
+    selected_category = request.GET.get('category', '') # 获取分类
+
     articles = Article.objects.filter(author=request.user.id)
-    return render(request, 'MyArticle.html', {'articles': articles})
+
+    # 由搜索词筛选
+    if search_query:
+        articles = articles.filter(Q(title__icontains=search_query) | Q(body__icontains=search_query))
+
+    # 由分类筛选
+    if selected_category:
+        articles = articles.filter(category=selected_category)
+
+    return render(request, 'MyArticle.html', {
+        'articles': articles,
+        'category': category,
+    })
