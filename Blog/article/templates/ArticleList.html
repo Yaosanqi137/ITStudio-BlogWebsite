@@ -67,7 +67,7 @@
         {% if articles %}
             {% for article in articles %}
                 <div class="article-item glass-effect">
-                    <img src="{{ article.head_img.url }}" alt="文章图片">
+                    <img src="{{ article.head_img.url }}" alt="文章图片" width="430" height="200">
                     <h3 class="article-title"><a href="{% url 'article:detail' article.id %}">{{ article.title }}</a></h3>
                     <div class="article-meta">
                         <span><i class="fas fa-user"></i> 作者: {{ article.author }}</span>
