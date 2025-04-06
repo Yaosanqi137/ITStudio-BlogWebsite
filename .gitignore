@@ -1,0 +1,54 @@
+# Python 缓存文件
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+# Django migrations folders
+migrations/
+
+# VS Code 配置文件
+.vscode/
+*.code-workspace
+.history/
+
+# 虚拟环境
+venv/
+env/
+ENV/
+
+# 数据库文件
+*.sqlite3
+*.db
+
+# 日志文件
+*.log
+
+# 本地配置文件
+local_settings.py
+
+# 媒体和静态文件（如果需要）
+# /media/
+# /static/
+
+# 其他常见的忽略文件
+.DS_Store
+Thumbs.db
+.idea/
+*.swp
+*.swo 

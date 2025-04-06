@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="https://img.fastmirror.net/s/2024/08/16/66bf44708b1e7.png">
+    <title>注册 </title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../../static/css/RegisterStyles.css">
+</head>
+<body>
+<div class="background-gradient"></div>
+
+<div class="register-container glass-effect">
+    <div class="forms-container">
+        <div class="signin-signup">
+            <!-- 注册表单 -->
+            <form action="{% url 'user:register' %}" method="post" class="sign-up-form">
+                <h2 class="title">注册</h2>
+                {% csrf_token %}
+
+                <!-- 手动渲染表单字段而不是使用 reg_form.as_p -->
+                <div class="custom-form">
+                    <!-- 用户名字段 -->
+                    <p class="input-field">
+                        <i class="fas fa-user"></i>
+                        {{ reg_form.username }}
+                    </p>
+                    <div id="username-tips" class="field-tips">
+                        <div id="username-empty-tip" class="field-tip-item">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span>请输入用户名</span>
+                        </div>
+                        <div id="username-length-tip" class="field-tip-item">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span>用户名长度应为2-150个字符</span>
+                        </div>
+                        <div id="username-chars-tip" class="field-tip-item">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span>用户名只能包含字母、数字和下划线</span>
+                        </div>
+                    </div>
+
+                    <!-- 邮箱字段 -->
+                    <p class="input-field">
+                        <i class="fas fa-envelope"></i>
+                        {{ reg_form.email }}
+                    </p>
+                    <div class="field-tips" id="email-tips">
+                        <div class="field-tip-item" id="email-empty-tip">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span>请输入电子邮箱</span>
+                        </div>
+                        <div class="field-tip-item" id="email-format-tip">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span>请输入有效的电子邮箱地址</span>
+                        </div>
+                    </div>
+
+                    <!-- 密码字段 -->
+                    <p class="input-field">
+                        <i class="fas fa-lock"></i>
+                        {{ reg_form.password1 }}
+                    </p>
+
+                    <!-- 确认密码字段 -->
+                    <p class="input-field">
+                        <i class="fas fa-lock"></i>
+                        {{ reg_form.password2 }}
+                    </p>
+
+                    <!-- 保留验证码字段 -->
+                    {{ reg_form.captcha }}
+                </div>
+
+                <div class="password-strength">
+                    <div class="strength-bar"></div>
+                </div>
+
+                <div class="password-tips">
+                    <div class="tip-item" id="length-tip">
+                        <i class="fas fa-times"></i>
+                        <span>至少8个字符</span>
+                    </div>
+                    <div class="tip-item" id="uppercase-tip">
+                        <i class="fas fa-times"></i>
+                        <span>包含大写字母</span>
+                    </div>
+                    <div class="tip-item" id="lowercase-tip">
+                        <i class="fas fa-times"></i>
+                        <span>包含小写字母</span>
+                    </div>
+                    <div class="tip-item" id="number-tip">
+                        <i class="fas fa-times"></i>
+                        <span>包含数字</span>
+                    </div>
+                    <div class="tip-item" id="special-tip">
+                        <i class="fas fa-times"></i>
+                        <span>包含特殊字符</span>
+                    </div>
+                </div>
+
+                <div id="password-message" class="password-message"></div>
+
+                <div class="captcha-container">
+                    <div class="captcha-wrapper">
+                        {{ captcha.captcha }}
+                        <button type="button" id="refresh-captcha" class="refresh-captcha-btn">
+                            <i class="fas fa-sync-alt"></i> <span>刷新验证码</span>
+                        </button>
+                    </div>
+                    <span id="captcha_status" class="status-text"></span>
+                </div>
+
+                {% if error %}
+                    <span class="error-message">{{ error }}</span>
+                {% endif %}
+
+                <input type="submit" value="注册" class="btn" id="signup-btn">
+            </form>
+        </div>
+    </div>
+
+    <div class="panels-container">
+        <div class="panel right-panel">
+            <div class="content">
+                <h3>已有账号?</h3>
+                <p>使用您的账号登录，畅享购物体验!</p>
+                <!-- 直接修改按钮样式 -->
+                <a href="{% url 'user:login' %}" class="btn transparent" style="width: 150px; height: 49px; font-size: 1rem; font-weight: 600; margin: 10px 0; display: flex; align-items: center; justify-content: center; transition: 0.5s;" onmouseover="this.style.backgroundColor='rgba(255,255,255,0.2)'; this.style.transform='scale(1.05)';" onmouseout="this.style.backgroundColor='transparent'; this.style.transform='scale(1)';">登录</a>
+                
+                <!-- 添加游客模式按钮 -->
+                <a href="/" class="btn transparent guest-btn" style="width: 150px; height: 49px; font-size: 1rem; font-weight: 600; margin: 10px 0; display: flex; align-items: center; justify-content: center; transition: 0.5s; gap: 8px;" onmouseover="this.style.backgroundColor='rgba(255,255,255,0.2)'; this.style.transform='scale(1.05)';" onmouseout="this.style.backgroundColor='transparent'; this.style.transform='scale(1)';">
+                    <i class="fas fa-user-secret"></i> 游客模式
+                </a>
+            </div>
+            <img src="https://i.ibb.co/nP8H853/Login.png" class="image" alt="" />
+        </div>
+    </div>
+</div>
+
+<script src="../../static/js/RegisterJs.js"></script>
+</body>
+</html>

@@ -1,0 +1,293 @@
+body {
+    font-family: 'Microsoft YaHei', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f2f5;
+}
+
+.background-gradient {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    background: linear-gradient(135deg, #39c5bb, #bb6688);
+    opacity: 0.6;
+}
+
+.glass-effect {
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+}
+
+.article-container {
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 20px;
+}
+
+.article-item {
+    margin-bottom: 30px;
+    padding: 20px;
+}
+
+.article-item img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+}
+
+.article-title {
+    font-size: 1.5rem;
+    margin: 15px 0;
+}
+
+.article-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 10px;
+    color: #555;
+}
+
+/* 文章分类按钮样式 */
+.articles-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.flex-grow {
+    flex-grow: 1;
+}
+
+.category-button {
+    display: inline-block;
+    position: relative;
+}
+
+.category-btn {
+    background: none;
+    border: none;
+    color: white;
+    text-decoration: underline;
+    text-decoration-color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0;
+    margin-left: 20px;
+    transition: all 0.3s ease;
+    position: relative;
+    padding-right: 20px; /* 为图标留出空间 */
+}
+
+.category-btn::after {
+    content: '\f0da'; /* 右三角图标 */
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: transform 0.3s ease;
+}
+
+.category-button:hover .category-btn::after {
+    content: '\f0d7'; /* 下三角图标 */
+    transform: translateY(-50%);
+}
+
+/* 悬浮显示的分类内容 */
+.category-dropdown {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 100%;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+    padding: 10px;
+    z-index: 10;
+    min-width: 200px;
+    animation: fadeIn 0.3s ease;
+}
+
+/* 确保悬浮时下拉菜单显示 - 放在样式表底部以覆盖其他可能的冲突规则 */
+.category-button:hover .category-dropdown {
+    display: block !important;
+}
+
+.category-item:hover .sub-category {
+    display: flex !important;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.category-item {
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.category-item:hover {
+    background-color: rgba(57, 197, 187, 0.1);
+}
+
+.category-item:last-child {
+    border-bottom: none;
+}
+
+.category-title {
+    font-weight: bold;
+    cursor: pointer;
+    display: block;
+    padding: 5px;
+    color: #333;
+    position: relative;
+}
+
+.category-title::after {
+    content: '\f054'; /* 右箭头 */
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    position: absolute;
+    right: 10px;
+    transition: transform 0.3s ease;
+}
+
+.category-title.active::after {
+    transform: rotate(90deg); /* 右箭头旋转90度 */
+}
+
+.sub-category {
+    display: none;
+    position: absolute;
+    left: 100%; /* 向右展开 */
+    top: 0;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 8px 16px rgba(31, 38, 135, 0.3);
+    padding: 10px;
+    min-width: 150px;
+    flex-direction: column;
+    gap: 5px;
+    animation: slideIn 0.2s ease;
+    z-index: 11;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+/* 确保不超出右边界的检测 */
+.category-item.boundary-right .sub-category {
+    left: auto;
+    right: 100%;
+    animation: slideInLeft 0.2s ease;
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(-10px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideInLeft {
+    from { opacity: 0; transform: translateX(10px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+.sub-category-btn {
+    background: none;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    text-align: left;
+}
+
+.sub-category-btn:hover {
+    background-color: #39c5bb;
+    color: white;
+    border-color: #39c5bb;
+    transform: translateX(5px);
+}
+
+/* 已选择分类显示样式 */
+.selected-category {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 15px;
+    background-color: rgba(255, 255, 255, 0.7);
+    border-radius: 15px;
+    padding: 3px 10px;
+    font-size: 0.9rem;
+    color: #333;
+}
+
+/* 清除筛选按钮 */
+.clear-filter-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 10px;
+    background-color: rgba(255, 255, 255, 0.8);
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.clear-filter-btn:hover {
+    background-color: #f44336;
+    color: white;
+    transform: rotate(90deg);
+}
+
+.clear-filter-btn i {
+    font-size: 12px;
+}
+
+/* 在没有文章时显示的提示 */
+.no-articles {
+    text-align: center;
+    padding: 50px 20px;
+    color: #666;
+}
+
+.no-articles i {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    color: #ddd;
+}
+
+/* 响应式样式 */
+@media (max-width: 768px) {
+    .article-container {
+        padding: 15px;
+    }
+    
+    .article-meta {
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .articles-header {
+        flex-wrap: wrap;
+    }
+    
+    .selected-category {
+        margin: 10px 0;
+    }
+} 

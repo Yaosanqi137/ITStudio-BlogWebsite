@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OUC大大大blog</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../../static/css/HubStyles.css">
+</head>
+<body>
+<header class="glass-effect">
+    <nav>
+        <div class="logo">OUC<span>博客网</span></div>
+        <div class="search-container">
+            <i class="fas fa-search search-icon" id="searchIcon"></i>
+            <input type="search" class="search-box" id="searchBox" placeholder="搜索文章、评论、用户...">
+        </div>
+        <ul class="nav-links">
+            {% if user.is_authenticated %}
+            <li><a href="#" class="active">发表文章</a></li>
+            <li><a href="#">我的文章</a></li>
+            {% endif %}
+            <li><a href="{% url 'article:list' %}">文章列表</a></li>
+            <li><a href="#">咖啡馆</a></li>
+            <li><a href="https://github.com/Yaosanqi137/ITStudio-BlogWebsite">我们的 GitHub</a></li>
+            {% if not user.is_authenticated %}
+            <li><a href="/user/login">登录/注册</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+</header>
+
+<main>
+    {% if user.is_authenticated %}
+    <section class="profile glass-effect">
+        <div class="profile-image">
+            <img src="{{ user.avatar.url }}" alt="头像">
+        </div>
+        <div class="profile-info">
+            <h1>欢迎！{{ user.nickname }}</h1>
+            <p class="tagline">网站标语</p>
+            <div class="social-links">
+                <a href="user/profile"><i class="fa fa-gear"></i></a>
+                <a href="user/logout"><i class="fa  fa-warning"></i></a>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    <div class="articles-header">
+        <h2>热门文章 Top6</h2>
+    </div>
+
+    <section class="articles">
+        {% for article in articles_looks %}
+            <article class="article-card glass-effect"
+                     onclick="window.location.href='{% url 'article:detail' article.id %}';"
+                     style="cursor: pointer;">
+                <div class="article-image">
+                    <img src="{{ article.head_img.url }}" alt="文章图片">
+                </div>
+                <div class="article-content">
+                    <h3>{{ article.title }}</h3>
+                    <p>作者: {{ article.author }}</p>
+                    <div class="article-meta">
+                        <!-- 第一行：核心数据 -->
+                        <div class="meta-row">
+                        <span class="meta-item">
+                            <i class="far fa-eye meta-icon"></i>
+                            {{ article.looks }}
+                        </span>
+                            <span class="meta-item">
+                            <i class="fas fa-heart meta-icon"></i>
+                            {{ article.likes }}
+                        </span>
+                            <span class="meta-item">
+                            <i class="far fa-comment meta-icon"></i>
+                            TODO
+                        </span>
+                        </div>
+
+                        <!-- 第二行：辅助信息 -->
+                        <div class="meta-row">
+                        <span class="meta-item">
+                            <i class="far fa-calendar meta-icon"></i>
+                            {{ article.created_time|date:"Y/m/d H:i" }}
+                        </span>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        {% endfor %}
+    </section>
+
+    <div class="articles-header">
+        <h2>好评如潮文章 Top6</h2>
+    </div>
+
+    <section class="articles">
+        {% for article in articles_likes %}
+            <article class="article-card glass-effect"
+                     onclick="window.location.href='{% url 'article:detail' article.id %}';"
+                     style="cursor: pointer;">
+                <div class="article-image">
+                    <img src="{{ article.head_img.url }}" alt="文章图片">
+                </div>
+                <div class="article-content">
+                    <h3>{{ article.title }}</h3>
+                    <p>作者: {{ article.author }}</p>
+                    <div class="article-meta">
+                        <!-- 第一行：核心数据 -->
+                        <div class="meta-row">
+                        <span class="meta-item">
+                            <i class="far fa-eye meta-icon"></i>
+                            {{ article.looks }}
+                        </span>
+                            <span class="meta-item">
+                            <i class="fas fa-heart meta-icon"></i>
+                            {{ article.likes }}
+                        </span>
+                            <span class="meta-item">
+                            <i class="far fa-comment meta-icon"></i>
+                            TODO
+                        </span>
+                        </div>
+
+                        <!-- 第二行：辅助信息 -->
+                        <div class="meta-row">
+                        <span class="meta-item">
+                            <i class="far fa-calendar meta-icon"></i>
+                            {{ article.created_time|date:"Y/m/d H:i" }}
+                        </span>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        {% endfor %}
+    </section>
+
+</main>
+
+<footer class="glass-effect">
+    <div class="footer-content">
+        <div class="footer-logo">OUC<span>博客网</span></div>
+        <p>版权信息: Made By IT Studio</p>
+        <p>联系信息: 114514-1919-810</p>
+    </div>
+</footer>
+
+<script src="../../static/js/HubJs.js"></script>
+</body>
+</html>
