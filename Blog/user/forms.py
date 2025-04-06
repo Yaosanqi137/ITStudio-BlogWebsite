@@ -24,15 +24,9 @@ class UserRegForm(UserCreationForm):
         return email
 
 
-class AvatarUploadForm(forms.ModelForm):
-    avatar = forms.ImageField(
-        label='上传头像',
-        required=False,
-        widget=forms.FileInput(attrs={'accept': 'image/*'})
-    )
-
+class ProfileForm(forms.ModelForm):
     class Meta:
         model = BlogUser
-        fields = ('avatar',)
+        fields = ('avatar', 'nickname', 'info', 'birthday', 'sex')
 
 

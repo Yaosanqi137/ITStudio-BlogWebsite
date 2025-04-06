@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.http import JsonResponse, HttpResponseRedirect
@@ -100,7 +101,7 @@ def register_view(request):
                 email.send(fail_silently=False)
             except Exception as e:
                 messages.error(request, f'验证邮件发送失败! {e} 请重新注册！')
-                user.delete()
+                # user.delete()
                 return redirect('/user/login', {})
 
             messages.success(request, '验证邮件发送成功！已将您重定向回登录页面!')
@@ -136,41 +137,50 @@ def login_view(request):
                 "refresh_captcha": True,
             })
 
-        if '@' in user_login.account:
-            try:
-                user = BlogUser.objects.get(email=user_login.account)
-                user_login.account = user.username
-            except BlogUser.DoesNotExist:
-                return render(request, "Login.html", {
-                    "error": "邮箱未注册，请先注册账号!",
-                    "captcha": new_captcha,
-                    "refresh_captcha": True,
-                })
+        if user_login.is_valid():
+            if '@' in user_login.account:
+                try:
+                    user = BlogUser.objects.get(email=user_login.account)
+                    user_login.account = user.username
+                except BlogUser.DoesNotExist:
+                    return render(request, "Login.html", {
+                        "error": "邮箱未注册，请先注册账号!",
+                        "captcha": new_captcha,
+                        "refresh_captcha": True,
+                    })
 
-        user = authenticate(username=user_login.account, password=user_login.password)
-        if user is not None:
-            login(request, user)
-            return HttpResponseRedirect("/")
-        else:
-            user = BlogUser.objects.get(username=user_login.account)
-            if user is None or not user.check_password(user_login.password):
-                return render(request, "Login.html", {
-                    "error": "账户或密码错误，请重试！",
-                    "captcha": new_captcha,
-                    "refresh_captcha": True,
-                })
+            user = authenticate(username=user_login.account, password=user_login.password)
+            if user is not None:
+                login(request, user)
+                return HttpResponseRedirect("/")
             else:
-                return render(request, "Login.html", {
-                    "error": "此账户还未激活，请使用激活邮件激活！",
-                    "captcha": new_captcha,
-                    "refresh_captcha": True,
-                })
+                try:
+                    user = BlogUser.objects.get(username=user_login.account)
+                except BlogUser.DoesNotExist:
+                    return render(request, "Login.html", {
+                        "error": "账户或密码错误，请重试！",
+                        "captcha": new_captcha,
+                        "refresh_captcha": True,
+                    })
+                if not user.check_password(user_login.password):
+                    return render(request, "Login.html", {
+                        "error": "账户或密码错误，请重试！",
+                        "captcha": new_captcha,
+                        "refresh_captcha": True,
+                    })
+                else:
+                    return render(request, "Login.html", {
+                        "error": "此账户还未激活，请使用激活邮件激活！",
+                        "captcha": new_captcha,
+                        "refresh_captcha": True,
+                    })
     else:
         user_login = UserLoginForm()
         captcha = CaptchaForm()
         return render(request, "Login.html", {
             "user_login": user_login, "captcha": captcha})
 
+@login_required(login_url="/user/login")
 def logout_view(request):
     """
     处理用户登出请求
@@ -178,3 +188,21 @@ def logout_view(request):
     logout(request) # 调用 Django 内置的 logout 函数，清除 session
     # 可以重定向到首页或登录页
     return redirect('/') # 或者 redirect('/user/login/')
+
+@login_required(login_url="/user/login")
+def profile_view(request):
+    user = BlogUser.objects.get(username=request.user.username)
+    if request.method == "POST":
+        profile_form = ProfileForm(request.POST, request.FILES, instance=user)
+        if profile_form.is_valid():
+            profile_form.save()
+        if (BlogUser.objects.filter(nickname=profile_form.data['nickname'])
+                    .exclude(id=request.user.id).exists()):
+            return render(request, "Profile.html", {
+                "profile_form": profile_form,
+                "error": "已经有人叫这个名字了！"
+            })
+        return redirect('/user/profile')
+    else:
+        profile_form = ProfileForm(instance=user)
+        return render(request, "Profile.html", {"profile_form": profile_form})
