@@ -1,395 +1,93 @@
 <!DOCTYPE html>
-{% load static %}
 <html lang="zh-hans">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% if article_post_form.instance.id %}编辑文章{% else %}新建文章{% endif %}</title>
 
-    <!-- 引入FontAwesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
-    <!-- 引入Bootstrap -->
+    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- 引入EasyMDE -->
+    <!-- EasyMDE Markdown Editor -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css">
-
-    <!-- 自定义样式 -->
-    <style>
-        /* 全局样式 */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
-        }
-
-        body {
-            background-color: #f5f5f5;
-            color: #333;
-            line-height: 1.6;
-            overflow-x: hidden;
-            position: relative;
-        }
-
-        .background-gradient {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #a2e8f1 0%, #fbc2eb 100%);
-            opacity: 0.8;
-            z-index: -1;
-        }
-
-        /* 毛玻璃效果 */
-        .glass-effect {
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            border-radius: 12px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-        }
-
-        .glass-effect:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
-        }
-
-        /* 导航栏 */
-        header {
-            padding: 15px 0;
-            position: sticky;
-            top: 15px;
-            z-index: 100;
-            width: 90%;
-            margin: 15px auto;
-        }
-
-        nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 30px;
-            height: 70px;
-        }
-
-        .logo {
-            font-size: 28px;
-            font-weight: 700;
-            color: #fff;
-            letter-spacing: 1px;
-        }
-
-        .logo span {
-            color: #ff6b6b;
-        }
-
-        .nav-links {
-            display: flex;
-            list-style: none;
-        }
-
-        .nav-links li {
-            margin: 0 20px;
-        }
-
-        .nav-links a {
-            text-decoration: none;
-            color: #fff;
-            font-weight: 500;
-            font-size: 18px;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        .nav-links a::after {
-            content: "";
-            position: absolute;
-            bottom: -5px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: #ff6b6b;
-            transition: width 0.3s ease;
-        }
-
-        .nav-links a:hover::after, .nav-links a.active::after {
-            width: 100%;
-        }
-
-        .mobile-menu {
-            display: none;
-            cursor: pointer;
-            font-size: 24px;
-            color: #fff;
-        }
-
-        /* 主要内容 */
-        main {
-            max-width: 1200px;
-            margin: 30px auto;
-            padding: 0 20px;
-        }
-
-        /* 文章编辑卡片 */
-        .article-edit-card {
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* Markdown编辑器容器 */
-        .editor-container {
-            margin-top: 20px;
-        }
-
-        .editor-toolbar {
-            border-radius: 0.375rem 0.375rem 0 0;
-        }
-
-        .editor-preview {
-            background-color: #f8f9fa;
-            padding: 1rem;
-        }
-
-        .CodeMirror, .EasyMDEContainer .CodeMirror {
-            border: 1px solid #dee2e6;
-            border-radius: 0.375rem;
-            min-height: 400px;
-        }
-
-        /* 表单元素样式 */
-        .form-label {
-            color: #333;
-            font-weight: 600;
-        }
-
-        .form-control {
-            background-color: rgba(255, 255, 255, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            color: #fff;
-            transition: all 0.3s ease;
-        }
-
-        .form-control:focus {
-            background-color: rgba(255, 255, 255, 0.3);
-            border-color: #ff6b6b;
-            box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.2);
-        }
-
-        /* 按钮样式 */
-        .btn {
-            transition: all 0.3s ease;
-        }
-
-        .btn-primary {
-            background-color: #ff6b6b;
-            border: none;
-        }
-
-        .btn-primary:hover {
-            background-color: #ff5252;
-        }
-
-        .btn-outline-secondary {
-            color: #fff;
-            border-color: rgba(255, 255, 255, 0.3);
-        }
-
-        .btn-outline-secondary:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-            border-color: #fff;
-        }
-
-        /* 图片上传样式 */
-        .file-upload-wrapper {
-            margin: 10px 0;
-        }
-
-        .file-upload-wrapper input[type="file"] {
-            display: block;
-            margin: 10px 0;
-        }
-
-        /* 页脚样式 */
-        footer {
-            padding: 30px;
-            text-align: center;
-            margin: 0 auto 20px;
-            width: 90%;
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-radius: 12px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-        }
-
-        .footer-content {
-            color: #fff;
-        }
-
-        .footer-logo {
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 15px;
-        }
-
-        .footer-logo span {
-            color: #ff6b6b;
-        }
-
-        footer p {
-            margin: 10px 0;
-            color: rgba(255, 255, 255, 0.7);
-        }
-
-        /* 响应式设计 */
-        @media (max-width: 900px) {
-            .nav-links {
-                display: none;
-            }
-
-            .mobile-menu {
-                display: block;
-            }
-
-            main {
-                padding: 0 15px;
-            }
-
-            footer {
-                width: 95%;
-                padding: 20px;
-            }
-        }
-    </style>
 </head>
-<body>
-<div class="background-gradient"></div>
+<body class="bg-light">
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow-lg">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">{% if article_post_form.instance.id %}编辑文章{% else %}发布新文章{% endif %}</h3>
+                </div>
 
-<header class="glass-effect">
-    <nav>
-        <div class="logo">OUC<span>博客网</span></div>
-        <ul class="nav-links">
-            {% if user.is_authenticated %}
-                <li><a href="/article/create" class="active">发表文章</a></li>
-                <li><a href="/article/my">我的文章</a></li>
-            {% endif %}
-            <li><a href="#">咖啡馆</a></li>
-            <li><a href="https://github.com/Yaosanqi137/ITStudio-BlogWebsite">我们的 GitHub</a></li>
-            <li><a href="#">搜索功能(文章、评论、用户)</a></li>
-            {% if not user.is_authenticated %}
-                <li><a href="/user/login">登录/注册</a></li>
-            {% endif %}
-        </ul>
-        <div class="mobile-menu">
-            <i class="fas fa-bars"></i>
-        </div>
-    </nav>
-</header>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data" novalidate>
+                        {% csrf_token %}
 
-<main>
-    <div class="container py-5">
-        <div class="row justify-content-center">
-            <div class="col-lg-10">
-                <div class="card shadow-lg glass-effect article-edit-card">
-                    <div class="card-header bg-primary text-white">
-                        <h3 class="mb-0">{% if article_post_form.instance.id %}编辑文章{% else %}发布新文章{% endif %}</h3>
-                    </div>
+                        <!-- 标题输入 -->
+                        <div class="mb-4">
+                            <label for="id_title" class="form-label fw-bold">文章标题</label>
+                            <input type="text"
+                                   name="title"
+                                   id="id_title"
+                                   class="form-control {% if article_post_form.title.errors %}is-invalid{% endif %}"
+                                   value="{{ article_post_form.title.value|default:'' }}"
+                                   required>
+                            {% for error in article_post_form.title.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        </div>
 
-                    <div class="card-body">
-                        <form method="post" enctype="multipart/form-data" novalidate>
-                            {% csrf_token %}
-
-                            <!-- 标题输入 -->
-                            <div class="mb-4">
-                                <label for="id_title" class="form-label">文章标题</label>
-                                <input type="text"
-                                       name="title"
-                                       id="id_title"
-                                       class="form-control {% if article_post_form.title.errors %}is-invalid{% endif %}"
-                                       value="{{ article_post_form.title.value|default:'' }}"
-                                       required>
-                                {% for error in article_post_form.title.errors %}
+                        <!-- 头图上传 -->
+                        <div class="mb-4">
+                            <label for="id_head_img" class="form-label fw-bold">封面图片</label>
+                            <div class="file-upload-wrapper">
+                                <input type="file"
+                                       name="head_img"
+                                       id="id_head_img"
+                                       class="form-control {% if article_post_form.head_img.errors %}is-invalid{% endif %}"
+                                       accept="image/*"
+                                       onchange="previewImage(event)">
+                                {% for error in article_post_form.head_img.errors %}
                                     <div class="invalid-feedback">{{ error }}</div>
                                 {% endfor %}
                             </div>
 
-                            <!-- 头图上传 -->
-                            <div class="mb-4">
-                                <label for="id_head_img" class="form-label">封面图片</label>
-                                <div class="file-upload-wrapper">
-                                    <input type="file"
-                                           name="head_img"
-                                           id="id_head_img"
-                                           class="form-control {% if article_post_form.head_img.errors %}is-invalid{% endif %}"
-                                           accept="image/*"
-                                           onchange="previewImage(event)">
-                                    {% for error in article_post_form.head_img.errors %}
-                                        <div class="invalid-feedback">{{ error }}</div>
-                                    {% endfor %}
-                                </div>
-
-                                <!-- 图片预览 -->
-                                <div class="mt-3" id="image-preview">
-                                    {% if article_post_form.instance.head_img %}
-                                        <img src="{{ article_post_form.instance.head_img.url }}"
-                                             class="img-thumbnail"
-                                             style="max-width: 384px;"
-                                             alt="当前封面">
-                                    {% endif %}
-                                </div>
-                            </div>
-
-                            <!-- 文章类型 -->
-                            <div class="mb-4">
-                                <label for="id_category" class="form-label">文章分类</label>
-                                {{ article_post_form.category }}
-                                {% if article_post_form.category.errors %}
-                                    <div class="invalid-feedback">
-                                        {% for error in article_post_form.category.errors %}
-                                            {{ error }}
-                                        {% endfor %}
-                                    </div>
+                            <!-- 图片预览 -->
+                            <div class="mt-3" id="image-preview">
+                                {% if article_post_form.instance.head_img %}
+                                    <img src="{{ article_post_form.instance.head_img.url }}"
+                                         class="img-thumbnail"
+                                         style="max-width: 384px;"
+                                         alt="当前封面">
                                 {% endif %}
                             </div>
+                        </div>
 
-                            <!-- Markdown编辑器 -->
-                            <div class="mb-4">
-                                <label for="id_body" class="form-label">文章内容</label>
-                                <textarea name="body"
-                                          id="id_body"
-                                          class="form-control {% if article_post_form.body.errors %}is-invalid{% endif %}"
-                                          rows="15">{{ article_post_form.body.value|default:'' }}</textarea>
-                                {% for error in article_post_form.body.errors %}
-                                    <div class="invalid-feedback">{{ error }}</div>
-                                {% endfor %}
-                            </div>
+                        <!-- Markdown编辑器 -->
+                        <div class="mb-4">
+                            <label for="id_body" class="form-label fw-bold">文章内容</label>
+                            <textarea name="body"
+                                      id="id_body"
+                                      class="form-control {% if article_post_form.body.errors %}is-invalid{% endif %}"
+                                      rows="15">{{ article_post_form.body.value|default:'' }}</textarea>
+                            {% for error in article_post_form.body.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        </div>
 
-                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                                <button type="submit" class="btn btn-primary">保存文章</button>
-                                <a href="{% url 'article:list' %}" class="btn btn-outline-secondary">取消</a>
-                            </div>
-                        </form>
-                    </div>
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <button type="submit" class="btn btn-primary btn-lg px-5">
+                                <i class="bi bi-save me-2"></i>保存文章
+                            </button>
+                            <a href="{% url 'article:list' %}" class="btn btn-outline-secondary btn-lg px-5">取消</a>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
-</main>
-
-<footer class="glass-effect">
-    <div class="footer-content">
-        <div class="footer-logo">OUC<span>博客网</span></div>
-        <p>版权信息: Made By IT Studio</p>
-        <p>联系信息: 114514-1919-810</p>
-    </div>
-</footer>
+</div>
 
 <!-- 必要的JavaScript库 -->
 <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
@@ -436,5 +134,23 @@
         $('button[type="submit"]').prop('disabled', true).html('<i class="bi bi-hourglass-split me-2"></i>保存中...');
     });
 </script>
+
+<style>
+    .CodeMirror, .EasyMDEContainer .CodeMirror {
+        border: 1px solid #dee2e6;
+        border-radius: 0.375rem;
+        min-height: 400px;
+    }
+    .editor-toolbar {
+        border-radius: 0.375rem 0.375rem 0 0;
+    }
+    .editor-preview {
+        background-color: #f8f9fa;
+        padding: 1rem;
+    }
+    .cm-table {
+        color: #d63384;
+    }
+</style>
 </body>
 </html>

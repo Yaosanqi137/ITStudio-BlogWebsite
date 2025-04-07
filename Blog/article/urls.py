@@ -9,5 +9,5 @@ urlpatterns = [
     path('edit/<int:id>', views.edit_view, name='edit'),
     path('create', views.create_view, name='create'),
     path('delete/<int:id>', views.delete_view, name='delete'),
-    path('my', views.my_view, name='MyArticle'),
+    path('my', views.my_view, name='my'),
 ]

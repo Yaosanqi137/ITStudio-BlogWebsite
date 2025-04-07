@@ -6,7 +6,7 @@
 </head>
 <body>
 <!-- 搜索和筛选表单 -->
-<form method="GET" action="{% url 'article:list' %}">
+<form method="GET" action="{% url 'article:my' %}">
     <input type="text" name="search" placeholder="搜索文章标题" value="{{ request.GET.search }}">
     <select name="category">
         <option value="">所有分类</option>
