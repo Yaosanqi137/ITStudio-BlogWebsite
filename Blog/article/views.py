@@ -61,10 +61,11 @@ def create_view(request):
             new_article.save()
             id = new_article.id
             return redirect(f'/article/detail/{id}')
+        else:
+            return render(request, 'ArticlePost.html', {'article_post_form': article_post_form})
     else:
         article_post_form = ArticlePostForm()
-        context = {'article_post_form': article_post_form}
-        return render(request, 'ArticlePost.html', context)
+        return render(request, 'ArticlePost.html', {'article_post_form': article_post_form})
 
 @login_required(login_url='/user/login/')
 def delete_view(request, id):
