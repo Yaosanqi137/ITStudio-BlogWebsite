@@ -74,7 +74,6 @@ INSTALLED_APPS = [
     'comment',
     'imagekit',
     'captcha',
-    'mptt',
 ]
 
 MIDDLEWARE = [
