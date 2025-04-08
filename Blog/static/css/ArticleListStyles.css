@@ -290,4 +290,107 @@ body {
     .selected-category {
         margin: 10px 0;
     }
-} 
+}
+
+/* 添加分页样式 */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0;
+    gap: 10px;
+}
+
+.pagination a, .pagination span {
+    padding: 8px 16px;
+    text-decoration: none;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: white;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.pagination a:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.pagination .current-page {
+    background: rgba(255, 255, 255, 0.3);
+    cursor: default;
+}
+
+/* 为我的文章模板页添加的特定样式 */
+.search-form {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.form-group {
+    position: relative;
+    padding: 8px 15px;
+    border-radius: 8px;
+    backdrop-filter: blur(10px);
+}
+
+.form-group input {
+    background: transparent;
+    border: none;
+    color: white;
+    padding-left: 25px;
+}
+
+.form-group select {
+    background: transparent;
+    border: none;
+    color: white;
+    appearance: none;
+    padding-right: 25px;
+}
+
+.form-group i {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(255,255,255,0.6);
+}
+
+.search-btn {
+    padding: 8px 20px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.article-actions {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    gap: 10px;
+}
+
+.edit-btn, .delete-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(5px);
+    transition: transform 0.2s ease;
+}
+
+.edit-btn {
+    background: rgba(76, 175, 80, 0.3);
+}
+
+.delete-btn {
+    background: rgba(244, 67, 54, 0.3);
+}
+
+.edit-btn:hover, .delete-btn:hover {
+    transform: scale(1.1);
+}

@@ -93,6 +93,29 @@
                 <p>请尝试其他分类或者清除筛选条件</p>
             </div>
         {% endif %}
+
+        {% if articles %}
+            <!-- 分页导航 -->
+            <div class="pagination">
+                {% if articles.has_previous %}
+                    <a href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page=1">&laquo; 第一页</a>
+                    <a href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ articles.previous_page_number }}">上一页</a>
+                {% endif %}
+
+                {% for num in articles.paginator.page_range %}
+                    {% if articles.number == num %}
+                        <span class="current-page">{{ num }}</span>
+                    {% else %}
+                        <a href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ num }}">{{ num }}</a>
+                    {% endif %}
+                {% endfor %}
+
+                {% if articles.has_next %}
+                    <a href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ articles.next_page_number }}">下一页</a>
+                    <a href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ articles.paginator.num_pages }}">最后一页 &raquo;</a>
+                {% endif %}
+            </div>
+        {% endif %}
     </div>
 </main>
 

@@ -1,36 +1,134 @@
 <!DOCTYPE html>
-<html lang="en">
+{% load static %}
+<html lang="zh">
 <head>
     <meta charset="UTF-8">
-    <title>文章列表</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的文章</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/HubStyles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/ArticleListStyles.css' %}">
 </head>
 <body>
-<!-- 搜索和筛选表单 -->
-<form method="GET" action="{% url 'article:my' %}">
-    <input type="text" name="search" placeholder="搜索文章标题" value="{{ request.GET.search }}">
-    <select name="category">
-        <option value="">所有分类</option>
-        {% for key, value in category.items %}
-            <option value="{{ key }}" {% if request.GET.category == key %}selected{% endif %}>{{ value }}</option>
-        {% endfor %}
-    </select>
-    <button type="submit">搜索</button>
-</form>
+<div class="background-gradient"></div>
 
-{% for article in articles %}
-    <p><img src="{{ article.head_img.url }}" alt="文章图片"></p>
-    <p><a href="{% url 'article:detail' article.id %}">{{ article.title }}</a></p>
-    <a href="{% url 'article:delete' article.id %}">删除文章</a>
-    <a href="{% url 'article:edit' article.id %}">编辑文章</a>
-    <p>{{ article.category }}</p>
-    <p>作者: {{ article.author }}</p>
-    <p>发布时间: {{ article.created_time }}</p>
-    <p>最后更新时间: {{ article.updated_time }}</p>
-    <p>点赞数: {{ article.likes }}</p>
-    <p>讨厌数: {{ article.dislikes }}</p>
-    <p>收藏数: {{ article.collect }}</p>
-    <p>浏览数: {{ article.looks }}</p>
-    <p>评论数: TODO</p>
-{% endfor %}
+<main>
+    <div class="article-container">
+        <!-- 搜索和筛选区 -->
+        <div class="articles-header glass-effect">
+            <h2>我的文章</h2>
+            <div class="flex-grow"></div>
+            {% if current_category or current_subcategory %}
+                <div class="selected-category">
+                    {% if current_category %}{{ current_category }}{% endif %}
+                    {% if current_subcategory %} > {{ current_subcategory }}{% endif %}
+                </div>
+                <button class="clear-filter-btn" title="清除筛选">
+                    <i class="fas fa-times"></i>
+                </button>
+            {% endif %}
+            <div class="category-button">
+                <button class="category-btn">文章分类</button>
+                <div class="category-dropdown">
+                    <div class="category-item">
+                        <span class="category-title">开发</span>
+                        <div class="sub-category">
+                            <button class="sub-category-btn" data-category="开发" data-subcategory="前端">前端</button>
+                            <button class="sub-category-btn" data-category="开发" data-subcategory="后端">后端</button>
+                            <button class="sub-category-btn" data-category="开发" data-subcategory="移动开发">移动开发</button>
+                            <button class="sub-category-btn" data-category="开发" data-subcategory="人工智能">人工智能</button>
+                        </div>
+                    </div>
+                    <div class="category-item">
+                        <span class="category-title">文学</span>
+                        <div class="sub-category">
+                            <button class="sub-category-btn" data-category="文学" data-subcategory="小说">小说</button>
+                            <button class="sub-category-btn" data-category="文学" data-subcategory="诗歌">诗歌</button>
+                            <button class="sub-category-btn" data-category="文学" data-subcategory="散文">散文</button>
+                        </div>
+                    </div>
+                    <div class="category-item">
+                        <span class="category-title">新闻</span>
+                        <div class="sub-category">
+                            <button class="sub-category-btn" data-category="新闻" data-subcategory="校园新闻">校园新闻</button>
+                            <button class="sub-category-btn" data-category="新闻" data-subcategory="科技资讯">科技资讯</button>
+                            <button class="sub-category-btn" data-category="新闻" data-subcategory="社会热点">社会热点</button>
+                        </div>
+                    </div>
+                    <div class="category-item">
+                        <span class="category-title" data-category="树洞">树洞</span>
+                    </div>
+                    <div class="category-item">
+                        <span class="category-title" data-category="日志">日志</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 文章列表 -->
+        {% if articles %}
+            {% for article in articles %}
+                <div class="article-item glass-effect">
+                    <div class="article-header">
+                        <img src="{{ article.head_img.url }}" alt="文章图片" width="430" height="200">
+                        <div class="article-actions">
+                            <a href="{% url 'article:edit' article.id %}" class="edit-btn" title="编辑">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="{% url 'article:delete' article.id %}" class="delete-btn" title="删除"
+                               onclick="return confirm('确定删除这篇文章吗？')">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <h3 class="article-title">
+                        <a href="{% url 'article:detail' article.id %}">{{ article.title }}</a>
+                    </h3>
+                    <div class="article-meta">
+                        <span><i class="fas fa-tag"></i> {{ article.get_category_display }}</span>
+                        <span><i class="far fa-calendar"></i> {{ article.created_time|date:"Y-m-d" }}</span>
+                        <span><i class="fas fa-sync"></i> {{ article.updated_time|date:"Y-m-d" }}</span>
+                    </div>
+                    <div class="article-stats">
+                        <span><i class="fas fa-heart"></i> {{ article.likes }}</span>
+                        <span><i class="fas fa-eye"></i> {{ article.looks }}</span>
+                        <span><i class="fas fa-comments"></i> TODO</span>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="no-articles glass-effect">
+                <i class="fas fa-file-alt"></i>
+                <h3>还没有发表过文章</h3>
+                <p>点击右上角开始你的创作之旅吧！</p>
+            </div>
+        {% endif %}
+
+        {% if articles %}
+            <!-- 分页导航 -->
+            <div class="pagination">
+                {% if articles.has_previous %}
+                    <a href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page=1">&laquo; 第一页</a>
+                    <a href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ articles.previous_page_number }}">上一页</a>
+                {% endif %}
+
+                {% for num in articles.paginator.page_range %}
+                    {% if articles.number == num %}
+                        <span class="current-page">{{ num }}</span>
+                    {% else %}
+                        <a href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ num }}">{{ num }}</a>
+                    {% endif %}
+                {% endfor %}
+
+                {% if articles.has_next %}
+                    <a href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ articles.next_page_number }}">下一页</a>
+                    <a href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ articles.paginator.num_pages }}">最后一页 &raquo;</a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</main>
+
+<script src="{% static 'js/ArticleListJs.js' %}"></script>
 </body>
 </html>

@@ -1,5 +1,6 @@
 import markdown
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.shortcuts import render
@@ -33,6 +34,11 @@ def list_view(request):
     # 由分类筛选
     if selected_category:
         articles = articles.filter(category=selected_category)
+
+    # 分页
+    articles = Paginator(articles, 10)
+    page = request.GET.get('page')
+    articles = articles.get_page(page)
 
     return render(request, 'ArticleList.html', {
         'articles': articles,
@@ -105,6 +111,11 @@ def my_view(request):
     # 由分类筛选
     if selected_category:
         articles = articles.filter(category=selected_category)
+
+    # 分页
+    articles = Paginator(articles, 10)
+    page = request.GET.get('page')
+    articles = articles.get_page(page)
 
     return render(request, 'MyArticle.html', {
         'articles': articles,

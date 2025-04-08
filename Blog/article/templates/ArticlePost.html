@@ -1,35 +1,32 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="zh-hans">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% if article_post_form.instance.id %}编辑文章{% else %}新建文章{% endif %}</title>
 
-    <!-- Bootstrap 5 CSS -->
+    <!-- 核心样式库 -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- EasyMDE Markdown Editor -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css">
+
     <style>
-        .CodeMirror, .EasyMDEContainer .CodeMirror {
-            border: 1px solid #dee2e6;
-            border-radius: 0.375rem;
-            min-height: 400px;
+        /* 图片预览样式 */
+        #image-preview {
+            position: relative;
+            min-height: 100px;
+            transition: opacity 0.3s ease;
         }
-        .editor-toolbar {
-            border-radius: 0.375rem 0.375rem 0 0;
+        .preview-image {
+            max-width: 384px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
         }
-        .editor-preview {
-            background-color: #f8f9fa;
-            padding: 1rem;
-        }
-        .cm-table {
-            color: #d63384;
-        }
-        .form-label.required:after {
-            content: "*";
-            color: #dc3545;
-            margin-left: 0.25rem;
+        .preview-image:hover {
+            transform: scale(1.02);
         }
     </style>
 </head>
@@ -46,76 +43,88 @@
                     <form method="post" enctype="multipart/form-data" novalidate>
                         {% csrf_token %}
 
-                        <!-- 全局错误提示 -->
+                        <!-- 错误提示 -->
                         {% if article_post_form.non_field_errors %}
-                            <div class="alert alert-danger">
+                            <div class="alert alert-danger mb-4">
                                 {% for error in article_post_form.non_field_errors %}
-                                    {{ error }}
+                                    <div>{{ error }}</div>
                                 {% endfor %}
                             </div>
                         {% endif %}
 
-                        <!-- 标题 -->
+                        <!-- 标题输入 -->
                         <div class="mb-4">
-                            <label for="id_title" class="form-label fw-bold required">文章标题</label>
+                            <label class="form-label fw-bold required">文章标题</label>
                             <input type="text"
                                    name="title"
-                                   id="id_title"
-                                   class="form-control {% if article_post_form.title.errors %}is-invalid{% endif %}"
                                    value="{{ article_post_form.title.value|default:'' }}"
-                                   required
-                                   maxlength="200">
+                                   class="form-control {% if article_post_form.title.errors %}is-invalid{% endif %}"
+                                   required>
                             {% for error in article_post_form.title.errors %}
                                 <div class="invalid-feedback">{{ error }}</div>
                             {% endfor %}
                         </div>
 
-                        <!-- 分类 -->
-                        {{ article_post_form.category }}
+                        <!-- 分类选择 -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold required">文章分类</label>
+                            <select name="category"
+                                    class="form-select select2-init {% if article_post_form.category.errors %}is-invalid{% endif %}"
+                                    required>
+                                {% for group_name, group_choices in article_post_form.CATEGORY_OPTIONS %}
+                                    <optgroup label="{{ group_name }}">
+                                        {% for value, text in group_choices %}
+                                            <option value="{{ value }}" {% if article_post_form.category.value == value %}selected{% endif %}>
+                                                {{ text }}
+                                            </option>
+                                        {% endfor %}
+                                    </optgroup>
+                                {% endfor %}
+                            </select>
+                            {% for error in article_post_form.category.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        </div>
 
                         <!-- 头图上传 -->
                         <div class="mb-4">
-                            <label for="id_head_img" class="form-label fw-bold">封面图片</label>
-                            <div class="file-upload-wrapper">
+                            <label class="form-label fw-bold">封面图片</label>
+                            <div class="file-upload-area border rounded p-3">
                                 <input type="file"
                                        name="head_img"
-                                       id="id_head_img"
+                                       id="headImgInput"
                                        class="form-control {% if article_post_form.head_img.errors %}is-invalid{% endif %}"
-                                       accept="image/*"
-                                       onchange="previewImage(event)">
-                                {% for error in article_post_form.head_img.errors %}
-                                    <div class="invalid-feedback">{{ error }}</div>
-                                {% endfor %}
-                            </div>
-
-                            <!-- 图片预览 -->
-                            <div class="mt-3" id="image-preview">
-                                {% if article_post_form.instance.head_img and article_post_form.instance.head_img.url %}
-                                    <img src="{{ article_post_form.instance.head_img.url }}"
-                                         class="img-thumbnail"
-                                         style="max-width: 384px;"
-                                         alt="当前封面">
-                                {% endif %}
+                                       accept="image/*">
+                                <div class="mt-3" id="image-preview">
+                                    {% if article_post_form.instance.head_img %}
+                                        <img src="{{ article_post_form.instance.head_img.url }}"
+                                             class="preview-image"
+                                             alt="当前封面">
+                                    {% endif %}
+                                </div>
                             </div>
                         </div>
 
-                        <!-- 正文编辑器 -->
+                        <!-- Markdown 编辑器 -->
                         <div class="mb-4">
-                            <label for="id_body" class="form-label fw-bold required">文章内容</label>
+                            <label class="form-label fw-bold required">文章内容</label>
                             <textarea name="body"
-                                      id="id_body"
-                                      class="form-control {% if article_post_form.body.errors %}is-invalid{% endif %}"
-                                      rows="15">{{ article_post_form.body.value|default:'' }}</textarea>
+                                      id="markdown-editor"
+                                      class="{% if article_post_form.body.errors %}is-invalid{% endif %}"
+                            >{{ article_post_form.body.value|default:'' }}</textarea>
                             {% for error in article_post_form.body.errors %}
                                 <div class="invalid-feedback">{{ error }}</div>
                             {% endfor %}
                         </div>
 
-                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                            <button type="submit" class="btn btn-primary btn-lg px-5">
-                                <i class="bi bi-save me-2"></i>保存文章
+                        <!-- 表单操作 -->
+                        <div class="d-flex justify-content-between align-items-center mt-5">
+                            <a href="{% url 'article:list' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>返回列表
+                            </a>
+                            <button type="submit" class="btn btn-primary px-4">
+                                <i class="fas fa-save me-2"></i>保存文章
                             </button>
-                            <a href="{% url 'article:list' %}" class="btn btn-outline-secondary btn-lg px-5">取消</a>
                         </div>
                     </form>
                 </div>
@@ -124,27 +133,87 @@
     </div>
 </div>
 
-<!-- 必要的JavaScript库 -->
+<!-- 脚本依赖 -->
 <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
 <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
 
 <script>
-    // Markdown 编辑器实例
-    let easyMDE;
+    document.addEventListener('DOMContentLoaded', function() {
+        // 封面预览功能
+        const headImgInput = document.getElementById('headImgInput');
+        const previewContainer = document.getElementById('image-preview');
+        let currentImage = previewContainer.querySelector('img')?.src || null;
 
-    // 初始化编辑器
-    function initEditor() {
-        if (easyMDE) {
-            easyMDE.toTextArea();
-            easyMDE = null;
+        function showPreview(source) {
+            previewContainer.innerHTML = `
+            <img src="${source}"
+                 class="preview-image"
+                 alt="封面预览">
+        `;
         }
 
-        easyMDE = new EasyMDE({
-            element: document.getElementById('id_body'),
+        function showLoading() {
+            previewContainer.innerHTML = `
+            <div class="preview-loading text-muted">
+                <i class="fas fa-spinner fa-spin fa-2x"></i>
+            </div>
+        `;
+        }
+
+        function handleFileSelect(file) {
+            if (!file.type.startsWith('image/')) {
+                alert('请选择图片文件');
+                return;
+            }
+
+            showLoading();
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                showPreview(e.target.result);
+            };
+
+            reader.onerror = function() {
+                previewContainer.innerHTML = `
+                <div class="alert alert-danger mt-2">
+                    图片读取失败，请重试
+                </div>
+            `;
+            };
+
+            reader.readAsDataURL(file);
+        }
+
+        // 文件选择事件
+        headImgInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                handleFileSelect(file);
+            } else if (currentImage) {
+                showPreview(currentImage);
+            } else {
+                previewContainer.innerHTML = '';
+            }
+        });
+
+        // 初始化分类选择器
+        $('.select2-init').select2({
+            theme: 'bootstrap-5',
+            placeholder: '选择文章分类',
+            minimumResultsForSearch: Infinity,
+            templateResult: function(option) {
+                return $('<span><i class="fas fa-tag me-2 text-primary"></i>' + option.text + '</span>');
+            }
+        });
+
+        // 初始化Markdown编辑器
+        const easymde = new EasyMDE({
+            element: document.getElementById('markdown-editor'),
             autoDownloadFontAwesome: false,
             spellChecker: false,
-            placeholder: '使用Markdown格式编写内容...',
+            status: false,
             toolbar: [
                 'heading', 'bold', 'italic', '|',
                 'quote', 'code', '|',
@@ -152,49 +221,14 @@
                 'link', 'image', 'table', '|',
                 'preview', 'side-by-side', 'fullscreen'
             ],
-            uploadImage: true,
-            imageUploadEndpoint: '/upload_image/',
-            imageCSRFToken: '{{ csrf_token }}',
-            imagePathAbsolute: true
+            previewClass: 'p-3 bg-white rounded',
+            sideBySideFullscreen: false
         });
-    }
 
-    // 图片预览功能
-    function previewImage(event) {
-        const preview = document.getElementById('image-preview');
-        const file = event.target.files[0];
-
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                preview.innerHTML = `<img src="${e.target.result}" class="img-thumbnail" style="max-width: 384px;" alt="封面预览">`;
-            }
-            reader.readAsDataURL(file);
-        } else {
-            preview.innerHTML = '';
-        }
-    }
-
-    // 表单提交处理
-    $(document).ready(function() {
-        // 初始化编辑器
-        initEditor();
-
-        // 表单提交处理
-        $('form').submit(function() {
-            const $submitBtn = $('button[type="submit"]');
-            const originalHtml = $submitBtn.html();
-
-            // 禁用按钮并显示加载状态
-            $submitBtn.prop('disabled', true);
-            $submitBtn.html('<i class="bi bi-hourglass-split me-2"></i>保存中...');
-
-            // 5秒后恢复（防止请求卡死）
-            setTimeout(() => {
-                $submitBtn.prop('disabled', false);
-                $submitBtn.html(originalHtml);
-            }, 5000);
-        });
+        // 保留原始图片引用
+        {% if article_post_form.instance.head_img %}
+            currentImage = "{{ article_post_form.instance.head_img.url }}";
+        {% endif %}
     });
 </script>
 </body>
