@@ -9,6 +9,7 @@ from .models import Article
 from user.models import BlogUser
 from django.db.models import Q
 from article.models import get_random_image
+from comment.models import Comment
 
 # 分类选项
 category = {
@@ -47,13 +48,14 @@ def list_view(request):
 
 def detail_view(request, id):
     article = Article.objects.get(id=id)
+    comments = Comment.objects.filter(article=id)
     article.looks += 1
     article.save()
     article.body = markdown.markdown(article.body, extensions=[
         'markdown.extensions.extra',
         'markdown.extensions.codehilite'
         ])
-    return render(request, 'Article.html', {'article': article})
+    return render(request, 'Article.html', {'article': article, 'comments': comments})
 
 @login_required(login_url='/user/login/')
 def create_view(request):

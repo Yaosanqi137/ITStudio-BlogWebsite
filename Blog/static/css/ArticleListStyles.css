@@ -232,6 +232,7 @@ body {
     padding: 3px 10px;
     font-size: 0.9rem;
     color: #333;
+    z-index: 1000;
 }
 
 /* 清除筛选按钮 */

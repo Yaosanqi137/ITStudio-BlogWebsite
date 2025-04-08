@@ -71,8 +71,10 @@ INSTALLED_APPS = [
     'user',
     'pages',
     'article',
+    'comment',
     'imagekit',
     'captcha',
+    'mptt',
 ]
 
 MIDDLEWARE = [
