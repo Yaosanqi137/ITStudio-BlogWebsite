@@ -12,6 +12,7 @@
 {% endif %}
 <body>
 作者: {{ article.author }}
+<img src="{{ article.author.avatar.url }}" style="border-radius: 50%">
 发布时间: {{ article.created_time }}
 最后更新时间: {{ article.updated_time }}
 
@@ -64,6 +65,7 @@
     <div>
         {% for comment in comments %}
             <hr>
+            <img src="{{ comment.user.avatar.url }}" style="border-radius: 50%">
             <p>
                 <strong style="color: pink">
                     {{ comment.user }}
