@@ -51,4 +51,7 @@ local_settings.py
 Thumbs.db
 .idea/
 *.swp
-*.swo 
+*.swo
+*.jpg
+*.png
+*.webp
