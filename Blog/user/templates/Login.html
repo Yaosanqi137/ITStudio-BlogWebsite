@@ -36,39 +36,40 @@
             <form action="{% url 'user:login' %}" method="post" class="sign-in-form">
                 <h2 class="title">登录</h2>
                 {% csrf_token %}
-                
+
                 <div class="input-field">
                     <i class="fas fa-user"></i>
                     <input type="text" name="account" placeholder="请输入用户名或邮箱" required />
                 </div>
-                
+
                 <div class="input-field">
                     <i class="fas fa-lock"></i>
                     <input type="password" name="password" placeholder="请输入密码" required />
                 </div>
-                
-                <div class="captcha-container">
-                    <div class="captcha-wrapper">
-                        {{ captcha.captcha }}
-                        <button type="button" id="refresh-captcha" class="refresh-captcha-btn">
-                            <i class="fas fa-sync-alt"></i> <span>刷新验证码</span>
-                        </button>
-                    </div>
-                    <span id="captcha_status" class="status-text"></span>
+
+                <!-- 验证码区域 -->
+                <div class="captcha-wrapper">
+                    {{ captcha.captcha }}  {# Django Simple Captcha 生成的DOM #}
+                    <button type="button" id="refresh-captcha">
+                        <i class="fas fa-sync-alt"></i>
+                        <span>刷新验证码</span>
+                    </button>
                 </div>
-                
+                <span id="captcha_status" class="status-text"></span>
+
                 {% if error %}
                     <span class="error-message">{{ error }}</span>
                 {% endif %}
-                
+
                 <input type="submit" value="登录" class="btn solid" />
-                
+
                 <!-- 添加游客模式按钮 -->
                 <div class="guest-mode">
                     <a href="/" class="guest-btn">
                         <i class="fas fa-user-secret"></i> 游客模式
                     </a>
                 </div>
+
             </form>
 
             <!-- 注册表单链接 -->
@@ -80,6 +81,13 @@
         </div>
     </div>
 </div>
+
+<script>
+    window.DJANGO_URLS = {
+        refresh_captcha: "{% url 'user:refresh_captcha' %}",
+        ajax_validate: "{% url 'user:ajax_val' %}"
+    };
+</script>
 
 <script src="../../static/js/LoginJs.js"></script>
 </body>

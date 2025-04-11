@@ -350,3 +350,24 @@ form.sign-in-form {
 .guest-btn i {
     font-size: 1rem;
 }
+
+/* 状态提示样式 */
+.status-text {
+    display: block;
+    margin-top: 8px;
+    font-size: 0.9em;
+}
+
+.status-success {
+    color: #28a745;
+}
+
+.status-error {
+    color: #dc3545;
+}
+
+/* 禁用按钮样式 */
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}

@@ -102,15 +102,15 @@
 
                 <div id="password-message" class="password-message"></div>
 
-                <div class="captcha-container">
-                    <div class="captcha-wrapper">
-                        {{ captcha.captcha }}
-                        <button type="button" id="refresh-captcha" class="refresh-captcha-btn">
-                            <i class="fas fa-sync-alt"></i> <span>刷新验证码</span>
-                        </button>
-                    </div>
-                    <span id="captcha_status" class="status-text"></span>
+                <!-- 验证码区域 -->
+                <div class="captcha-wrapper">
+                    {{ captcha.captcha }}  {# Django Simple Captcha 生成的DOM #}
+                    <button type="button" id="refresh-captcha">
+                        <i class="fas fa-sync-alt"></i>
+                        <span>刷新验证码</span>
+                    </button>
                 </div>
+                <span id="captcha_status" class="status-text"></span>
 
                 {% if error %}
                     <span class="error-message">{{ error }}</span>
@@ -138,6 +138,13 @@
         </div>
     </div>
 </div>
+
+<script>
+    window.DJANGO_URLS = {
+        refresh_captcha: "{% url 'user:refresh_captcha' %}",
+        ajax_validate: "{% url 'user:ajax_val' %}"
+    };
+</script>
 
 <script src="../../static/js/RegisterJs.js"></script>
 </body>

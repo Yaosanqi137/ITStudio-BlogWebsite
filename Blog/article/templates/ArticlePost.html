@@ -1,156 +1,226 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="zh-hans">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% if article_post_form.instance.id %}编辑文章{% else %}新建文章{% endif %}</title>
 
-    <!-- Bootstrap 5 CSS -->
+    <!-- 核心样式库 -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- EasyMDE Markdown Editor -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css">
+    <link rel="stylesheet" href="{% static 'css/ArticlePostStyles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/NavbarStyles.css' %}">
 </head>
-<body class="bg-light">
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-10">
-            <div class="card shadow-lg">
-                <div class="card-header bg-primary text-white">
-                    <h3 class="mb-0">{% if article_post_form.instance.id %}编辑文章{% else %}发布新文章{% endif %}</h3>
-                </div>
 
-                <div class="card-body">
-                    <form method="post" enctype="multipart/form-data" novalidate>
-                        {% csrf_token %}
+<body>
+    <header class="glass-effect">
+        <nav>
+            <div class="logo">OUC<span>博客网</span></div>
+            <ul class="nav-links">
+                <li><a href="/"><i class="fas fa-home"></i> 主页</a></li>
+                {% if user.is_authenticated %}
+                <li><a href="{% url 'article:create' %}" class="active">发表文章</a></li>
+                <li><a href="{% url 'article:my' %}">我的文章</a></li>
+                {% endif %}
+                <li><a href="{% url 'article:list' %}">文章列表</a></li>
+                <li><a href="#">咖啡馆</a></li>
+                <li><a href="https://github.com/Yaosanqi137/ITStudio-BlogWebsite">我们的 GitHub</a></li>
+                {% if not user.is_authenticated %}
+                <li><a href="{% url 'user:login' %}">登录/注册</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
 
-                        <!-- 标题输入 -->
-                        <div class="mb-4">
-                            <label for="id_title" class="form-label fw-bold">文章标题</label>
-                            <input type="text"
-                                   name="title"
-                                   id="id_title"
-                                   class="form-control {% if article_post_form.title.errors %}is-invalid{% endif %}"
-                                   value="{{ article_post_form.title.value|default:'' }}"
-                                   required>
-                            {% for error in article_post_form.title.errors %}
-                                <div class="invalid-feedback">{{ error }}</div>
-                            {% endfor %}
-                        </div>
-
-                        <!-- 头图上传 -->
-                        <div class="mb-4">
-                            <label for="id_head_img" class="form-label fw-bold">封面图片</label>
-                            <div class="file-upload-wrapper">
-                                <input type="file"
-                                       name="head_img"
-                                       id="id_head_img"
-                                       class="form-control {% if article_post_form.head_img.errors %}is-invalid{% endif %}"
-                                       accept="image/*"
-                                       onchange="previewImage(event)">
-                                {% for error in article_post_form.head_img.errors %}
-                                    <div class="invalid-feedback">{{ error }}</div>
-                                {% endfor %}
-                            </div>
-
-                            <!-- 图片预览 -->
-                            <div class="mt-3" id="image-preview">
-                                {% if article_post_form.instance.head_img %}
-                                    <img src="{{ article_post_form.instance.head_img.url }}"
-                                         class="img-thumbnail"
-                                         style="max-width: 384px;"
-                                         alt="当前封面">
-                                {% endif %}
-                            </div>
-                        </div>
-
-                        <!-- Markdown编辑器 -->
-                        <div class="mb-4">
-                            <label for="id_body" class="form-label fw-bold">文章内容</label>
-                            <textarea name="body"
-                                      id="id_body"
-                                      class="form-control {% if article_post_form.body.errors %}is-invalid{% endif %}"
-                                      rows="15">{{ article_post_form.body.value|default:'' }}</textarea>
-                            {% for error in article_post_form.body.errors %}
-                                <div class="invalid-feedback">{{ error }}</div>
-                            {% endfor %}
-                        </div>
-
-                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                            <button type="submit" class="btn btn-primary btn-lg px-5">
-                                <i class="bi bi-save me-2"></i>保存文章
-                            </button>
-                            <a href="{% url 'article:list' %}" class="btn btn-outline-secondary btn-lg px-5">取消</a>
-                        </div>
-                    </form>
-                </div>
-            </div>
+    <div class="editArea glass-effect">
+        <div class="header">
+            {% if article_post_form.instance.id %}编辑文章{% else %}发布新文章{% endif %}
         </div>
-    </div>
-</div>
 
-<!-- 必要的JavaScript库 -->
+        <div class="content">
+            <form method="post" enctype="multipart/form-data" novalidate>
+                {% csrf_token %}
+
+                <!-- 错误提示 -->
+                {% if article_post_form.non_field_errors %}
+                    <div class="alert alert-danger mb-4">
+                        {% for error in article_post_form.non_field_errors %}
+                            <div>{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <!-- 标题输入 -->
+                <div class="mb-4 title">
+                    <label class="form-label fw-bold required">文章标题</label>
+                    <input type="text" name="title" value="{{ article_post_form.title.value|default:'' }}"
+                           class="form-control {% if article_post_form.title.errors %}is-invalid{% endif %}"
+                           required="required">
+                    {% for error in article_post_form.title.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <!-- 分类选择 -->
+                <div class="mb-4 category">
+                    <label class="form-label fw-bold required">文章分类</label><br/>
+                    <select name="category" required="required"
+                            class="form-select select2-init {% if article_post_form.category.errors %}is-invalid{% endif %}"
+                            >
+                        {% for group_name, group_choices in article_post_form.CATEGORY_OPTIONS %}
+                            <optgroup label="{{ group_name }}">
+                                {% for value, text in group_choices %}
+                                    <option value="{{ value }}" {% if article_post_form.category.value == value %}selected{% endif %}>
+                                        {{ text }}
+                                    </option>
+                                {% endfor %}
+                            </optgroup>
+                        {% endfor %}
+                    </select>
+                    {% for error in article_post_form.category.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <!-- 头图上传 -->
+                <div class="mb-4">
+                    <label class="form-label fw-bold">封面图片</label>
+                    <div class="file-upload-area border rounded p-2">
+                        <input type="file" name="head_img" id="headImgInput"
+                            class="form-control {% if article_post_form.head_img.errors %}is-invalid{% endif %}"
+                            accept="image/*">
+                        <div class="mt-3" id="image-preview">
+                            {% if article_post_form.instance.head_img %}
+                                <img src="{{ article_post_form.instance.head_img.url }}"
+                                     class="preview-image" alt="当前封面">
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Markdown 编辑器 -->
+                <div class="mb-4">
+                    <label class="form-label fw-bold required">文章内容</label>
+                    <textarea name="body" id="markdown-editor"
+                              class="{% if article_post_form.body.errors %}is-invalid{% endif %}"
+                    >{{ article_post_form.body.value|default:'' }}</textarea>
+                    {% for error in article_post_form.body.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <!-- 表单操作 -->
+                <div class="d-flex justify-content-between align-items-center mt-5">
+                    <a href="{% url 'article:list' %}" class="btn btn-outline-secondary  back">
+                        <i class="fas fa-arrow-left me-2"></i>返回列表
+                    </a>
+                    <button type="submit" class="btn btn-primary px-4">
+                        <i class="fas fa-save me-2"></i>保存文章
+                    </button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+
+<!-- 脚本依赖 -->
 <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
 <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
+<script src="{% static 'js/NavbarJs.js' %}"></script>
 
 <script>
-    // 初始化Markdown编辑器
-    const easyMDE = new EasyMDE({
-        element: document.getElementById('id_body'),
-        autoDownloadFontAwesome: false,
-        spellChecker: false,
-        placeholder: '使用Markdown格式编写内容...',
-        toolbar: [
-            'heading', 'bold', 'italic', '|',
-            'quote', 'code', '|',
-            'unordered-list', 'ordered-list', '|',
-            'link', 'image', 'table', '|',
-            'preview', 'side-by-side', 'fullscreen'
-        ],
-        uploadImage: true,
-        imageUploadEndpoint: '/upload_image/',
-        imageCSRFToken: '{{ csrf_token }}',
-        imagePathAbsolute: true
-    });
+    document.addEventListener('DOMContentLoaded', function() {
+        // 封面预览功能
+        const headImgInput = document.getElementById('headImgInput');
+        const previewContainer = document.getElementById('image-preview');
+        let currentImage = previewContainer.querySelector('img')?.src || null;
 
-    // 图片预览功能
-    function previewImage(event) {
-        const preview = document.getElementById('image-preview');
-        const file = event.target.files[0];
+        function showPreview(source) {
+            previewContainer.innerHTML = `
+            <img src="${source}" class="preview-image" alt="封面预览">`;
+        }
 
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                preview.innerHTML = `<img src="${e.target.result}" class="img-thumbnail" style="max-width: 384px;" alt="封面预览">`;
+        function showLoading() {
+            previewContainer.innerHTML = `
+            <div class="preview-loading text-muted">
+                <i class="fas fa-spinner fa-spin fa-2x"></i>
+            </div>
+        `;
+        }
+
+        function handleFileSelect(file) {
+            if (!file.type.startsWith('image/')) {
+                alert('请选择图片文件');
+                return;
             }
+
+            showLoading();
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                showPreview(e.target.result);
+            };
+
+            reader.onerror = function() {
+                previewContainer.innerHTML = `
+                <div class="alert alert-danger mt-2">
+                    图片读取失败，请重试
+                </div>
+            `;
+            };
+
             reader.readAsDataURL(file);
         }
-    }
 
-    // 表单提交检查
-    $('form').submit(function() {
-        // 禁用重复提交
-        $('button[type="submit"]').prop('disabled', true).html('<i class="bi bi-hourglass-split me-2"></i>保存中...');
+        // 文件选择事件
+        headImgInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                handleFileSelect(file);
+            } else if (currentImage) {
+                showPreview(currentImage);
+            } else {
+                previewContainer.innerHTML = '';
+            }
+        });
+
+        // 初始化分类选择器
+        $('.select2-init').select2({
+            theme: 'bootstrap-5',
+            placeholder: '选择文章分类',
+            minimumResultsForSearch: Infinity,
+            templateResult: function(option) {
+                return $('<span><i class="fas fa-tag me-2 text-primary"></i>' + option.text + '</span>');
+            }
+        });
+
+        // 初始化Markdown编辑器
+        const easymde = new EasyMDE({
+            element: document.getElementById('markdown-editor'),
+            autoDownloadFontAwesome: false,
+            spellChecker: false,
+            status: false,
+            toolbar: [
+                'heading', 'bold', 'italic', '|',
+                'quote', 'code', '|',
+                'unordered-list', 'ordered-list', '|',
+                'link', 'image', 'table',
+                'preview', 'side-by-side', 'fullscreen'
+            ],
+            previewClass: 'p-3 bg-white rounded',
+            sideBySideFullscreen: false
+        });
+
+        // 保留原始图片引用
+        {% if article_post_form.instance.head_img %}
+            currentImage = "{{ article_post_form.instance.head_img.url }}";
+        {% endif %}
     });
 </script>
-
-<style>
-    .CodeMirror, .EasyMDEContainer .CodeMirror {
-        border: 1px solid #dee2e6;
-        border-radius: 0.375rem;
-        min-height: 400px;
-    }
-    .editor-toolbar {
-        border-radius: 0.375rem 0.375rem 0 0;
-    }
-    .editor-preview {
-        background-color: #f8f9fa;
-        padding: 1rem;
-    }
-    .cm-table {
-        color: #d63384;
-    }
-</style>
 </body>
 </html>

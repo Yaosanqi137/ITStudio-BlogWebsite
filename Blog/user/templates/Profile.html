@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人设置</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/ProfileStyles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/NavbarStyles.css' %}">
+</head>
+<body>
+    <header class="glass-effect">
+        <nav>
+            <div class="logo">OUC<span>博客网</span></div>
+            <ul class="nav-links">
+                <li><a href="/" class="active"><i class="fas fa-home"></i> 主页</a></li>
+                {% if user.is_authenticated %}
+                <li><a href="{% url 'article:create' %}">发表文章</a></li>
+                <li><a href="{% url 'article:my' %}">我的文章</a></li>
+                {% endif %}
+                <li><a href="{% url 'article:list' %}">文章列表</a></li>
+                <li><a href="#">咖啡馆</a></li>
+                <li><a href="https://github.com/Yaosanqi137/ITStudio-BlogWebsite">我们的 GitHub</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container glass-effect">
+        <section class="profile-section">
+            <h2>个人设置</h2>
+            
+            <div class="profile-row">
+                <div class="profile-col">
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        <!-- 昵称 -->
+                        <div class="form-group">
+                            <label for="{{ profile_form.nickname.id_for_label }}" class="form-label">昵称</label>
+                            {{ profile_form.nickname.as_widget|safe }}
+                            {% if profile_form.nickname.errors %}
+                                <div class="invalid-feedback">
+                                    {% for error in profile_form.nickname.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- 头像 -->
+                        <div class="form-group">
+                            <label for="{{ profile_form.avatar.id_for_label }}" class="form-label">头像</label>
+                            <div class="input-field">
+                                <input type="file" class="form-control" id="{{ profile_form.avatar.id_for_label }}" name="{{ profile_form.avatar.name }}">
+                            </div>
+                            <div class="form-text">
+                                支持上传 JPG/PNG 格式的图片，尺寸将自动调整为 160x160 像素。
+                            </div>
+                            {% if profile_form.avatar.errors %}
+                                <div class="invalid-feedback">
+                                    {% for error in profile_form.avatar.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- 简介 -->
+                        <div class="form-group">
+                            <label for="{{ profile_form.info.id_for_label }}" class="form-label">简介</label>
+                            {{ profile_form.info.as_widget|safe }}
+                            <div class="form-text">
+                                简单介绍一下自己吧！
+                            </div>
+                            {% if profile_form.info.errors %}
+                                <div class="invalid-feedback">
+                                    {% for error in profile_form.info.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- 生日 -->
+                        <div class="form-group">
+                            <label for="{{ profile_form.birthday.id_for_label }}" class="form-label">生日</label>
+                            {{ profile_form.birthday.as_widget|safe }}
+                            <div class="form-text">
+                                格式：YYYY-MM-DD
+                            </div>
+                            {% if profile_form.birthday.errors %}
+                                <div class="invalid-feedback">
+                                    {% for error in profile_form.birthday.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- 性别 -->
+                        <div class="form-group">
+                            <label for="{{ profile_form.sex.id_for_label }}" class="form-label">性别</label>
+                            {{ profile_form.sex.as_widget|safe }}
+                            {% if profile_form.sex.errors %}
+                                <div class="invalid-feedback">
+                                    {% for error in profile_form.sex.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        {% if error %}
+                            <div class="error-message">{{ error }}</div>
+                        {% endif %}
+
+                        <!-- 提交按钮 -->
+                        <button type="submit" class="btn btn-primary">保存更改</button>
+                    </form>
+                </div>
+
+                <div class="profile-col">
+                    <div class="preview-card glass-effect">
+                        <h4>当前资料预览</h4>
+                        <div class="text-center">
+                            <img src="{{ profile_form.instance.avatar.url }}" alt="头像" class="profile-preview">
+                        </div>
+                        <div class="preview-info">
+                            <p><strong>昵称:</strong> {{ profile_form.instance.nickname }}</p>
+                            <p><strong>简介:</strong> {{ profile_form.instance.info|default:"暂无简介" }}</p>
+                            <p><strong>生日:</strong> {{ profile_form.instance.birthday|default:"未设置" }}</p>
+                            <p><strong>性别:</strong> {{ profile_form.instance.sex }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 底部按钮 -->
+        <div class="bottom-buttons">
+            <a href="/article/my" class="btn-myarticles">我的文章</a>
+            <a href="/" class="btn-home">返回主界面</a>
+            <a href="/user/logout" class="btn-logout">退出登录</a>
+        </div>
+    </div>
+
+    <script src="{% static 'js/ProfileJs.js' %}"></script>
+    <script src="{% static 'js/NavbarJs.js' %}"></script>
+</body>
+</html>

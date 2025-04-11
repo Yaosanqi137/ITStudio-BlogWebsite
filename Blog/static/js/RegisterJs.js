@@ -1,109 +1,104 @@
 document.addEventListener('DOMContentLoaded', function () {
-
-    // --- Start of Captcha Logic (Working Version) ---
+    // ================== 验证码模块 ==================
     const captchaWrapper = document.querySelector('.captcha-wrapper');
-    const captchaContainer = document.querySelector('.captcha-container');
 
+    // 验证码实时验证函数
     function performCaptchaValidation(captchaInput, hashkeyInput) {
         const response = captchaInput.value.trim();
-        const hashkey = hashkeyInput.value;
-        if (!response || !hashkey) { return; }
-        console.log('正在验证验证码:', response, '使用hashkey:', hashkey);
+        const hashkey = hashkeyInput.value.trim();
+
+        if (!response || !hashkey) {
+            const statusEl = document.getElementById('captcha_status');
+            if (statusEl) {
+                statusEl.textContent = '请输入验证码';
+                statusEl.className = 'status-error';
+            }
+            return;
+        }
+
         if (captchaInput._validating) return;
         captchaInput._validating = true;
-        fetch(`{% url 'user:ajax_val' %}?response=${response}&hashkey=${hashkey}`)
-            .then(response => response.json())
+
+        // 使用正确URL
+        fetch(`${window.DJANGO_URLS.ajax_validate}?response=${encodeURIComponent(response)}&hashkey=${encodeURIComponent(hashkey)}`)
+            .then(res => res.json())
             .then(data => {
-                console.log('验证码验证结果:', data);
-                let captchaStatus = document.getElementById('captcha_status');
-                if (!captchaStatus && captchaContainer) {
-                    captchaStatus = document.createElement('span');
-                    captchaStatus.id = 'captcha_status';
-                    captchaContainer.appendChild(captchaStatus);
-                }
-                if (captchaStatus) {
-                    captchaStatus.textContent = data.status ? '验证码正确' : (data.message || '验证码错误');
-                    captchaStatus.className = data.status ? 'status-success' : 'status-error';
-                }
+                const statusEl = document.getElementById('captcha_status');
+                if (!statusEl) return;
+
+                statusEl.textContent = data.message || (data.status ? '验证码正确' : '验证码错误');
+                statusEl.className = data.status ? 'status-success' : 'status-error';
             })
-            .catch(error => {
-                console.error('验证码验证错误:', error);
-                let captchaStatus = document.getElementById('captcha_status');
-                if (captchaStatus) { captchaStatus.textContent = '验证出错'; captchaStatus.className = 'status-error'; }
+            .catch(err => {
+                console.error('验证码验证错误:', err);
+                const statusEl = document.getElementById('captcha_status');
+                if (statusEl) {
+                    statusEl.textContent = '验证服务异常';
+                    statusEl.className = 'status-error';
+                }
             })
             .finally(() => { captchaInput._validating = false; });
     }
 
+    // 实时输入验证
     if (captchaWrapper) {
-        captchaWrapper.addEventListener('blur', function (event) {
-            if (event.target && event.target.id === 'id_captcha_1') {
-                const captchaInput = event.target;
-                let hashkeyInput = null;
-                const captchaDiv = captchaInput.closest('.captcha');
-                if (captchaDiv) { hashkeyInput = captchaDiv.querySelector('input[type="hidden"][name="captcha_0"]'); }
-                if (!hashkeyInput) { hashkeyInput = captchaWrapper.querySelector('input[type="hidden"][name="captcha_0"]'); }
-                if (captchaInput && hashkeyInput) { performCaptchaValidation(captchaInput, hashkeyInput); }
-                else { console.error("无法在 'blur' 事件中找到 hashkey 输入。"); }
-            }
-        }, true);
-        console.log("验证码 'blur' 事件监听器已设置 (委托)。");
-    } else { console.error("未能找到 '.captcha-wrapper' 元素来设置事件委托。"); }
-
-    function refreshCaptcha() {
-        const refreshButton = document.getElementById('refresh-captcha');
-        const icon = refreshButton ? refreshButton.querySelector('i') : null;
-        console.log("Attempting to find elements for refresh...");
-        const currentCaptchaWrapper = document.querySelector('.captcha-wrapper');
-        const captchaImage = currentCaptchaWrapper ? currentCaptchaWrapper.querySelector('img') : null;
-        const hashkeyInput = currentCaptchaWrapper ? currentCaptchaWrapper.querySelector('input[type="hidden"][name="captcha_0"]') : null;
-        const textInput = currentCaptchaWrapper ? currentCaptchaWrapper.querySelector('input[type="text"][id="id_captcha_1"]') : null;
-        console.log("captchaWrapper:", currentCaptchaWrapper, "captchaImage:", captchaImage, "hashkeyInput:", hashkeyInput, "textInput:", textInput);
-        if (!currentCaptchaWrapper || !captchaImage || !hashkeyInput || !textInput) {
-            if (!currentCaptchaWrapper) console.error("刷新失败: 未找到 .captcha-wrapper");
-            if (!captchaImage) console.error("刷新失败: 未找到 img 元素在 .captcha-wrapper 内");
-            if (!hashkeyInput) console.error("刷新失败: 未找到 input[name='captcha_0']");
-            if (!textInput) console.error("刷新失败: 未找到 input[id='id_captcha_1']");
-            console.error("未能找到所有必要的验证码元素。");
-            return Promise.reject("Missing captcha elements");
-        }
-        if (refreshButton) refreshButton.disabled = true;
-        if (icon) icon.classList.add('fa-spin');
-        const captchaStatus = document.getElementById('captcha_status');
-        if (captchaStatus) { captchaStatus.textContent = ''; captchaStatus.className = 'status-text'; }
-        return fetch("{% url 'user:refresh_captcha' %}")
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 1 && data.new_cptch_key && data.new_cptch_image_url) {
-                    hashkeyInput.value = data.new_cptch_key;
-                    captchaImage.src = data.new_cptch_image_url;
-                    textInput.value = '';
-                    console.log("验证码已通过更新 src 和 value 刷新。 新 Key:", data.new_cptch_key);
-                } else {
-                    console.error("刷新请求失败或返回数据无效:", data.message || '未知错误');
-                    if (captchaStatus) { captchaStatus.textContent = '刷新失败'; captchaStatus.className = 'status-error'; }
-                    throw new Error(data.message || '刷新失败');
-                }
-            })
-            .catch(error => {
-                console.error('刷新验证码 fetch 错误:', error);
-                if (captchaStatus) { captchaStatus.textContent = '刷新出错'; captchaStatus.className = 'status-error'; }
-            })
-            .finally(() => {
-                if (icon) { setTimeout(() => { icon.classList.remove('fa-spin'); if (refreshButton) refreshButton.disabled = false; }, 300); }
-                else { if (refreshButton) refreshButton.disabled = false; }
-            });
-    }
-
-    const refreshCaptchaBtn = document.getElementById('refresh-captcha');
-    if (refreshCaptchaBtn) { refreshCaptchaBtn.addEventListener('click', refreshCaptcha); }
-    if (captchaWrapper) {
-        captchaWrapper.addEventListener('click', function (event) {
-            if (event.target && event.target.tagName === 'IMG' && (event.target.classList.contains('captcha-image') || event.target.closest('.captcha'))) {
-                refreshCaptcha();
+        captchaWrapper.addEventListener('input', function(e) {
+            if (e.target.id === 'id_captcha_1') {
+                const hashkeyInput = captchaWrapper.querySelector('input[name="captcha_0"]');
+                performCaptchaValidation(e.target, hashkeyInput);
             }
         });
     }
-    // --- End of Captcha Logic ---
+
+    // 刷新验证码函数
+    function refreshCaptcha() {
+        const wrapper = document.querySelector('.captcha-wrapper');
+        if (!wrapper) return;
+
+        const captchaImg = wrapper.querySelector('img');
+        const hashkeyInput = wrapper.querySelector('input[name="captcha_0"]');
+        const textInput = wrapper.querySelector('#id_captcha_1');
+        const refreshBtn = document.getElementById('refresh-captcha');
+        const icon = refreshBtn?.querySelector('i');
+
+        if (icon) icon.classList.add('fa-spin');
+        if (refreshBtn) refreshBtn.disabled = true;
+
+        fetch(window.DJANGO_URLS.refresh_captcha)
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 1) {
+                    hashkeyInput.value = data.new_cptch_key;
+                    captchaImg.src = data.new_cptch_image_url;
+                    textInput.value = '';
+                    const statusEl = document.getElementById('captcha_status');
+                    if (statusEl) {
+                        statusEl.textContent = '';
+                        statusEl.className = '';
+                    }
+                } else {
+                    throw new Error(data.message || '刷新失败');
+                }
+            })
+            .catch(err => {
+                console.error('验证码刷新错误:', err);
+                const statusEl = document.getElementById('captcha_status');
+                if (statusEl) {
+                    statusEl.textContent = '刷新失败，点击重试';
+                    statusEl.className = 'status-error';
+                }
+            })
+            .finally(() => {
+                if (icon) icon.classList.remove('fa-spin');
+                if (refreshBtn) refreshBtn.disabled = false;
+            });
+    }
+
+    // 绑定刷新事件
+    document.getElementById('refresh-captcha')?.addEventListener('click', refreshCaptcha);
+    captchaWrapper?.addEventListener('click', function(e) {
+        if (e.target.tagName === 'IMG') refreshCaptcha();
+    });
 
 
     // --- Start of Password Strength Logic (Re-integrated and Checked) ---
@@ -412,29 +407,27 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
 
+        document.querySelector('.sign-up-form')?.addEventListener('submit', function(e) {
+            e.preventDefault();
 
-        // 4. 验证验证码 (仅检查前端状态)
-        const captchaStatus = document.getElementById('captcha_status');
-        const captchaInput = document.getElementById('id_captcha_1');
-        let captchaHasError = false;
-        if (!captchaInput || !captchaInput.value.trim()) {
-            hasErrors = true; captchaHasError = true;
-            errorMessages.push('请输入验证码');
-            if (captchaStatus) {
-                captchaStatus.textContent = '请输入验证码';
-                captchaStatus.className = 'status-error';
+            // 强制触发验证码验证
+            const captchaInput = document.getElementById('id_captcha_1');
+            const hashkeyInput = document.querySelector('input[name="captcha_0"]');
+            if (captchaInput && hashkeyInput) {
+                performCaptchaValidation(captchaInput, hashkeyInput);
             }
-            if (!firstErrorField) firstErrorField = captchaInput;
-        } else if (captchaStatus && captchaStatus.classList.contains('status-error')) {
-            const errorText = captchaStatus.textContent;
-            // 只有当错误不是 "请输入验证码" 时才认为是真正的验证错误
-            if (errorText && !errorText.includes('请输入验证码')) {
-                hasErrors = true; captchaHasError = true;
-                errorMessages.push('验证码错误或无效');
-                if (!firstErrorField) firstErrorField = captchaInput;
+
+            // 检查所有验证状态
+            const isValid = Array.from(document.querySelectorAll('.status-error')).every(el =>
+                !el.textContent.includes('验证码')
+            );
+
+            if (isValid) {
+                this.submit(); // 实际提交表单
+            } else {
+                alert('请正确填写所有字段后再提交');
             }
-        }
-        // 注意：如果验证码状态是 'status-success'，我们假设它是正确的
+        });
 
         // --- 输出结果到控制台 ---
         if (hasErrors) {

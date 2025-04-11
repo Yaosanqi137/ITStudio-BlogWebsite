@@ -1,5 +1,6 @@
 import markdown
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.shortcuts import render
@@ -8,6 +9,18 @@ from .models import Article
 from user.models import BlogUser
 from django.db.models import Q
 from article.models import get_random_image
+from comment.models import Comment
+
+# 分类选项
+category = {
+    "生活": "生活",
+    "闲谈": "闲谈",
+    "软件": "软件",
+    "硬件": "硬件",
+    "知识": "知识",
+    "美食": "美食",
+    "其他": "其他",
+}
 
 def list_view(request):
     search_query = request.GET.get('search', '') # 获取搜索词
@@ -23,16 +36,10 @@ def list_view(request):
     if selected_category:
         articles = articles.filter(category=selected_category)
 
-    # 分类选项
-    category = {
-        "生活": "生活",
-        "闲谈": "闲谈",
-        "软件": "软件",
-        "硬件": "硬件",
-        "知识": "知识",
-        "美食": "美食",
-        "其他": "其他",
-    }
+    # 分页
+    articles = Paginator(articles, 10)
+    page = request.GET.get('page')
+    articles = articles.get_page(page)
 
     return render(request, 'ArticleList.html', {
         'articles': articles,
@@ -41,13 +48,14 @@ def list_view(request):
 
 def detail_view(request, id):
     article = Article.objects.get(id=id)
+    comments = Comment.objects.filter(article=id)
     article.looks += 1
     article.save()
     article.body = markdown.markdown(article.body, extensions=[
         'markdown.extensions.extra',
         'markdown.extensions.codehilite'
         ])
-    return render(request, 'Article.html', {'article': article})
+    return render(request, 'Article.html', {'article': article, 'comments': comments})
 
 @login_required(login_url='/user/login/')
 def create_view(request):
@@ -61,10 +69,11 @@ def create_view(request):
             new_article.save()
             id = new_article.id
             return redirect(f'/article/detail/{id}')
+        else:
+            return render(request, 'ArticlePost.html', {'article_post_form': article_post_form})
     else:
         article_post_form = ArticlePostForm()
-        context = {'article_post_form': article_post_form}
-        return render(request, 'ArticlePost.html', context)
+        return render(request, 'ArticlePost.html', {'article_post_form': article_post_form})
 
 @login_required(login_url='/user/login/')
 def delete_view(request, id):
@@ -92,5 +101,25 @@ def edit_view(request, id):
 
 @login_required(login_url='/user/login/')
 def my_view(request):
+    search_query = request.GET.get('search', '') # 获取搜索词
+    selected_category = request.GET.get('category', '') # 获取分类
+
     articles = Article.objects.filter(author=request.user.id)
-    return render(request, 'MyArticle.html', {'articles': articles})
+
+    # 由搜索词筛选
+    if search_query:
+        articles = articles.filter(Q(title__icontains=search_query) | Q(body__icontains=search_query))
+
+    # 由分类筛选
+    if selected_category:
+        articles = articles.filter(category=selected_category)
+
+    # 分页
+    articles = Paginator(articles, 10)
+    page = request.GET.get('page')
+    articles = articles.get_page(page)
+
+    return render(request, 'MyArticle.html', {
+        'articles': articles,
+        'category': category,
+    })
