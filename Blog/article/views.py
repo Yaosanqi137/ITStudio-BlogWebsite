@@ -10,6 +10,8 @@ from user.models import BlogUser
 from django.db.models import Q
 from comment.models import Comment
 
+from comment.forms import CommentForm
+
 # 分类选项
 category = {
     "生活": "生活",
@@ -48,13 +50,18 @@ def list_view(request):
 def detail_view(request, id):
     article = Article.objects.get(id=id)
     comments = Comment.objects.filter(article=id)
+    comment_form = CommentForm()
     article.looks += 1
     article.save()
     article.body = markdown.markdown(article.body, extensions=[
         'markdown.extensions.extra',
         'markdown.extensions.codehilite'
         ])
-    return render(request, 'Article.html', {'article': article, 'comments': comments})
+    context = {'article': article,
+               'comments': comments,
+               'comment_form': comment_form
+               }
+    return render(request, 'Article.html', context)
 
 @login_required(login_url='/user/login/')
 def create_view(request):
