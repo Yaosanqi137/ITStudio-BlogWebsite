@@ -1,0 +1,134 @@
+/* 导航栏样式 */
+header {
+    padding: 15px 0;
+    position: sticky;
+    top: 15px;
+    z-index: 100;
+    width: 90%;
+    margin: 15px auto;
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 30px;
+    height: 70px;
+}
+
+.logo {
+    font-size: 28px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 1px;
+}
+
+.logo span {
+    color: #ff6b6b;
+}
+
+.nav-links {
+    display: flex;
+    list-style: none;
+}
+
+.nav-links li {
+    margin: 0 20px;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: #fff;
+    font-weight: 500;
+    font-size: 18px;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.nav-links a::after {
+    content: "";
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: #ff6b6b;
+    transition: width 0.3s ease;
+}
+
+.nav-links a:hover::after,
+.nav-links a.active::after {
+    width: 100%;
+}
+
+.nav-links a i {
+    margin-right: 5px;
+}
+
+.nav-links a.active {
+    color: #ff6b6b;
+}
+
+/* 响应式导航栏 */
+.menu-toggle {
+    display: none;
+    cursor: pointer;
+    font-size: 24px;
+    color: #fff;
+}
+
+@media (max-width: 900px) {
+    .menu-toggle {
+        display: block;
+    }
+    
+    .nav-links {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 70%;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(10px);
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        transition: right 0.5s ease;
+        z-index: 1000;
+    }
+    
+    .nav-links.active {
+        right: 0;
+    }
+    
+    .nav-links li {
+        margin: 20px 0;
+    }
+    
+    .nav-links a {
+        font-size: 20px;
+    }
+    
+    .close-menu {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        font-size: 24px;
+        color: #fff;
+        cursor: pointer;
+    }
+}
+
+@media (max-width: 600px) {
+    header {
+        width: 95%;
+    }
+    
+    .logo {
+        font-size: 24px;
+    }
+    
+    nav {
+        padding: 0 15px;
+    }
+} 

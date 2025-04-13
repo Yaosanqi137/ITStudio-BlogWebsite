@@ -51,4 +51,17 @@ local_settings.py
 Thumbs.db
 .idea/
 *.swp
-*.swo 
+*.swo
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.bmp
+*.tif
+*.tiff
+
+# 但保留 default.png
+!_images/**/default.png
+!_images/**/
+!_images/background.jpg
+!_images/background1.jpg
