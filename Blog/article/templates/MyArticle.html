@@ -92,7 +92,7 @@
                     <div class="article-stats">
                         <span><i class="fas fa-heart"></i> {{ article.likes }}</span>
                         <span><i class="fas fa-eye"></i> {{ article.looks }}</span>
-                        <span><i class="fas fa-comments"></i> TODO</span>
+                        <span><i class="fas fa-comments"></i> {{ article.comments.count }}</span>
                     </div>
                 </div>
             {% endfor %}

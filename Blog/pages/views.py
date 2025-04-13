@@ -2,6 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404
 from user.models import *
 from article.models import *
+from comment.models import *
 
 
 def homepage_view(request):
