@@ -18,6 +18,8 @@
 发布时间: {{ article.created_time }}
 最后更新时间: {{ article.updated_time }}
 
+<p>{{ article.body|safe }}</p>
+
 <div class="col-9">
     ...
     <!-- 已有代码，文章正文 -->
@@ -79,7 +81,5 @@
         {% endfor %}
     </div>
 </div>
-
-<p>{{ article.body|safe }}</p>
 </body>
 </html>
