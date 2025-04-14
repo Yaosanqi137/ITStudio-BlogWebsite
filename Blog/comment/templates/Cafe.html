@@ -1,4 +1,3 @@
-<!-- templates/Cafe.html -->
 {% load mptt_tags %}
 {% load static %}
 <!DOCTYPE html>
@@ -8,94 +7,262 @@
     <script src="{% static 'ckeditor/ckeditor/plugins/prism/lib/prism/prism_patched.min.js' %}"></script>
     <link rel="stylesheet" href="{% static 'prism/prism.css' %}">
     <style>
+        :root {
+            --primary-color: #4a89dc;
+            --hover-color: #3b7dd8;
+            --success-color: #4CAF50;
+            --danger-color: #f44336;
+            --text-dark: #333;
+            --text-light: #666;
+            --border-color: #e0e0e0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            line-height: 1.6;
+        }
+
         .chat-container {
             max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
+            margin: 20px auto;
+            padding: 25px;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
         }
+
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+
+        /* 消息卡片样式 */
         .chat-message {
-            margin-bottom: 15px;
-            padding: 15px;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            background-color: #f9f9f9;
+            margin-bottom: 20px;
+            padding: 18px;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            background-color: white;
             transition: all 0.3s ease;
+            position: relative;
         }
+
         .chat-message:hover {
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transform: translateY(-2px);
         }
-        .reply-form {
-            margin-top: 30px;
-            padding: 20px;
-            background-color: #f5f5f5;
-            border-radius: 8px;
-        }
-        .children {
-            margin-left: 40px;
-            border-left: 2px solid #ddd;
-            padding-left: 20px;
-        }
-        .reply-btn {
-            background-color: #4a89dc;
-            color: white;
-            border: none;
-            padding: 5px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 13px;
-            margin-left: 10px;
-            transition: background-color 0.3s;
-        }
-        .reply-btn:hover {
-            background-color: #3b7dd8;
-        }
-        .reply-info {
-            font-size: 13px;
-            color: #666;
-            margin-bottom: 8px;
-        }
+
+        /* 头像系统 */
         .message-header {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-bottom: 8px;
+            margin-bottom: 12px;
         }
+
+        .user-avatar {
+            position: relative;
+            margin-right: 12px;
+        }
+
+        .user-avatar img {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .user-avatar:hover img {
+            transform: scale(1.1);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .online-badge {
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            width: 12px;
+            height: 12px;
+            background-color: var(--success-color);
+            border-radius: 50%;
+            border: 2px solid white;
+            z-index: 2;
+        }
+
+        .user-info {
+            flex-grow: 1;
+        }
+
         .message-user {
-            font-weight: bold;
-            color: #333;
+            font-weight: 600;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
         }
+
         .message-time {
-            color: #999;
             font-size: 12px;
+            color: var(--text-light);
+            margin-top: 2px;
         }
-        .message-body {
+
+        /* 回复信息样式 */
+        .reply-info {
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            background-color: #f0f4ff;
+            border-radius: 20px;
             margin: 10px 0;
-            line-height: 1.5;
+            font-size: 13px;
         }
+
+        .reply-info img {
+            width: 24px;
+            height: 24px;
+            margin-right: 8px;
+            border: 2px solid white;
+        }
+
+        .reply-info strong {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        /* 消息内容 */
+        .message-body {
+            margin: 15px 0;
+            padding: 0 5px;
+            color: var(--text-dark);
+        }
+
+        /* 回复按钮 */
         .message-footer {
             display: flex;
             justify-content: flex-end;
+            margin-top: 10px;
         }
+
+        .reply-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 6px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+        }
+
+        .reply-btn:hover {
+            background-color: var(--hover-color);
+            transform: translateY(-1px);
+        }
+
+        .reply-btn i {
+            margin-right: 5px;
+            font-size: 12px;
+        }
+
+        /* 回复信息提示 */
         #parent-info {
-            margin-bottom: 10px;
-            padding: 8px;
+            margin-bottom: 15px;
+            padding: 10px 15px;
             background-color: #e8f4ff;
-            border-radius: 4px;
+            border-radius: 8px;
             display: none;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        #cancel-reply {
+            background-color: var(--danger-color);
+            color: white;
+            border: none;
+            padding: 3px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        /* 表单区域 */
+        .reply-form {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+        }
+
+        .reply-form button[type="submit"] {
+            padding: 8px 22px;
+            background-color: var(--success-color);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .reply-form button[type="submit"]:hover {
+            background-color: #3d8b40;
+            transform: translateY(-1px);
+        }
+
+        /* 子消息缩进 */
+        .children {
+            margin-left: 50px;
+            border-left: 2px solid #e0e0e0;
+            padding-left: 20px;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .chat-container {
+                padding: 15px;
+                margin: 10px;
+            }
+
+            .user-avatar img {
+                width: 36px;
+                height: 36px;
+            }
+
+            .children {
+                margin-left: 30px;
+            }
         }
     </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
 <div class="chat-container">
-    <h1>聊天室</h1>
+    <h1><i class="fas fa-comments"></i> 聊天室</h1>
 
     <!-- 聊天消息列表 -->
     <div class="chat-list">
         {% recursetree chats %}
             <div class="chat-message" id="chat-{{ node.id }}">
                 <div class="message-header">
-                    <span class="message-user">{{ node.user.username }}</span>
-                    <span class="message-time">{{ node.created|date:"Y-m-d H:i" }}</span>
+                    <div class="user-avatar">
+                        <img src="{{ node.user.avatar.url }}" alt="{{ node.user.username }}">
+                        {% if node.user.is_online %}
+                            <span class="online-badge"></span>
+                        {% endif %}
+                    </div>
+                    <div class="user-info">
+                        <span class="message-user">{{ node.user.username }}</span>
+                        <span class="message-time">{{ node.created|date:"Y-m-d H:i" }}</span>
+                    </div>
                 </div>
 
                 {% if node.reply_to %}
@@ -110,7 +277,7 @@
 
                 <div class="message-footer">
                     <button class="reply-btn" data-chat-id="{{ node.id }}" data-username="{{ node.user.username }}">
-                        回复
+                        <i class="fas fa-reply"></i> 回复
                     </button>
                 </div>
 
@@ -125,8 +292,8 @@
 
     <!-- 当前回复信息 -->
     <div id="parent-info">
-        正在回复 <span id="reply-username"></span>
-        <button id="cancel-reply" style="margin-left: 10px; background-color: #f44336; color: white; border: none; padding: 2px 8px; border-radius: 3px; cursor: pointer;">取消</button>
+        <span>正在回复 <strong id="reply-username"></strong></span>
+        <button id="cancel-reply">取消</button>
     </div>
 
     <!-- 聊天表单 -->
@@ -137,7 +304,7 @@
             {{ chat_form.media }}
             {{ chat_form.body }}
             <div style="margin-top: 15px; text-align: right;">
-                <button type="submit" style="padding: 8px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer;">发送</button>
+                <button type="submit"><i class="fas fa-paper-plane"></i> 发送</button>
             </div>
         </form>
     </div>
@@ -152,15 +319,12 @@
                 const chatId = this.dataset.chatId;
                 const username = this.dataset.username;
 
-                // 调试输出
-                console.log('Setting parent_chat_id to:', chatId);
-
                 // 设置表单中的隐藏字段值
                 document.getElementById('parent_chat_id').value = chatId;
 
                 // 显示回复信息
                 document.getElementById('reply-username').textContent = username;
-                document.getElementById('parent-info').style.display = 'block';
+                document.getElementById('parent-info').style.display = 'flex';
 
                 // 滚动到表单
                 document.getElementById('chat-form').scrollIntoView({
