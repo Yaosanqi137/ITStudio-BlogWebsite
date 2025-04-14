@@ -1,0 +1,181 @@
+<!-- templates/Cafe.html -->
+{% load mptt_tags %}
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>聊天室</title>
+    <script src="{% static 'ckeditor/ckeditor/plugins/prism/lib/prism/prism_patched.min.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'prism/prism.css' %}">
+    <style>
+        .chat-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .chat-message {
+            margin-bottom: 15px;
+            padding: 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            transition: all 0.3s ease;
+        }
+        .chat-message:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .reply-form {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+        }
+        .children {
+            margin-left: 40px;
+            border-left: 2px solid #ddd;
+            padding-left: 20px;
+        }
+        .reply-btn {
+            background-color: #4a89dc;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            margin-left: 10px;
+            transition: background-color 0.3s;
+        }
+        .reply-btn:hover {
+            background-color: #3b7dd8;
+        }
+        .reply-info {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .message-user {
+            font-weight: bold;
+            color: #333;
+        }
+        .message-time {
+            color: #999;
+            font-size: 12px;
+        }
+        .message-body {
+            margin: 10px 0;
+            line-height: 1.5;
+        }
+        .message-footer {
+            display: flex;
+            justify-content: flex-end;
+        }
+        #parent-info {
+            margin-bottom: 10px;
+            padding: 8px;
+            background-color: #e8f4ff;
+            border-radius: 4px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<div class="chat-container">
+    <h1>聊天室</h1>
+
+    <!-- 聊天消息列表 -->
+    <div class="chat-list">
+        {% recursetree chats %}
+            <div class="chat-message" id="chat-{{ node.id }}">
+                <div class="message-header">
+                    <span class="message-user">{{ node.user.username }}</span>
+                    <span class="message-time">{{ node.created|date:"Y-m-d H:i" }}</span>
+                </div>
+
+                {% if node.reply_to %}
+                    <div class="reply-info">
+                        回复 <strong>@{{ node.reply_to.username }}</strong>
+                    </div>
+                {% endif %}
+
+                <div class="message-body">
+                    {{ node.body|safe }}
+                </div>
+
+                <div class="message-footer">
+                    <button class="reply-btn" data-chat-id="{{ node.id }}" data-username="{{ node.user.username }}">
+                        回复
+                    </button>
+                </div>
+
+                {% if not node.is_leaf_node %}
+                    <div class="children">
+                        {{ children }}
+                    </div>
+                {% endif %}
+            </div>
+        {% endrecursetree %}
+    </div>
+
+    <!-- 当前回复信息 -->
+    <div id="parent-info">
+        正在回复 <span id="reply-username"></span>
+        <button id="cancel-reply" style="margin-left: 10px; background-color: #f44336; color: white; border: none; padding: 2px 8px; border-radius: 3px; cursor: pointer;">取消</button>
+    </div>
+
+    <!-- 聊天表单 -->
+    <div class="reply-form">
+        <form method="post" id="chat-form">
+            {% csrf_token %}
+            <input type="hidden" name="parent_chat_id" id="parent_chat_id" value="">
+            {{ chat_form.media }}
+            {{ chat_form.body }}
+            <div style="margin-top: 15px; text-align: right;">
+                <button type="submit" style="padding: 8px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer;">发送</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 处理回复按钮点击
+        document.querySelectorAll('.reply-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const chatId = this.dataset.chatId;
+                const username = this.dataset.username;
+
+                // 调试输出
+                console.log('Setting parent_chat_id to:', chatId);
+
+                // 设置表单中的隐藏字段值
+                document.getElementById('parent_chat_id').value = chatId;
+
+                // 显示回复信息
+                document.getElementById('reply-username').textContent = username;
+                document.getElementById('parent-info').style.display = 'block';
+
+                // 滚动到表单
+                document.getElementById('chat-form').scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center'
+                });
+            });
+        });
+
+        // 处理取消回复
+        document.getElementById('cancel-reply').addEventListener('click', function() {
+            document.getElementById('parent_chat_id').value = '';
+            document.getElementById('parent-info').style.display = 'none';
+        });
+    });
+</script>
+</body>
+</html>

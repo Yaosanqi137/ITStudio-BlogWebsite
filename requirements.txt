@@ -4,3 +4,4 @@ django_simple_captcha==0.6.2
 Markdown==3.7
 Pillow==11.1.0
 django-ckeditor==6.7.2
+django-mptt==0.17.0

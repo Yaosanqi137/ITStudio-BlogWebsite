@@ -103,6 +103,7 @@ INSTALLED_APPS = [
     'user',
     'pages',
     'article',
+    'mptt',
     'comment',
     'imagekit',
     'captcha',
