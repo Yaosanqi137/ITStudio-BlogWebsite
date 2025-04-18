@@ -36,6 +36,15 @@ def cafe_view(request):
                 # 被回复人
                 chat.reply_to = parent_chat.user
                 chat.save()
+
+                # 发信给被回复人
+                message = UserMessage.objects.create(user=chat.reply_to)
+                message.content = "你在咖啡馆收到了一条新的回复！"
+                host = request.build_absolute_uri('/')[:-1]
+                url = f"{host}/comment/cafe#chat-{chat.id}"
+                message.redirect_url = url
+                message.save()
+
                 return redirect(f"/comment/cafe#chat-{chat.id}")
 
             chat.save()

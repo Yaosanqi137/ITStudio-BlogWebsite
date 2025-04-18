@@ -10,6 +10,38 @@
     <link rel="stylesheet" href="{% static 'css/NavbarStyles.css' %}">
 </head>
 <body>
+<!-- GitHub风格通知铃铛 -->
+{% if user.is_authenticated %}
+    <div class="github-notification" id="githubNotification">
+        <div class="notification-icon">
+            <i class="fas fa-bell"></i>
+            {% if messages.count > 0 %}
+                <span class="notification-counter">{{ messages.count }}</span>
+            {% endif %}
+        </div>
+
+        <!-- 消息弹窗 -->
+        <div class="notification-popover">
+            <div class="popover-header">
+                <span>未读消息</span>
+            </div>
+            <div class="popover-body">
+                {% for message in messages %}
+                    <div class="message-item"
+                         data-id="{{ message.id }}"
+                         data-url="{{ message.redirect_url|default:'#' }}">
+                        <div class="message-text">{{ message.content }}</div>
+                        <div class="message-meta">
+                            <time>{{ message.created_at|date:"Y-m-d H:i" }}</time>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="empty-message">暂无新消息</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endif %}
 <header class="glass-effect">
     <nav>
         <div class="logo">OUC<span>博客网</span></div>

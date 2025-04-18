@@ -125,4 +125,93 @@ document.addEventListener('DOMContentLoaded', function() {
             navLinks.style.right = '';
         }
     });
-}); 
+
+    // GitHub风格通知交互
+    document.addEventListener('DOMContentLoaded', function() {
+        const notification = document.getElementById('githubNotification');
+
+        if (notification) {
+            const icon = notification.querySelector('.notification-icon');
+            const popover = notification.querySelector('.notification-popover');
+
+            // 点击铃铛切换弹窗
+            icon.addEventListener('click', function(e) {
+                e.stopPropagation();
+                popover.style.display = popover.style.display === 'block' ? 'none' : 'block';
+            });
+
+            // 点击消息项跳转
+            notification.querySelectorAll('.message-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const url = this.getAttribute('data-url');
+                    if (url && url !== '#') {
+                        window.location.href = url;
+                    }
+                });
+            });
+
+            // 点击页面其他区域关闭弹窗
+            document.addEventListener('click', function(e) {
+                if (!notification.contains(e.target)) {
+                    popover.style.display = 'none';
+                }
+            });
+        }
+    });
+});
+// 在NavbarJs.js中统一处理
+document.addEventListener('DOMContentLoaded', function() {
+    // 获取CSRF令牌的函数（必须添加）
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    // 通知铃铛交互
+    const notification = document.getElementById('githubNotification');
+    if (notification) {
+        const icon = notification.querySelector('.notification-icon');
+        const popover = notification.querySelector('.notification-popover');
+
+        // 点击铃铛切换弹窗
+        icon.addEventListener('click', function(e) {
+            e.stopPropagation();
+            popover.style.display = popover.style.display === 'block' ? 'none' : 'block';
+        });
+
+        // 点击消息项处理（合并两个功能）
+        notification.querySelectorAll('.message-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const messageId = this.dataset.id;
+                const url = this.dataset.url || '#';
+
+                // 发送AJAX请求标记已读
+                fetch(`/messages/${messageId}/mark_read/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken'),
+                        'Content-Type': 'application/json'
+                    }
+                }).then(response => {
+                    if(url !== '#') {
+                        window.location.href = url;
+                    }
+                    // 可选：更新未读计数
+                    if(typeof updateUnreadCount === 'function') {
+                        updateUnreadCount();
+                    }
+                });
+            });
+        });
+    }
+});
