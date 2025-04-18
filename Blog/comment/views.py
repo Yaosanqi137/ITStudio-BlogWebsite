@@ -4,9 +4,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 from article.models import Article
 from .forms import CommentForm, ChatForm
 from user.models import BlogUser
-
 from .models import Chat
-
+from pages.models import UserMessage
 
 @login_required(login_url='/user/login/')
 def article_post_view(request, article_id):
@@ -37,10 +36,10 @@ def cafe_view(request):
                 # 被回复人
                 chat.reply_to = parent_chat.user
                 chat.save()
-                return redirect("/comment/cafe")
+                return redirect(f"/comment/cafe#chat-{chat.id}")
 
             chat.save()
-            return redirect("/comment/cafe")
+            return redirect(f"/comment/cafe#chat-{chat.id}")
     else:
         chat_form = ChatForm()
         chats = Chat.objects.all()
