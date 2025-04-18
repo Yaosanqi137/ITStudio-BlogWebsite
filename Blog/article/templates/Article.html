@@ -63,23 +63,29 @@
 
 
     <!-- 显示评论 -->
-    <h4>共有{{ comments.count }}条评论</h4>
-    <div>
+    <div id="comments-section">
+        <h4>共有{{ comments.count }}条评论</h4>
         {% for comment in comments %}
-            <hr>
+            <hr id="comment-{{ comment.id }}">
             <img src="{{ comment.user.avatar.url }}" style="border-radius: 50%">
             <p>
-                <strong style="color: pink">
-                    {{ comment.user }}
-                </strong> 于
-                <span style="color: green">
-                    {{ comment.created|date:"Y-m-d H:i:s" }}
-                </span> 时说：
+                <strong style="color: pink">{{ comment.user }}</strong>
+                于<span style="color: green">{{ comment.created|date:"Y-m-d H:i:s" }}</span>时说：
             </p>
-            <pre style="font-family: inherit; font-size: 1em;">
-{{ comment.body|safe }}</pre>
+            <pre style="font-family: inherit; font-size: 1em;">{{ comment.body|safe }}</pre>
         {% endfor %}
     </div>
 </div>
 </body>
+<!-- 添加自动滚动JS -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        if(window.location.hash) {
+            const target = document.querySelector(window.location.hash);
+            if(target) {
+                target.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+    });
+</script>
 </html>

@@ -7,6 +7,12 @@ from user.models import BlogUser
 from .models import Chat
 from pages.models import UserMessage
 
+def send_message(user, content, url):
+    message = UserMessage.objects.create(user=user)
+    message.content = content
+    message.redirect_url = url
+    message.save()
+
 @login_required(login_url='/user/login/')
 def article_post_view(request, article_id):
     article = get_object_or_404(Article, id=article_id)
@@ -18,7 +24,13 @@ def article_post_view(request, article_id):
             new_comment.article = article
             new_comment.user = BlogUser.objects.get(id=request.user.id)
             new_comment.save()
-            return redirect(f"/article/detail/{article.id}")
+
+            # 发信给文章作者
+            host = request.build_absolute_uri('/')[:-1]
+            url = f"{host}/article/detail/{article.id}#comment-{new_comment.id}"
+            send_message(article.author, "有人给你的文章评论啦！", url)
+
+            return redirect(f"/article/detail/{article.id}#comment-{new_comment.id}")
 
 @login_required(login_url='/user/login/')
 def cafe_view(request):
@@ -38,12 +50,9 @@ def cafe_view(request):
                 chat.save()
 
                 # 发信给被回复人
-                message = UserMessage.objects.create(user=chat.reply_to)
-                message.content = "你在咖啡馆收到了一条新的回复！"
                 host = request.build_absolute_uri('/')[:-1]
                 url = f"{host}/comment/cafe#chat-{chat.id}"
-                message.redirect_url = url
-                message.save()
+                send_message(chat.reply_to, "你在咖啡馆收到了一条新的回复！", url)
 
                 return redirect(f"/comment/cafe#chat-{chat.id}")
 
