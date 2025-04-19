@@ -196,11 +196,21 @@
         width: 20%;
     }
 
-    form .category select,
-    form .category select optgroup,
-    form .category select optgroup option,
-    form .category select .selection span {
-        background-color: #fff !important;
+    form .category .select2-container--bootstrap-5 .select2-selection {
+        background-color: #fff;
+        height: 38px;
+        line-height: 38px;
+        border-radius: 5px;
+        padding-left: 3px;
+    }
+
+    form .category .select2-container--bootstrap-5 .select2-selection:active,
+    form .category .select2-container--bootstrap-5 .select2-selection:focus {
+        box-shadow: 0 0 5px 5px rgba(30, 90, 255, 0.3);
+    }
+
+    form .category .optiontag {
+        color: black;
     }
 
     form #text {

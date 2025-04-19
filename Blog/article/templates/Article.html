@@ -1,91 +1,112 @@
 <!DOCTYPE html>
 <html lang="en">
 {% load static %}
+
 <head>
     <meta charset="UTF-8">
     <title>{{ article.title }}</title>
     <link rel="stylesheet" href="{% static 'css/monokai.css' %}">
+    <link rel="stylesheet" href="../../static/css/ArticleStyles.css">
     <script src="{% static 'ckeditor/ckeditor/plugins/prism/lib/prism/prism_patched.min.js' %}"></script>
     <link rel="stylesheet" href="{% static 'prism/prism.css' %}">
 </head>
-{% if request.user.username == article.author.username %}
-    <a href="{% url 'article:delete' article.id %}">删除文章</a>
-    <a href="{% url 'article:edit' article.id %}">编辑文章</a>
-{% endif %}
+
 <body>
-作者: {{ article.author }}
-<img src="{{ article.author.avatar.url }}" style="border-radius: 50%">
-发布时间: {{ article.created_time }}
-最后更新时间: {{ article.updated_time }}
+    <header class="glass-effect">
+        <nav>
+            <div class="logo">OUC<span>博客网</span></div>
+            <div class="search-container">
+                <i class="fas fa-search search-icon" id="searchIcon"></i>
+                <input type="search" class="search-box" id="searchBox" placeholder="搜索文章、评论、用户...">
+            </div>
+            <ul class="nav-links">
+                {% if user.is_authenticated %}
+                <li><a href="{% url 'article:create' %}" class="active">发表文章</a></li>
+                <li><a href="{% url 'article:my' %}">我的文章</a></li>
+                {% endif %}
+                <li><a href="{% url 'article:list' %}">文章列表</a></li>
+                <li><a href="#">咖啡馆</a></li>
+                <li><a href="https://github.com/Yaosanqi137/ITStudio-BlogWebsite">我们的 GitHub</a></li>
+                {% if not user.is_authenticated %}
+                <li><a href="{% url 'user:login' %}">登录/注册</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
 
-<p>{{ article.body|safe }}</p>
+    <!-- 正文部分 -->
+    <div class="article glass-effect">
+        <div class="main">
+            <div class="title">{{ article.title }}</div>
+            <!-- 文章正文 -->
+            <p>{{ article.body|safe }}</p>
+        </div>
 
-<div class="col-9">
-    ...
-    <!-- 已有代码，文章正文 -->
-    <div class="col-12">
-        ...
+        <div class="author">
+            <img src="{{ article.author.avatar.url }}" style="border-radius: 50%">
+            作者: {{ article.author }}<br>
+            发布时间: {{ article.created_time }}<br>
+            最后更新时间: {{ article.updated_time }}
+            {% if request.user.username == article.author.username %}
+            <a href="{% url 'article:delete' article.id %}" class="delete glass-effect">删除文章</a>
+            <a href="{% url 'article:edit' article.id %}" class="edit glass-effect">编辑文章</a>
+            {% endif %}
+        </div>
     </div>
 
-    <!-- 发表评论 -->
-    <hr>
-    {% if user.is_authenticated %}
-        <div>
-            <form
-                    action="{% url 'comment:post' article.id %}"
-                    method="POST"
-            >
-                {% csrf_token %}
-                <div class="form-group">
-                    <label for="body">
-                        <strong>
-                            我也要发言：
-                        </strong>
-                    </label>
-                    <div>
-                        {{ comment_form.media }}
-                        {{ comment_form.body }}
-                    </div>
+    <!-- 评论区 -->
+    <div class="comment glass-effect">
+        <div class="head">评论区</div>
+
+        <!-- 发表评论 -->
+        {% if user.is_authenticated %}
+        <form action="{% url 'comment:post' article.id %}" method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="body">
+                    <strong>
+                        我也要发言：
+                    </strong>
+                </label><br>
+                <div class="input">
+                    {{ comment_form.media }}
+                    {{ comment_form.body }}
                 </div>
-                <!-- 提交按钮 -->
-                <button type="submit" class="btn btn-primary ">发送</button>
-            </form>
-        </div>
-        <br>
-    {% else %}
+            </div>
+            <!-- 提交按钮 -->
+            <button type="submit" class="btn btn-primary submit glass-effect">发送</button>
+        </form>
+
+        {% else %}
         <br>
         <h5 class="row justify-content-center">
             请<a href="{% url 'userprofile:login' %}">登录</a>后回复
         </h5>
         <br>
-    {% endif %}
+        {% endif %}
 
-
-
-    <!-- 显示评论 -->
-    <div id="comments-section">
+        <!-- 显示评论 -->
         <h4>共有{{ comments.count }}条评论</h4>
-        {% for comment in comments %}
-            <hr id="comment-{{ comment.id }}">
+        <hr>
+        <div class="comments">
+            {% for comment in comments %}
             <img src="{{ comment.user.avatar.url }}" style="border-radius: 50%">
             <p>
-                <strong style="color: pink">{{ comment.user }}</strong>
-                于<span style="color: green">{{ comment.created|date:"Y-m-d H:i:s" }}</span>时说：
+                <strong style="color: pink">
+                    {{ comment.user }}
+                </strong> 于
+                <span style="color: green">
+                    {{ comment.created|date:"Y-m-d H:i:s" }}
+                </span> 时说：
             </p>
-            <pre style="font-family: inherit; font-size: 1em;">{{ comment.body|safe }}</pre>
-        {% endfor %}
+            <pre style="font-family: inherit; font-size: 1em;">
+                {{ comment.body|safe }}
+            </pre>
+            <hr>
+            {% endfor %}
+        </div>
     </div>
-</div>
+
 </body>
-<!-- 添加自动滚动JS -->
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        if(window.location.hash) {
-            const target = document.querySelector(window.location.hash);
-            if(target) {
-                target.scrollIntoView({ behavior: 'smooth' });
-            }
-        }
-    });
-</script>
+
 </html>
