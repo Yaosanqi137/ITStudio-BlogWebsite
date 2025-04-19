@@ -8,7 +8,30 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="{% static 'css/HubStyles.css' %}">
     <link rel="stylesheet" href="{% static 'css/ArticleListStyles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/NavbarStyles.css' %}">
 </head>
+<header class="glass-effect">
+    <nav>
+        <div class="logo">OUC<span>博客网</span></div>
+        <div class="search-container">
+            <i class="fas fa-search search-icon" id="searchIcon"></i>
+            <input type="search" class="search-box" id="searchBox" placeholder="搜索文章、评论、用户...">
+        </div>
+        <ul class="nav-links">
+            <li><a href="/"><i class="fas fa-home"></i> 主页</a></li>
+            {% if user.is_authenticated %}
+                <li><a href="{% url 'article:create' %}">发表文章</a></li>
+                <li><a href="{% url 'article:my' %}" class="active">我的文章</a></li>
+            {% endif %}
+            <li><a href="{% url 'article:list' %}">文章列表</a></li>
+            <li><a href="{% url 'comment:cafe' %}">咖啡馆</a></li>
+            <li><a href="https://github.com/Yaosanqi137/ITStudio-BlogWebsite">我们的 GitHub</a></li>
+            {% if not user.is_authenticated %}
+                <li><a href="{% url 'user:login' %}">登录/注册</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+</header>
 <body>
 <div class="background-gradient"></div>
 

@@ -12,27 +12,28 @@
 </head>
 
 <body>
-    <header class="glass-effect">
-        <nav>
-            <div class="logo">OUC<span>博客网</span></div>
-            <div class="search-container">
-                <i class="fas fa-search search-icon" id="searchIcon"></i>
-                <input type="search" class="search-box" id="searchBox" placeholder="搜索文章、评论、用户...">
-            </div>
-            <ul class="nav-links">
-                {% if user.is_authenticated %}
-                <li><a href="{% url 'article:create' %}" class="active">发表文章</a></li>
+<header class="glass-effect">
+    <nav>
+        <div class="logo">OUC<span>博客网</span></div>
+        <div class="search-container">
+            <i class="fas fa-search search-icon" id="searchIcon"></i>
+            <input type="search" class="search-box" id="searchBox" placeholder="搜索文章、评论、用户...">
+        </div>
+        <ul class="nav-links">
+            <li><a href="/" class="active"><i class="fas fa-home"></i> 主页</a></li>
+            {% if user.is_authenticated %}
+                <li><a href="{% url 'article:create' %}">发表文章</a></li>
                 <li><a href="{% url 'article:my' %}">我的文章</a></li>
-                {% endif %}
-                <li><a href="{% url 'article:list' %}">文章列表</a></li>
-                <li><a href="#">咖啡馆</a></li>
-                <li><a href="https://github.com/Yaosanqi137/ITStudio-BlogWebsite">我们的 GitHub</a></li>
-                {% if not user.is_authenticated %}
+            {% endif %}
+            <li><a href="{% url 'article:list' %}">文章列表</a></li>
+            <li><a href="{% url 'comment:cafe' %}">咖啡馆</a></li>
+            <li><a href="https://github.com/Yaosanqi137/ITStudio-BlogWebsite">我们的 GitHub</a></li>
+            {% if not user.is_authenticated %}
                 <li><a href="{% url 'user:login' %}">登录/注册</a></li>
-                {% endif %}
-            </ul>
-        </nav>
-    </header>
+            {% endif %}
+        </ul>
+    </nav>
+</header>
 
     <!-- 正文部分 -->
     <div class="article glass-effect">
@@ -86,27 +87,54 @@
         {% endif %}
 
         <!-- 显示评论 -->
-        <h4>共有{{ comments.count }}条评论</h4>
-        <hr>
-        <div class="comments">
-            {% for comment in comments %}
-            <img src="{{ comment.user.avatar.url }}" style="border-radius: 50%">
-            <p>
-                <strong style="color: pink">
-                    {{ comment.user }}
-                </strong> 于
-                <span style="color: green">
-                    {{ comment.created|date:"Y-m-d H:i:s" }}
-                </span> 时说：
-            </p>
-            <pre style="font-family: inherit; font-size: 1em;">
-                {{ comment.body|safe }}
-            </pre>
+        <div id="comments-section">
+            <h4>共有{{ comments.count }}条评论</h4>
             <hr>
-            {% endfor %}
+            <div class="comments">
+                {% for comment in comments %}
+                <div id="comment-{{ comment.id }}" class="comment-item">
+                <img src="{{ comment.user.avatar.url }}" style="border-radius: 50%" width="64px">
+                <p>
+                    <strong style="color: pink">
+                        {{ comment.user }}
+                    </strong> 于
+                    <span style="color: green">
+                        {{ comment.created|date:"Y-m-d H:i:s" }}
+                    </span> 时说：
+                </p>
+                <pre style="font-family: inherit; font-size: 1em;">
+                    {{ comment.body|safe }}
+                </pre>
+                <hr>
+                </div>
+                {% endfor %}
+            </div>
         </div>
     </div>
 
 </body>
-
+<script>
+    <!-- 添加自动滚动JS -->
+    document.addEventListener('DOMContentLoaded', function() {
+        if(window.location.hash) {
+            const target = document.querySelector(window.location.hash);
+            if(target) {
+                // 添加高亮类
+                target.classList.add('highlight');
+                // 滚动到目标位置
+                target.scrollIntoView({ behavior: 'smooth' });
+                // 5秒后移除高亮
+                setTimeout(() => {
+                    target.classList.remove('highlight');
+                }, 5000);
+            }
+        }
+    });
+    CKEDITOR.replace('id_body', {
+        // 其他配置...
+        smiley_images: ['regular_smile.png','sad_smile.png','wink_smile.png'],
+        smiley_columns: 8,
+        smiley_size: 24  // 控制表情显示尺寸
+    });
+</script>
 </html>
