@@ -48,6 +48,25 @@
             作者: {{ article.author }}<br>
             发布时间: {{ article.created_time }}<br>
             最后更新时间: {{ article.updated_time }}
+
+            <!-- 添加关注按钮 -->
+       {% if request.user.is_authenticated and request.user != article.author %}
+            <form method="post" action="{% if is_following_author %}
+                                          {% url 'user:unfollow_user' article.author.id %}
+                                      {% else %}
+                                          {% url 'user:follow_user' article.author.id %}
+                                      {% endif %}">
+                {% csrf_token %}
+                <button type="submit" class="glass-effect">
+                    {% if is_following_author %}
+                        取消关注
+                    {% else %}
+                        关注
+                    {% endif %}
+                </button>
+            </form>
+            {% endif %}
+
             {% if request.user.username == article.author.username %}
             <a href="{% url 'article:delete' article.id %}" class="delete glass-effect">删除文章</a>
             <a href="{% url 'article:edit' article.id %}" class="edit glass-effect">编辑文章</a>

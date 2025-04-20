@@ -2,14 +2,14 @@ import markdown
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.http import HttpResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect,get_object_or_404
 from django.shortcuts import render
 from .forms import ArticlePostForm
 from .models import Article
-from user.models import BlogUser
+from user.models import BlogUser,Follow
 from django.db.models import Q
 from comment.models import Comment
-
+from django.contrib.auth.models import User
 from comment.forms import CommentForm
 
 # 分类选项
@@ -53,13 +53,23 @@ def detail_view(request, id):
     comment_form = CommentForm()
     article.looks += 1
     article.save()
+
+    # 判断是否关注了作者
+    is_following_author = False
+    if request.user.is_authenticated and request.user != article.author:
+        is_following_author = Follow.objects.filter(
+            follower=request.user,
+            followed=article.author
+        ).exists()
+
     article.body = markdown.markdown(article.body, extensions=[
         'markdown.extensions.extra',
         'markdown.extensions.codehilite'
         ])
     context = {'article': article,
                'comments': comments,
-               'comment_form': comment_form
+               'comment_form': comment_form,
+               'is_following_author': is_following_author
                }
     return render(request, 'Article.html', context)
 
