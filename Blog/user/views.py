@@ -1,5 +1,5 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect,get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.http import JsonResponse, HttpResponseRedirect
 from .forms import *
@@ -206,3 +206,18 @@ def profile_view(request):
     else:
         profile_form = ProfileForm(instance=user)
         return render(request, "Profile.html", {"profile_form": profile_form})
+
+@login_required(login_url="/user/login")
+def follow_user(request,user_id):
+    user_to_follow =User.objects.get(id=user_id)
+    if request.user !=user_to_follow:
+        Follow.objects.create(follower=request.user,followed=user_to_follow)
+        # send_follow_message(user_to_follow, request.user)
+    return redirect(request.META.get('HTTP_REFERER','/'))
+
+@login_required(login_url="/user/login")
+def unfollow_user(request,user_id):
+    user_to_unfollow=User.objects.get(id=user_id)
+    Follow.objects.filter(follower=request.user,followed=user_to_unfollow).delete()
+    # send_unfollow_message(user_to_unfollow, request.user)
+    return redirect(request.META.get('HTTP_REFERER','/'))
