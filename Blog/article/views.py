@@ -63,9 +63,17 @@ def detail_view(request, id):
         ).exists()
 
     article.body = markdown.markdown(article.body, extensions=[
-        'markdown.extensions.extra',
-        'markdown.extensions.codehilite'
-        ])
+        'markdown.extensions.extra',  # 表格、缩写等扩展
+        'markdown.extensions.codehilite',  # 代码高亮
+        'markdown.extensions.toc',  # 目录生成
+        'markdown.extensions.fenced_code',  # 隔离代码块
+        'markdown.extensions.admonition',  # 提示块
+    ], extension_configs={
+        'codehilite': [
+            ('linenums', True),  # 显示行号
+            ('css_class', 'highlight'),  # 高亮CSS类
+        ]
+    })
     context = {'article': article,
                'comments': comments,
                'comment_form': comment_form,

@@ -58,6 +58,15 @@ EMAIL_FROM = 'm17866819721@163.com'  # 你的邮箱地址
 EMAIL_HOST_PASSWORD = 'ZQyMCfswEXKWjGAp'  # 你的邮箱密钥（授权码）
 email_title = '邮箱激活'
 
+# Markdown 配置
+MARKDOWN_EXTENSIONS = [
+    'extra',
+    'codehilite',
+    'toc',
+    'fenced_code',
+    'admonition'
+]
+
 FILE_UPLOAD_MAX_MEMORY_SIZE = 10485760
 
 X_FRAME_OPTIONS = 'SAMEORIGIN'

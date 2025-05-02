@@ -10,6 +10,38 @@
     <link rel="stylesheet" href="{% static 'css/back-to-top.css' %}">
     <script src="{% static 'ckeditor/ckeditor/plugins/prism/lib/prism/prism_patched.min.js' %}"></script>
     <link rel="stylesheet" href="{% static 'prism/prism.css' %}">
+    <style>
+        /* 限制图片最大宽度 */
+        .article img {
+            max-width: 70%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* 代码块样式优化 */
+        .highlight {
+            position: relative;
+            margin: 1em 0;
+            border-radius: 6px;
+            overflow: auto;
+        }
+
+        /* 添加复制按钮 */
+        .highlight pre::after {
+            content: "复制";
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            color: #666;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .highlight:hover pre::after {
+            opacity: 1;
+        }
+    </style>
 </head>
 
 <body>
@@ -159,4 +191,28 @@
 </script>
 <script src="{% static 'js/layout-helpers.js' %}"></script>
 <script src="{% static 'js/back-to-top.js' %}"></script>
+<script>
+    // 代码复制功能
+    document.querySelectorAll('.highlight').forEach(block => {
+        block.addEventListener('click', (e) => {
+            if (e.target.classList.contains('copy-btn')) {
+                const code = block.querySelector('code').innerText;
+                navigator.clipboard.writeText(code).then(() => {
+                    const btn = e.target;
+                    btn.textContent = '已复制!';
+                    setTimeout(() => btn.textContent = '复制', 2000);
+                });
+            }
+        });
+
+        // 动态添加语言标签
+        const lang = block.className.match(/language-(\w+)/)?.[1] || 'code';
+        block.insertAdjacentHTML('beforeend',
+            `<div class="code-header">
+            <span class="lang-label">${lang}</span>
+            <button class="copy-btn">复制</button>
+        </div>`
+        );
+    });
+</script>
 </html>
