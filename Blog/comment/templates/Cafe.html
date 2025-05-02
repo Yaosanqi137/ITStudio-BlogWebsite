@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="{% static 'css/NavbarStyles.css' %}">
     <link rel="stylesheet" href="{% static 'prism/prism.css' %}">
     <link rel="stylesheet" href="{% static 'css/CafeStyles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/back-to-top.css' %}">
     <script src="{% static 'ckeditor/ckeditor/plugins/prism/lib/prism/prism_patched.min.js' %}"></script>
 </head>
 <body>
@@ -112,6 +113,8 @@
 </main>
 
 <script src="{% static 'js/NavbarJs.js' %}"></script>
+<script src="{% static 'js/layout-helpers.js' %}"></script>
+<script src="{% static 'js/back-to-top.js' %}"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // 处理回复按钮点击

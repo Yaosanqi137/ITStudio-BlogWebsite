@@ -7,6 +7,7 @@
     <title>{{ article.title }}</title>
     <link rel="stylesheet" href="{% static 'css/monokai.css' %}">
     <link rel="stylesheet" href="../../static/css/ArticleStyles.css">
+    <link rel="stylesheet" href="{% static 'css/back-to-top.css' %}">
     <script src="{% static 'ckeditor/ckeditor/plugins/prism/lib/prism/prism_patched.min.js' %}"></script>
     <link rel="stylesheet" href="{% static 'prism/prism.css' %}">
 </head>
@@ -156,4 +157,6 @@
         smiley_size: 24  // 控制表情显示尺寸
     });
 </script>
+<script src="{% static 'js/layout-helpers.js' %}"></script>
+<script src="{% static 'js/back-to-top.js' %}"></script>
 </html>
