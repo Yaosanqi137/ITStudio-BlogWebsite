@@ -12,31 +12,31 @@
     <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css">
     <link rel="stylesheet" href="../../static/css/ArticlePostStyles.css">
+    <link rel="stylesheet" href="{% static 'css/back-to-top.css' %}">
 </head>
 
 <body>
-<header class="glass-effect">
-    <nav>
-        <div class="logo">OUC<span>博客网</span></div>
-        <div class="search-container">
-            <i class="fas fa-search search-icon" id="searchIcon"></i>
-            <input type="search" class="search-box" id="searchBox" placeholder="搜索文章、评论、用户...">
-        </div>
-        <ul class="nav-links">
-            <li><a href="/"><i class="fas fa-home"></i> 主页</a></li>
-            {% if user.is_authenticated %}
+    <header class="glass-effect">
+        <nav>
+            <div class="logo">OUC<span>博客网</span></div>
+            <div class="search-container">
+                <i class="fas fa-search search-icon" id="searchIcon"></i>
+                <input type="search" class="search-box" id="searchBox" placeholder="搜索文章、评论、用户...">
+            </div>
+            <ul class="nav-links">
+                {% if user.is_authenticated %}
                 <li><a href="{% url 'article:create' %}" class="active">发表文章</a></li>
                 <li><a href="{% url 'article:my' %}">我的文章</a></li>
-            {% endif %}
-            <li><a href="{% url 'article:list' %}">文章列表</a></li>
-            <li><a href="{% url 'comment:cafe' %}">咖啡馆</a></li>
-            <li><a href="https://github.com/Yaosanqi137/ITStudio-BlogWebsite">我们的 GitHub</a></li>
-            {% if not user.is_authenticated %}
+                {% endif %}
+                <li><a href="{% url 'article:list' %}">文章列表</a></li>
+                <li><a href="#">咖啡馆</a></li>
+                <li><a href="https://github.com/Yaosanqi137/ITStudio-BlogWebsite">我们的 GitHub</a></li>
+                {% if not user.is_authenticated %}
                 <li><a href="{% url 'user:login' %}">登录/注册</a></li>
-            {% endif %}
-        </ul>
-    </nav>
-</header>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
 
     <div class="editArea glass-effect">
         <div class="header">
@@ -134,6 +134,7 @@
 <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
+<script src="{% static 'js/back-to-top.js' %}"></script>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
