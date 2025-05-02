@@ -12,8 +12,7 @@
     <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css">
     <link rel="stylesheet" href="{% static 'css/ArticlePostStyles.css' %}">
-    <link rel="stylesheet" href="{% static 'css/NavbarStyles.css' %}">
-    <link rel="stylesheet" href="{% static 'css/BackToTopStyles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/back-to-top.css' %}">
 </head>
 
 <body>
@@ -227,21 +226,9 @@
     });
 </script>
 
-<footer class="glass-effect">
-    <div class="footer-content">
-        <div class="footer-logo">OUC<span>博客网</span></div>
-        <p>版权信息: Made By IT Studio</p>
-        <p>联系信息: 114514-1919-810</p>
-    </div>
-</footer>
-
-<!-- 返回顶部按钮 -->
-<button class="back-to-top" title="返回顶部">
-    <i class="fas fa-arrow-up"></i>
-</button>
-
-{{ form.media }}
 <script src="{% static 'js/NavbarJs.js' %}"></script>
-<script src="{% static 'js/BackToTopJs.js' %}"></script>
+<script src="{% static 'js/ArticlePostJs.js' %}"></script>
+<script src="{% static 'js/layout-helpers.js' %}"></script>
+<script src="{% static 'js/back-to-top.js' %}"></script>
 </body>
 </html>

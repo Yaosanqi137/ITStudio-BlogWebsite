@@ -4,12 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我的文章 - OUC博客网</title>
+    <title>我的文章</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="{% static 'css/HubStyles.css' %}">
     <link rel="stylesheet" href="{% static 'css/ArticleListStyles.css' %}">
     <link rel="stylesheet" href="{% static 'css/NavbarStyles.css' %}">
-    <link rel="stylesheet" href="{% static 'css/BackToTopStyles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/back-to-top.css' %}">
 </head>
 <header class="glass-effect">
     <nav>
@@ -153,21 +153,9 @@
     </div>
 </main>
 
-<footer class="glass-effect">
-    <div class="footer-content">
-        <div class="footer-logo">OUC<span>博客网</span></div>
-        <p>版权信息: Made By IT Studio</p>
-        <p>联系信息: 114514-1919-810</p>
-    </div>
-</footer>
-
-<!-- 返回顶部按钮 -->
-<button class="back-to-top" title="返回顶部">
-    <i class="fas fa-arrow-up"></i>
-</button>
-
 <script src="{% static 'js/ArticleListJs.js' %}"></script>
 <script src="{% static 'js/NavbarJs.js' %}"></script>
-<script src="{% static 'js/BackToTopJs.js' %}"></script>
+<script src="{% static 'js/layout-helpers.js' %}"></script>
+<script src="{% static 'js/back-to-top.js' %}"></script>
 </body>
 </html>

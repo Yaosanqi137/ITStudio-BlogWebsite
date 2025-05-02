@@ -4,13 +4,10 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ article.title }} - OUC博客网</title>
+    <title>{{ article.title }}</title>
     <link rel="stylesheet" href="{% static 'css/monokai.css' %}">
     <link rel="stylesheet" href="../../static/css/ArticleStyles.css">
-    <link rel="stylesheet" href="{% static 'css/NavbarStyles.css' %}">
-    <link rel="stylesheet" href="{% static 'css/BackToTopStyles.css' %}">
-    <link rel="stylesheet" href="{% static 'prism/prism.css' %}">
+    <link rel="stylesheet" href="{% static 'css/back-to-top.css' %}">
     <script src="{% static 'ckeditor/ckeditor/plugins/prism/lib/prism/prism_patched.min.js' %}"></script>
     <link rel="stylesheet" href="{% static 'prism/prism.css' %}">
 </head>
@@ -52,6 +49,25 @@
             作者: {{ article.author }}<br>
             发布时间: {{ article.created_time }}<br>
             最后更新时间: {{ article.updated_time }}
+
+            <!-- 添加关注按钮 -->
+       {% if request.user.is_authenticated and request.user != article.author %}
+            <form method="post" action="{% if is_following_author %}
+                                          {% url 'user:unfollow_user' article.author.id %}
+                                      {% else %}
+                                          {% url 'user:follow_user' article.author.id %}
+                                      {% endif %}">
+                {% csrf_token %}
+                <button type="submit" class="glass-effect">
+                    {% if is_following_author %}
+                        取消关注
+                    {% else %}
+                        关注
+                    {% endif %}
+                </button>
+            </form>
+            {% endif %}
+
             {% if request.user.username == article.author.username %}
             <a href="{% url 'article:delete' article.id %}" class="delete glass-effect">删除文章</a>
             <a href="{% url 'article:edit' article.id %}" class="edit glass-effect">编辑文章</a>
@@ -116,19 +132,7 @@
         </div>
     </div>
 
-<footer class="glass-effect">
-    <div class="footer-content">
-        <div class="footer-logo">OUC<span>博客网</span></div>
-        <p>版权信息: Made By IT Studio</p>
-        <p>联系信息: 114514-1919-810</p>
-    </div>
-</footer>
-
-<!-- 返回顶部按钮 -->
-<button class="back-to-top" title="返回顶部">
-    <i class="fas fa-arrow-up"></i>
-</button>
-
+</body>
 <script>
     <!-- 添加自动滚动JS -->
     document.addEventListener('DOMContentLoaded', function() {
@@ -153,9 +157,6 @@
         smiley_size: 24  // 控制表情显示尺寸
     });
 </script>
-<script src="{% static 'js/ArticleJs.js' %}"></script>
-<script src="{% static 'js/NavbarJs.js' %}"></script>
-<script src="{% static 'prism/prism.js' %}"></script>
-<script src="{% static 'js/BackToTopJs.js' %}"></script>
-</body>
+<script src="{% static 'js/layout-helpers.js' %}"></script>
+<script src="{% static 'js/back-to-top.js' %}"></script>
 </html>
