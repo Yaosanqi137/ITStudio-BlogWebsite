@@ -79,6 +79,39 @@
                 <a href="user/profile"><i class="fa fa-gear"></i></a>
                 <a href="user/logout"><i class="fa  fa-warning"></i></a>
             </div>
+           <div class="follow-list">
+        <h3>我关注了：</h3>
+        <ul>
+            {% for follow in followed_users %}
+                <li>
+                    <a href="/user/{{ follow.followed.username }}">
+                        {{ follow.followed.username }}
+                    </a>
+                </li>
+            {% empty %}
+                <li>没有关注任何人。</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+
+    <!-- 显示关注我的人 -->
+    <div class="follow-list">
+        <h3>关注我的人：</h3>
+        <ul>
+            {% for follow in followers %}
+                <li>
+                    <a href="/user/{{ follow.follower.username }}">
+                        {{ follow.follower.username }}
+                    </a>
+                </li>
+            {% empty %}
+                <li>没有人关注我。</li>
+            {% endfor %}
+        </ul>
+    </div>
+        <pre>
+</pre>
         </div>
     </section>
     {% endif %}
