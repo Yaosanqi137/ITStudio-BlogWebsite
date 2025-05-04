@@ -78,13 +78,10 @@
 
         <div class="author">
             <img src="{{ article.author.avatar.url }}" style="border-radius: 50%">
-            作者: {{ article.author }}<br>
-            发布时间: {{ article.created_time }}<br>
-            最后更新时间: {{ article.updated_time }}
-
+            <div class="authorName">作者: {{ article.author }}<br></div>
             <!-- 添加关注按钮 -->
        {% if request.user.is_authenticated and request.user != article.author %}
-            <form method="post" action="{% if is_following_author %}
+            <form method="post" class="follow" action="{% if is_following_author %}
                                           {% url 'user:unfollow_user' article.author.id %}
                                       {% else %}
                                           {% url 'user:follow_user' article.author.id %}
@@ -98,7 +95,10 @@
                     {% endif %}
                 </button>
             </form>
-            {% endif %}
+            {% endif %}<br>
+
+            发布时间: {{ article.created_time }}<br>
+            最后更新时间: {{ article.updated_time }}
 
             {% if request.user.username == article.author.username %}
             <a href="{% url 'article:delete' article.id %}" class="delete glass-effect">删除文章</a>
@@ -145,19 +145,20 @@
             <div class="comments">
                 {% for comment in comments %}
                 <div id="comment-{{ comment.id }}" class="comment-item">
-                <img src="{{ comment.user.avatar.url }}" style="border-radius: 50%" width="64px">
-                <p>
-                    <strong style="color: pink">
-                        {{ comment.user }}
-                    </strong> 于
-                    <span style="color: green">
-                        {{ comment.created|date:"Y-m-d H:i:s" }}
-                    </span> 时说：
-                </p>
-                <pre style="font-family: inherit; font-size: 1em;">
-                    {{ comment.body|safe }}
-                </pre>
-                <hr>
+                    <img src="{{ comment.user.avatar.url }}" class="img" alt="avatar">
+                    <div class="commentContent">
+                        <p>
+                            <strong style="color: pink">
+                                {{ comment.user }}
+                            </strong> 于
+                            <span style="color: green">
+                                {{ comment.created|date:"Y-m-d H:i:s" }}
+                            </span> 时说：
+                        </p>
+                        <pre style="font-family: inherit; font-size: 1em;">
+                            {{ comment.body|safe }}
+                        </pre>
+                    </div>
                 </div>
                 {% endfor %}
             </div>
