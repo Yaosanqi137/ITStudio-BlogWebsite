@@ -21,7 +21,6 @@ class Article(models.Model):
     category     = models.CharField("文章类型", max_length=20)
     likes        = models.IntegerField(default=0)
     collect      = models.IntegerField(default=0)
-    dislikes     = models.IntegerField(default=0)
     looks        = models.IntegerField(default=0)
 
     class Meta:
