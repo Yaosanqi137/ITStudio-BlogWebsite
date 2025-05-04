@@ -10,4 +10,5 @@ urlpatterns = [
     path('create', views.create_view, name='create'),
     path('delete/<int:id>', views.delete_view, name='delete'),
     path('my', views.my_view, name='my'),
+    path('like/<int:id>', views.likes_view, name='like'),
 ]

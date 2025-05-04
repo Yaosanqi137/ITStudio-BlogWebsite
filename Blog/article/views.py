@@ -1,4 +1,5 @@
 import markdown
+import json
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.http import HttpResponse
@@ -11,6 +12,7 @@ from django.db.models import Q
 from comment.models import Comment
 from django.contrib.auth.models import User
 from comment.forms import CommentForm
+from django.views.decorators.http import require_POST
 
 # 分类选项
 category = {
@@ -145,3 +147,29 @@ def my_view(request):
         'articles': articles,
         'category': category,
     })
+
+@require_POST
+@login_required(login_url='/user/login/')
+def likes_view(request, id):
+    try:
+        if request.session.get(f'liked_{id}', False):
+            return HttpResponse(
+                json.dumps({'status': 'fail', 'msg': '已点赞过'}),
+                content_type='application/json',
+                status=400
+            )
+
+        article = Article.objects.get(id=id)
+        article.likes += 1
+        article.save()
+        request.session[f'liked_{id}'] = True
+        return HttpResponse(
+            json.dumps({'status': 'success', 'likes': article.likes}, ensure_ascii=False),
+            content_type='application/json'
+        )
+    except Exception as e:
+        return HttpResponse(
+            json.dumps({'status': 'error', 'msg': str(e)}),
+            content_type='application/json',
+            status=500
+        )

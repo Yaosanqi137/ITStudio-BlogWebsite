@@ -41,6 +41,30 @@
         .highlight:hover pre::after {
             opacity: 1;
         }
+
+        /* 点赞按钮样式 */
+        .like-section {
+            margin-top: 10px;
+        }
+
+        #like-btn {
+            padding: 5px 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        #like-btn.liked {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        #like-btn:hover {
+            background-color: #f0f0f0;
+        }
+
+        #like-btn.liked:hover {
+            background-color: #45a049;
+        }
     </style>
 </head>
 
@@ -98,7 +122,14 @@
                     {% endif %}
                 </button>
             </form>
-            {% endif %}
+        {% endif %}
+        {% if request.user.is_authenticated %}
+            <div class="like-section">
+                <button id="like-btn" class="glass-effect" data-article-id="{{ article.id }}">
+                    <i class="fas fa-thumbs-up"></i> 点赞 (<span id="like-count">{{ article.likes }}</span>)
+                </button>
+            </div>
+        {% endif %}
 
             {% if request.user.username == article.author.username %}
             <a href="{% url 'article:delete' article.id %}" class="delete glass-effect">删除文章</a>
@@ -165,54 +196,88 @@
     </div>
 
 </body>
-<script>
-    <!-- 添加自动滚动JS -->
-    document.addEventListener('DOMContentLoaded', function() {
-        if(window.location.hash) {
-            const target = document.querySelector(window.location.hash);
-            if(target) {
-                // 添加高亮类
-                target.classList.add('highlight');
-                // 滚动到目标位置
-                target.scrollIntoView({ behavior: 'smooth' });
-                // 5秒后移除高亮
-                setTimeout(() => {
-                    target.classList.remove('highlight');
-                }, 5000);
-            }
-        }
-    });
-    CKEDITOR.replace('id_body', {
-        // 其他配置...
-        smiley_images: ['regular_smile.png','sad_smile.png','wink_smile.png'],
-        smiley_columns: 8,
-        smiley_size: 24  // 控制表情显示尺寸
-    });
-</script>
+<script src="{% static 'js/csrf.js' %}"></script>
 <script src="{% static 'js/layout-helpers.js' %}"></script>
 <script src="{% static 'js/back-to-top.js' %}"></script>
 <script>
-    // 代码复制功能
-    document.querySelectorAll('.highlight').forEach(block => {
-        block.addEventListener('click', (e) => {
-            if (e.target.classList.contains('copy-btn')) {
-                const code = block.querySelector('code').innerText;
-                navigator.clipboard.writeText(code).then(() => {
-                    const btn = e.target;
-                    btn.textContent = '已复制!';
-                    setTimeout(() => btn.textContent = '复制', 2000);
-                });
-            }
-        });
+<!-- 添加自动滚动JS -->
+document.addEventListener('DOMContentLoaded', function() {
+    if(window.location.hash) {
+        const target = document.querySelector(window.location.hash);
+        if(target) {
+            // 添加高亮类
+            target.classList.add('highlight');
+            // 滚动到目标位置
+            target.scrollIntoView({ behavior: 'smooth' });
+            // 5秒后移除高亮
+            setTimeout(() => {
+                target.classList.remove('highlight');
+            }, 5000);
+        }
+    }
+});
+CKEDITOR.replace('id_body', {
+    // 其他配置...
+    smiley_images: ['regular_smile.png','sad_smile.png','wink_smile.png'],
+    smiley_columns: 8,
+    smiley_size: 24  // 控制表情显示尺寸
+});
 
-        // 动态添加语言标签
-        const lang = block.className.match(/language-(\w+)/)?.[1] || 'code';
-        block.insertAdjacentHTML('beforeend',
-            `<div class="code-header">
-            <span class="lang-label">${lang}</span>
-            <button class="copy-btn">复制</button>
-        </div>`
-        );
-    });
+document.getElementById('like-btn').addEventListener('click', function() {
+    const articleId = this.dataset.articleId;
+    const likeCount = document.getElementById('like-count');
+
+    fetch(`/article/like/${articleId}`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Accept': 'application/json'
+        },
+        credentials: 'same-origin'
+    })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(err => { throw err; });
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.status === 'success') {
+                likeCount.textContent = data.likes;
+                this.innerHTML = `<i class="fas fa-thumbs-up"></i> 已点赞 (${data.likes})`;
+                this.classList.add('liked');
+                this.disabled = true;
+            } else {
+                alert(data.msg || '操作失败');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert(error.msg || '请求出错');
+        });
+});
+
+// 获取CSRF Token的函数（添加到全局JS中）
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+// 点赞后禁用按钮
+fetch(`/like/${id}`).then(res => res.json()).then(data => {
+    if(data.status === 'success') {
+        likeBtn.disabled = true;
+        likeBtn.classList.add('liked');
+    }
+});
 </script>
 </html>
