@@ -12,6 +12,16 @@ from django.contrib import messages
 from django.template.loader import render_to_string
 from captcha.models import CaptchaStore
 from captcha.helpers import captcha_image_url
+from article.models import Article, Collection
+from django.core.paginator import Paginator
+from pages.models import UserMessage
+
+def send_message(user, content, url):
+    message = UserMessage.objects.create(user=user)
+    message.content = content
+    message.redirect_url = url
+    message.save()
+
 
 def ajax_validate_captcha(request):
     if request.method == 'GET':
@@ -108,6 +118,7 @@ def register_view(request):
             return redirect('/user/login')
         else:
             return render(request, 'Register.html',{
+                'error': '用户名已存在，请选择其他用户名',
                 'reg_form': reg_form,
                 'captcha': captcha,
             })
@@ -207,14 +218,52 @@ def profile_view(request):
         profile_form = ProfileForm(instance=user)
         return render(request, "Profile.html", {"profile_form": profile_form})
 
+def profile_prew_view(request, username):
+    user = get_object_or_404(BlogUser, username=username)
+    current_tab = request.GET.get('tab', 'articles')  # 获取当前选中的标签
+
+    # 获取四个板块数据
+    articles = Article.objects.filter(author=user).order_by('-created_time')
+    followers = user.followers.all().select_related('follower')
+    following = user.following.all().select_related('followed')
+    collection = Collection.objects.filter(collector=user)
+
+    # 分页处理（保持原有分页逻辑）
+    paginator = Paginator(articles, 10)
+    page_number = request.GET.get('page')
+    articles_page = paginator.get_page(page_number)
+
+    # 添加关注状态判断
+    is_following = False
+    if request.user.is_authenticated and request.user.pk != user.pk:
+        is_following = Follow.objects.filter(
+            follower=request.user,
+            followed=user
+        ).exists()
+
+    context = {
+        'profile_user': user,
+        'articles': articles_page,
+        'followers': followers,
+        'following': following,
+        'current_tab': current_tab,
+        'is_following': is_following,
+        'background_url': user.backimg.url,
+        'collection': collection,
+    }
+    return render(request, 'Space.html', context)
+
 @login_required(login_url="/user/login")
 def follow_user(request, user_id):
     user_to_follow = get_object_or_404(BlogUser, id=user_id)
-    follower_user = get_object_or_404(BlogUser, id=request.user.id)  # 因为 request.user 本身也是 BlogUser
+    follower_user = get_object_or_404(BlogUser, pk=request.user.pk)  # 因为 request.user 本身也是 BlogUser
 
     if follower_user != user_to_follow:
         Follow.objects.get_or_create(follower=follower_user, followed=user_to_follow)
         # send_follow_message(user_to_follow, follower_user)
+    host = request.build_absolute_uri('/')[:-1]
+    url = f"{host}/user/profile/{request.user.username}"
+    send_message(user_to_follow, f"{request.user.username} 关注你啦!", url)
     return redirect(request.META.get('HTTP_REFERER', '/'))
 
 @login_required(login_url="/user/login")

@@ -68,14 +68,17 @@
 
 <main>
     {% if user.is_authenticated %}
+        <a href="{% url 'user:profile_prew' request.user.username %}" class="follower-card-link" style="text-decoration: none;">
     <section class="profile glass-effect">
         <div class="profile-image">
             <img src="{{ user.avatar.url }}" alt="头像">
         </div>
+
         <div class="profile-info">
             <h1>欢迎！{{ user.nickname }}</h1>
             <p class="tagline">{{ user.info }}</p>
             <div class="social-links">
+                <i class="fa-solid fa-house"></i>
                 <a href="user/profile"><i class="fa fa-gear"></i></a>
                 <a href="user/logout"><i class="fa  fa-warning"></i></a>
             </div>
@@ -98,6 +101,7 @@
 </pre>
         </div>
     </section>
+        </a>
     {% endif %}
 
     <div class="articles-header">

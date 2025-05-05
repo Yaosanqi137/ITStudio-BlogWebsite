@@ -12,5 +12,4 @@ urlpatterns = [
     path('my', views.my_view, name='my'),
     path('like/<int:id>', views.likes_view, name='like'),
     path('collect/<int:id>', views.collect_view, name='collect'),
-    path('collect/status/<int:id>', views.collect_status_view, name='collect_status')
 ]

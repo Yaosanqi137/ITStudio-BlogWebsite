@@ -79,17 +79,6 @@
             display: inline-block;
         }
 
-        /* 关注状态 */
-        .author form button[type="submit"] {
-            background-color: #4285f4;
-            color: white;
-        }
-
-        /* 取消关注状态 */
-        .author form button[type="submit"]:contains("取消关注") {
-            background-color: #f44336;
-        }
-
         /* 悬停效果 */
         .author form button[type="submit"]:hover {
             transform: translateY(-2px);
@@ -106,11 +95,6 @@
             margin-right: 5px;
         }
 
-        /* 收藏按钮样式 */
-        .collect-section {
-            margin-top: 10px;
-        }
-
         #collect-btn {
             padding: 5px 10px;
             cursor: pointer;
@@ -124,6 +108,123 @@
         #collect-btn:disabled {
             opacity: 0.7;
             cursor: not-allowed;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            flex: 1;
+            min-width: 100px;
+        }
+
+        #collect-btn, #like-btn {
+            width: 100%;
+            padding: 8px 12px;
+            text-align: center;
+        }
+
+        .follow button {
+            margin-top: 10px;
+        }
+
+        .author-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .author-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .author-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #e0e0e0;
+        }
+
+        .author-meta {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .author-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .publish-time {
+            font-size: 0.85em;
+            color: #666;
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .action-btn {
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .follow-btn {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .follow-btn.unfollow {
+            background: #ff4444;
+            color: white;
+        }
+
+        .collect-btn {
+            background: #fff8e1;
+            color: #ff9800;
+        }
+
+        .collect-btn.collected {
+            background: #ff9800;
+            color: white;
+        }
+
+        .like-btn {
+            background: #e3f2fd;
+            color: #2196f3;
+        }
+
+        .like-btn.liked {
+            background: #2196f3;
+            color: white;
+        }
+
+        /* 悬停效果 */
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
         }
     </style>
 </head>
@@ -160,54 +261,47 @@
             <p>{{ article.body|safe }}</p>
         </div>
 
-        <div class="author">
-            <img src="{{ article.author.avatar.url }}" style="border-radius: 50%">
-            <div class="authorName">作者: {{ article.author }}<br></div>
-            <!-- 添加关注按钮 -->
-       {% if request.user.is_authenticated and request.user != article.author %}
-            <form method="post" class="follow" action="{% if is_following_author %}
-                                          {% url 'user:unfollow_user' article.author.id %}
-                                      {% else %}
-                                          {% url 'user:follow_user' article.author.id %}
-                                      {% endif %}">
-                {% csrf_token %}
-                <button type="submit" class="glass-effect">
-                    {% if is_following_author %}
-                        取消关注
-                    {% else %}
-                        关注
-                    {% endif %}
-                </button>
-            </form>
-            {% endif %}<br>
+        <div class="author-card glass-effect">
+            <a href="{% url 'user:profile_prew' article.author.username %}" class="follower-card-link" style="text-decoration: none;">
+            <!-- 左侧作者信息 -->
+            <div class="author-info">
+                <img src="{{ article.author.avatar.url }}" class="author-avatar">
+                <div class="author-meta">
+                    <div class="author-name">作者: {{ article.author }}</div>
+                    <div class="publish-time">
+                        <span>发布时间: {{ article.created_time }}</span>
+                        <span>更新: {{ article.updated_time }}</span>
+                    </div>
+                </div>
+            </div>
+            </a>
 
-            发布时间: {{ article.created_time }}<br>
-            最后更新时间: {{ article.updated_time }}
-        {% if request.user.is_authenticated %}
-            <div class="collect-section">
-                {% if is_collected %}
-                    <button id="collect-btn" class="glass-effect collected" data-article-id="{{ article.id }}">
-                        <i class="fas fa-star"></i> 已收藏 (<span id="collect-count">{{ article.collect }}</span>)
-                    </button>
-                {% else %}
-                    <button id="collect-btn" class="glass-effect" data-article-id="{{ article.id }}">
-                        <i class="fas fa-star"></i> 收藏 (<span id="collect-count">{{ article.collect }}</span>)
-                    </button>
+            <!-- 右侧操作按钮组 -->
+            <div class="action-buttons">
+                <!-- 关注按钮 -->
+                {% if request.user.is_authenticated and request.user.username != article.author.username %}
+                    <form method="post"
+                          action="{% if is_following_author %}{% url 'user:unfollow_user' article.author.id %}{% else %}{% url 'user:follow_user' article.author.id %}{% endif %}"
+                          class="follow-form">
+                        {% csrf_token %}
+                        <button type="submit" class="action-btn follow-btn {% if is_following_author %}unfollow{% endif %}">
+                            {% if is_following_author %}取消关注{% else %}+ 关注{% endif %}
+                        </button>
+                    </form>
                 {% endif %}
-            </div>
-            <div class="like-section">
-                <button id="like-btn" class="glass-effect" data-article-id="{{ article.id }}">
-                    <i class="fas fa-thumbs-up"></i> 点赞 (<span id="like-count">{{ article.likes }}</span>)
+
+                <!-- 收藏按钮 -->
+                <button id="collect-btn" class="action-btn collect-btn {% if is_collected %}collected{% endif %}"
+                        data-article-id="{{ article.id }}">
+                    <i class="fas fa-star"></i> {{ article.collect }}
+                </button>
+
+                <!-- 点赞按钮 -->
+                <button id="like-btn" class="action-btn like-btn" data-article-id="{{ article.id }}">
+                    <i class="fas fa-thumbs-up"></i> {{ article.likes }}
                 </button>
             </div>
-        {% endif %}
-
-            {% if request.user.username == article.author.username %}
-            <a href="{% url 'article:delete' article.id %}" class="delete glass-effect">删除文章</a>
-            <a href="{% url 'article:edit' article.id %}" class="edit glass-effect">编辑文章</a>
-            {% endif %}
         </div>
-    </div>
 
     <!-- 评论区 -->
     <div class="comment glass-effect">
@@ -343,12 +437,15 @@ CKEDITOR.replace('id_body', {
 
 document.getElementById('like-btn').addEventListener('click', function() {
     const articleId = this.dataset.articleId;
-    const likeCount = document.getElementById('like-count');
+    const likeBtn = this;
+
+    // 禁用按钮防止重复点击
+    likeBtn.disabled = true;
 
     fetch(`/article/like/${articleId}`, {
         method: 'POST',
         headers: {
-            'X-CSRFToken': '{{ csrf_token }}',
+            'X-CSRFToken': getCookie('csrftoken'),
             'Accept': 'application/json'
         },
         credentials: 'same-origin'
@@ -361,17 +458,23 @@ document.getElementById('like-btn').addEventListener('click', function() {
         })
         .then(data => {
             if (data.status === 'success') {
-                likeCount.textContent = data.likes;
-                this.innerHTML = `<i class="fas fa-thumbs-up"></i> 已点赞 (${data.likes})`;
-                this.classList.add('liked');
-                this.disabled = true;
+                // 更新按钮状态和显示
+                likeBtn.innerHTML = `<i class="fas fa-thumbs-up"></i> 已点赞 (${data.likes})`;
+                likeBtn.classList.add('liked');
+
+                // 更新页面上的点赞数显示
+                const likeCountElements = document.querySelectorAll('.like-count');
+                likeCountElements.forEach(el => {
+                    el.textContent = data.likes;
+                });
             } else {
+                likeBtn.disabled = false;
                 alert(data.msg || '操作失败');
             }
         })
         .catch(error => {
+            likeBtn.disabled = false;
             console.error('Error:', error);
-            alert(error.msg || '请求出错');
         });
 });
 

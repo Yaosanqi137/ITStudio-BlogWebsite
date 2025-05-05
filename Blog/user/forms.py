@@ -27,6 +27,6 @@ class UserRegForm(UserCreationForm):
 class ProfileForm(forms.ModelForm):
     class Meta:
         model = BlogUser
-        fields = ('avatar', 'nickname', 'info', 'birthday', 'sex')
+        fields = ('avatar', 'nickname', 'intro', 'birthday', 'sex', 'backimg')
 
 

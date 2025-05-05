@@ -15,6 +15,7 @@ from comment.forms import CommentForm
 from django.views.decorators.http import require_POST
 from django.db import transaction
 from django.db import models
+from pages.models import UserMessage
 
 # 分类选项
 category = {
@@ -26,6 +27,12 @@ category = {
     "美食": "美食",
     "其他": "其他",
 }
+
+def send_message(user, content, url):
+    message = UserMessage.objects.create(user=user)
+    message.content = content
+    message.redirect_url = url
+    message.save()
 
 def list_view(request):
     search_query = request.GET.get('search', '') # 获取搜索词
@@ -58,6 +65,12 @@ def detail_view(request, id):
     article.looks += 1
     article.save()
 
+    # 是否收藏了这篇文章
+    is_collected = False
+    collect = Collection.objects.filter(collector=request.user.id, article=id).exists()
+    if collect:
+        is_collected = True
+
     # 判断是否关注了作者
     is_following_author = False
     if request.user.is_authenticated and request.user.username != article.author.username:
@@ -77,6 +90,7 @@ def detail_view(request, id):
     context = {'article': article,
                'comments': comments,
                'comment_form': comment_form,
+               'is_collected': is_collected,
                'is_following_author': is_following_author
                }
     return render(request, 'Article.html', context)
@@ -90,6 +104,13 @@ def create_view(request):
             new_article.author = BlogUser.objects.get(pk=request.user.pk)
             new_article.save()
             id = new_article.id
+
+            followers = Follow.objects.filter(followed=request.user.id)
+
+            host = request.build_absolute_uri('/')[:-1]
+            url = f"{host}/article/detail/{id}"
+            for follow in followers:
+                send_message(follow.follower, f"{request.user.username} 更新了新文章！", url)
             return redirect(f'/article/detail/{id}')
         else:
             return render(request, 'ArticlePost.html', {'article_post_form': article_post_form})
@@ -151,26 +172,27 @@ def my_view(request):
 def likes_view(request, id):
     try:
         if request.session.get(f'liked_{id}', False):
-            return HttpResponse(
-                json.dumps({'status': 'fail', 'msg': '已点赞过'}),
-                content_type='application/json',
-                status=400
-            )
+            article = Article.objects.get(id=id)
+            return JsonResponse({
+                'status': 'fail',
+                'msg': '已点赞过',
+                'likes': article.likes  # 返回当前点赞数
+            }, status=400)
 
         article = Article.objects.get(id=id)
         article.likes += 1
         article.save()
         request.session[f'liked_{id}'] = True
-        return HttpResponse(
-            json.dumps({'status': 'success', 'likes': article.likes}, ensure_ascii=False),
-            content_type='application/json'
-        )
+        return JsonResponse({
+            'status': 'success',
+            'msg': '点赞成功',
+            'likes': article.likes
+        })
     except Exception as e:
-        return HttpResponse(
-            json.dumps({'status': 'error', 'msg': str(e)}),
-            content_type='application/json',
-            status=500
-        )
+        return JsonResponse({
+            'status': 'error',
+            'msg': str(e)
+        }, status=500)
 
 @require_POST
 @login_required(login_url='/user/login/')
@@ -210,15 +232,3 @@ def collect_view(request, id):
             'status': 'error',
             'message': str(e)
         }, status=400)
-
-@login_required(login_url='/user/login/')
-def collect_status_view(request, id):
-    article = get_object_or_404(Article, id=id)
-    is_collected = Collection.objects.filter(
-        article=article,
-        collector=request.user
-    ).exists()
-    return JsonResponse({
-        'is_collected': is_collected,
-        'collect': article.collect
-    })

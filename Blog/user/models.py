@@ -20,10 +20,11 @@ sex = {
 class BlogUser(User, models.Model):
     nickname = models.CharField("昵称", max_length=50, default=f"OUCer_{int(time.time())}", unique=True)
     avatar   = ProcessedImageField(verbose_name="头像", upload_to='avatars/%Y/%m/%d', default='avatars/default.png', processors=[ResizeToFill(160, 160)])
-    info     = models.TextField("简介", blank=True, null=True)
+    intro    = models.CharField("个人简介", max_length=200, default="这个用户很懒，什么都没写~")
     birthday = models.DateField("生日", null=True, blank=True)
     reg_time = models.DateField("注册时间", auto_now_add=True, editable=False)
     sex      = models.CharField("性别", default="保密", choices=sex, max_length=8)
+    backimg  = ProcessedImageField(verbose_name="背景图", upload_to='background/%Y/%m/%d', default='background/default.png', processors=[ResizeToFill(960, 320)])
 
     def get_avatar(self):
         return MEDIA_ADDR + str(self.avatar)
