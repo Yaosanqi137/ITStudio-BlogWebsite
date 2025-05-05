@@ -1,587 +1,324 @@
 <!DOCTYPE html>
 {% load static %}
-<html lang="zh">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>个人中心</title>
+    <title>个人空间</title>
+    <!-- 引入 Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="{% static 'css/HubStyles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/SharedStyles.css' %}">
     <link rel="stylesheet" href="{% static 'css/NavbarStyles.css' %}">
     <link rel="stylesheet" href="{% static 'css/back-to-top.css' %}">
-    <style>
-        .follower-card-link {
-            display: block;
-        }
-
-        .follower-card {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-        }
-
-        .follower-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-        }
-        /* 覆盖原有样式，采用毛玻璃效果 */
-        .profile-container {
-            max-width: 1200px;
-            margin: 30px auto;
-            padding: 0 20px;
-        }
-
-        .profile-header {
-            height: 300px;
-            background-size: cover;
-            background-position: center;
-            position: relative;
-            margin-bottom: 100px;
-            border-radius: 15px;
-            overflow: hidden;
-        }
-
-        .profile-card {
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(10px);
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            margin-top: -80px;
-            position: relative;
-            z-index: 2;
-            border: 1px solid rgba(255, 255, 255, 0.18);
-        }
-
-        .avatar-lg {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            border: 5px solid rgba(255, 255, 255, 0.5);
-            object-fit: cover;
-            margin-top: -100px;
-            transition: transform 0.5s ease;
-        }
-
-        .avatar-lg:hover {
-            transform: scale(1.1) rotate(5deg);
-        }
-
-        .nav-tabs {
-            margin-top: 30px;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-        }
-
-        .nav-tabs .nav-link {
-            color: #333;
-            font-weight: 500;
-            padding: 10px 20px;
-            transition: all 0.3s ease;
-        }
-
-        .nav-tabs .nav-link.active {
-            color: #049ab7;
-            border-bottom: 3px solid #049ab7;
-        }
-
-        .nav-tabs .nav-link:hover:not(.active) {
-            color: #666;
-        }
-
-        .follow-btn {
-            position: absolute;
-            right: 20px;
-            top: 20px;
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            border: none;
-            padding: 8px 20px;
-            border-radius: 30px;
-            transition: all 0.3s ease;
-        }
-
-        .follow-btn:hover {
-            background: rgba(255, 255, 255, 0.4);
-            transform: translateY(-3px);
-        }
-
-        .tab-content {
-            margin-top: 30px;
-        }
-
-        /* 文章卡片样式 */
-        .article-card {
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-            margin-bottom: 30px;
-        }
-
-        .article-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
-        }
-
-        /* 粉丝/关注卡片样式 */
-        .follower-card {
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-            margin-bottom: 20px;
-        }
-
-        .follower-card img {
-            width: 100%;
-            height: 150px;
-            object-fit: cover;
-        }
-
-        .follower-card .card-body {
-            padding: 15px;
-        }
-
-        /* 个人信息样式 */
-        .info-section dl {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        .info-section dt {
-            font-weight: 600;
-            color: #049ab7;
-        }
-
-        /* 响应式设计 */
-        @media (max-width: 768px) {
-            .profile-header {
-                height: 250px;
-                margin-bottom: 80px;
-            }
-
-            .avatar-lg {
-                width: 120px;
-                height: 120px;
-                margin-top: -80px;
-            }
-
-            .profile-card {
-                padding: 20px;
-            }
-
-            .nav-tabs .nav-link {
-                padding: 8px 15px;
-                font-size: 14px;
-            }
-        }
-        .follow-btn {
-            position: absolute;
-            right: 20px;
-            top: 20px;
-            background: #049ab7; /* 使用主题色 */
-            color: white;
-            border: none;
-            padding: 8px 20px;
-            border-radius: 30px;
-            transition: all 0.3s ease;
-            font-weight: 600;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-            border: 2px solid white; /* 添加白色边框增加对比度 */
-        }
-        .follow-btn:hover {
-            background: #037a9c;
-            transform: translateY(-3px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-        }
-        .tagline {
-            color: #333; /* 改为深色提高可读性 */
-            font-size: 1.2rem;
-            margin-bottom: 15px;
-            font-weight: 500;
-            background: rgba(255, 255, 255, 0.7); /* 半透明背景 */
-            padding: 8px 16px;
-            border-radius: 20px;
-            display: inline-block;
-            max-width: 80%;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-        }
-
-        .profile-header {
-            aspect-ratio: 3 / 1;  /* 设置3:1宽高比 */
-            height: auto;         /* 覆盖原有固定高度 */
-            min-height: 300px;    /* 设置最小高度 */
-            background-size: cover;
-            background-position: center;
-        }
-
-        .meta-row {
-            color: #333; /* 或 #666 根据设计需求 */
-        }
-
-        /* 全息卡片系统 */
-        .follower-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 2rem;
-            padding: 2rem;
-        }
-
-        .hologram-card {
-            position: relative;
-            border-radius: 16px;
-            overflow: hidden;
-            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-        }
-
-        .hologram-card:hover {
-            transform: translateY(-5px) scale(1.02);
-            box-shadow: 0 10px 30px rgba(4, 154, 183, 0.3);
-        }
-
-        .card-inner {
-            position: relative;
-            padding: 1.5rem;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 16px;
-            border: 1px solid rgba(255,255,255,0.3);
-        }
-
-        .avatar-halo {
-            position: relative;
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 1rem;
-        }
-
-        .neon-avatar {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid #4df2ff;
-            box-shadow: 0 0 20px rgba(77, 242, 255, 0.5);
-        }
-
-        .user-meta {
-            text-align: center;
-        }
-
-        .user-name {
-            color: #333;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-        }
-
-        .connection-stats {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            font-size: 0.9rem;
-            color: #666;
-        }
-
-        /* 量子网络样式 */
-        .quantum-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-            gap: 1.5rem;
-            padding: 2rem;
-        }
-
-        .network-node {
-            position: relative;
-            transition: all 0.3s ease;
-        }
-
-        .node-core {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 12px;
-            padding: 1.5rem;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-            transition: all 0.3s ease;
-        }
-
-        .network-node:hover .node-core {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 30px rgba(4, 154, 183, 0.2);
-        }
-
-        .particle-avatar {
-            position: relative;
-            width: 60px;
-            height: 60px;
-            margin: 0 auto 1rem;
-        }
-
-        .particle-image {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            object-fit: cover;
-            position: relative;
-            z-index: 2;
-        }
-
-        .particle-ring {
-            position: absolute;
-            top: -5px;
-            left: -5px;
-            right: -5px;
-            bottom: -5px;
-            border: 2px solid rgba(77, 242, 255, 0.7);
-            border-radius: 50%;
-            animation: particleOrbit 3s linear infinite;
-        }
-
-        @keyframes particleOrbit {
-            0% { transform: rotate(0deg) scale(1); opacity: 0.7; }
-            50% { transform: rotate(180deg) scale(1.1); opacity: 0.3; }
-            100% { transform: rotate(360deg) scale(1); opacity: 0.7; }
-        }
-
-        .node-info {
-            text-align: center;
-        }
-
-        .node-name {
-            color: #333;
-            margin-bottom: 0.5rem;
-        }
-
-        .node-meta {
-            font-size: 0.85rem;
-            color: #666;
-        }
-
-        /* 响应式设计 */
-        @media (max-width: 768px) {
-            .follower-grid, .quantum-grid {
-                grid-template-columns: 1fr;
-                padding: 1rem;
-            }
-
-            .hologram-card, .network-node {
-                max-width: 100%;
-            }
-        }
-    </style>
 </head>
 <body>
-
-<header class="glass-effect">
-    <nav>
-        <div class="logo">OUC<span>博客网</span></div>
-        <div class="search-container">
-            <i class="fas fa-search search-icon" id="searchIcon"></i>
-            <input type="search" class="search-box" id="searchBox" placeholder="搜索文章、评论、用户...">
+<!-- GitHub风格通知铃铛 -->
+{% if user.is_authenticated %}
+    <div class="github-notification" id="githubNotification">
+        <div class="notification-icon">
+            <i class="fas fa-bell"></i>
+            {% if messages.count > 0 %}
+                <span class="notification-counter">{{ messages.count }}</span>
+            {% endif %}
         </div>
-        <ul class="nav-links">
-            <li><a href="/" class="active"><i class="fas fa-home"></i> 主页</a></li>
-            {% if user.is_authenticated %}
-                <li><a href="{% url 'article:create' %}">发表文章</a></li>
-                <li><a href="{% url 'article:my' %}">我的文章</a></li>
-            {% endif %}
-            <li><a href="{% url 'article:list' %}">文章列表</a></li>
-            <li><a href="{% url 'comment:cafe' %}">咖啡馆</a></li>
-            <li><a href="https://github.com/Yaosanqi137/ITStudio-BlogWebsite">我们的 GitHub</a></li>
-            {% if not user.is_authenticated %}
-                <li><a href="{% url 'user:login' %}">登录/注册</a></li>
-            {% endif %}
-        </ul>
-    </nav>
-</header>
 
-<main class="profile-container">
-    <div class="profile-header glass-effect" style="background-image: url({{ profile_user.backimg.url }})">
-        {% if request.user.username == profile_user.username %}
-            <a href="{% url 'user:profile' %}" class="btn btn-light follow-btn">编辑资料</a>
-        {% else %}
-            <!-- 关注按钮 -->
-            {% if request.user.is_authenticated and request.user.username != profile_user.username %}
-                    {% csrf_token %}
-                <form method="post"
-                      action="{% if is_following %}{% url 'user:unfollow_user' profile_user.id %}{% else %}{% url 'user:follow_user' profile_user.id %}{% endif %}"
-                      class="follow-form">
-                    {% csrf_token %}
-                    <button type="submit" class="action-btn follow-btn {% if is_following %}unfollow{% endif %}">
-                        {% if is_following %}取消关注{% else %}+ 关注{% endif %}
-                    </button>
-                </form>
-            {% endif %}
-        {% endif %}
+        <!-- 消息弹窗 -->
+        <div class="notification-popover">
+            <div class="popover-header">
+                <span>未读消息</span>
+            </div>
+            <div class="popover-body">
+                {% for message in messages %}
+                    <div class="message-item"
+                         data-id="{{ message.id }}"
+                         data-url="{{ message.redirect_url|default:'#' }}">
+                        <div class="message-text">{{ message.content }}</div>
+                        <div class="message-meta">
+                            <time>{{ message.created_at|date:"Y-m-d H:i" }}</time>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="empty-message">暂无新消息</div>
+                {% endfor %}
+            </div>
+        </div>
     </div>
+{% endif %}
 
-    <div class="profile-card glass-effect">
-        <div class="text-center">
-            <img src="{{ profile_user.avatar.url }}" class="avatar-lg" alt="头像">
-            <h1 style="color: #049ab7; margin-top: 15px;">{{ profile_user.nickname }}</h1>
-            <p class="tagline">{{ profile_user.intro }}</p>
+<!-- 顶部格子背景 -->
+<div class="profile-header-bg"></div>
+
+<!-- 个人信息卡片 -->
+<div class="profile-card glass-effect">
+    <div class="profile-info-container">
+        <img src="{{ user.avatar.url }}" alt="头像" class="profile-avatar-large">
+        <div class="profile-details">
+            <h2 class="profile-username">
+                {{ user.nickname }}
+                {% if is_self %}
+                <a href="{% url 'user:profile' %}" class="btn-edit">
+                    <i class="fas fa-edit"></i> 编辑资料
+                </a>
+                {% endif %}
+            </h2>
+            <div class="profile-uid">UID: {{ user.id }}</div>
+            <p>{{ user.intro|default:"这个人很懒，还没有写简介" }}</p>
+            
+            <div class="stats-header">
+                <div class="stats-header-item">
+                    <i class="fas fa-file-alt"></i>
+                    <span>文章数: {{ article_count }}</span>
+                </div>
+                <div class="stats-header-item">
+                    <i class="fas fa-user-friends"></i>
+                    <span>关注: {{ following_count }}</span>
+                </div>
+                <div class="stats-header-item">
+                    <i class="fas fa-users"></i>
+                    <span>粉丝: {{ follower_count }}</span>
+                </div>
+                <div class="stats-header-item">
+                    <i class="fas fa-star"></i>
+                    <span>收藏: {{ collection_count }}</span>
+                </div>
+            </div>
         </div>
+    </div>
+    
+    <!-- 导航栏 -->
+    <div class="profile-nav">
+        <div class="profile-nav-item active" data-tab="articles">我的文章</div>
+        <div class="profile-nav-item" data-tab="collections">收藏的文章</div>
+        <div class="profile-nav-item" data-tab="following">关注</div>
+        <div class="profile-nav-item" data-tab="followers">粉丝</div>
+        <div class="profile-nav-item" data-tab="info">个人信息</div>
+    </div>
+</div>
 
-        <nav class="nav nav-tabs">
-            <a class="nav-link {% if current_tab == 'articles' %}active{% endif %}"
-               href="?tab=articles">文章 ({{ articles.paginator.count }})</a>
-            <a class="nav-link {% if current_tab == 'collect' %}active{% endif %}"
-               href="?tab=collect">文章收藏 ({{ collection.count }})</a>
-            <a class="nav-link {% if current_tab == 'followers' %}active{% endif %}"
-               href="?tab=followers">粉丝 ({{ followers.count }})</a>
-            <a class="nav-link {% if current_tab == 'following' %}active{% endif %}"
-               href="?tab=following">关注 ({{ following.count }})</a>
-            <a class="nav-link {% if current_tab == 'info' %}active{% endif %}"
-               href="?tab=info">个人信息</a>
-        </nav>
-
-        <div class="tab-content mt-4">
-            {% if current_tab == 'articles' %}
-                <!-- 文章列表 -->
+<div class="container">
+    <!-- 文章列表内容 -->
+    <div id="articles" class="tab-content active">
+        <div class="content-card glass-effect">
+            <h3><i class="fas fa-file-alt me-2"></i>我的文章</h3>
+            
+            {% if articles %}
                 {% for article in articles %}
-                    <div class="article-card">
-                        <div class="card-body">
-                            <h3><a href="{% url 'article:detail' article.id %}" style="color: #333; text-decoration: none;">{{ article.title }}</a></h3>
+                    <div class="article-card" onclick="window.location.href='{% url 'article:detail' article.id %}';">
+                        <div class="article-image">
+                            <img src="{{ article.head_img.url }}" alt="文章图片">
+                        </div>
+                        <div class="article-content">
+                            <h3>{{ article.title }}</h3>
                             <div class="article-meta">
-                                <div class="meta-row">
-                                    <span class="meta-item">
-                                        <i class="far fa-eye meta-icon"></i>
-                                        {{ article.looks }}
-                                    </span>
-                                    <span class="meta-item">
-                                        <i class="fas fa-heart meta-icon"></i>
-                                        {{ article.likes }}
-                                    </span>
-                                    <span class="meta-item">
-                                        <i class="far fa-comment meta-icon"></i>
-                                        {{ article.comments.count }}
-                                    </span>
-                                </div>
+                                <span class="meta-item">
+                                    <i class="far fa-eye meta-icon"></i>
+                                    {{ article.looks }}
+                                </span>
+                                <span class="meta-item">
+                                    <i class="fas fa-heart meta-icon"></i>
+                                    {{ article.likes }}
+                                </span>
+                                <span class="meta-item">
+                                    <i class="far fa-comment meta-icon"></i>
+                                    {{ article.comments.count }}
+                                </span>
+                                <span class="meta-item">
+                                    <i class="far fa-calendar meta-icon"></i>
+                                    {{ article.created_time|date:"Y/m/d H:i" }}
+                                </span>
                             </div>
                         </div>
                     </div>
                 {% endfor %}
-
-            {% elif current_tab == 'collect' %}
-                <!-- 文章列表 -->
-                {% for collect in collection %}
-                    <div class="article-card">
-                        <div class="card-body">
-                            <h3><a href="{% url 'article:detail' collect.article.id %}" style="color: #333; text-decoration: none;">{{ collect.article.title }}</a></h3>
-                            <div class="article-meta">
-                                <div class="meta-row">
-                                    <span class="meta-item">
-                                        <i class="far fa-eye meta-icon"></i>
-                                        {{ collect.article.looks }}
-                                    </span>
-                                    <span class="meta-item">
-                                        <i class="fas fa-heart meta-icon"></i>
-                                        {{ collect.article.likes }}
-                                    </span>
-                                    <span class="meta-item">
-                                        <i class="far fa-comment meta-icon"></i>
-                                        {{ collect.article.comments.count }}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                {% endfor %}
-
-
-            {% elif current_tab == 'followers' %}
-                <!-- 全息粉丝列表 -->
-                <div class="follower-grid">
-                    {% for follow in followers %}
-                        <div class="hologram-card">
-                            <a href="{% url 'user:profile_prew' follow.follower.username %}" class="quantum-link">
-                                <div class="card-inner">
-                                    <div class="avatar-halo">
-                                        <img src="{{ follow.follower.avatar.url }}"
-                                             alt="{{ follow.follower.nickname }}"
-                                             class="neon-avatar">
-                                    </div>
-                                    <div class="user-meta">
-                                        <h3 class="user-name">{{ follow.follower.nickname }}</h3>
-                                        <div class="connection-stats">
-                                            <span class="stat"><i class="fas fa-rss"></i> {{ follow.follower.followers.count }} 粉丝</span>
-                                            <span class="stat"><i class="fas fa-pen-fancy"></i> {{ follow.follower.article_set.count }} 文章</span>
-                                        </div>
-                                    </div>
-                                    <div class="glow-effect"></div>
-                                </div>
-                            </a>
-                        </div>
-                    {% endfor %}
-                </div>
-
-            {% elif current_tab == 'following' %}
-                <!-- 量子关注网络 -->
-                <div class="quantum-grid">
-                    {% for follow in following %}
-                        <div class="network-node">
-                            <a href="{% url 'user:profile_prew' follow.followed.username %}" class="neural-link">
-                                <div class="node-core">
-                                    <div class="particle-avatar">
-                                        <img src="{{ follow.followed.avatar.url }}"
-                                             alt="{{ follow.followed.nickname }}"
-                                             class="particle-image">
-                                        <div class="particle-ring"></div>
-                                    </div>
-                                    <div class="node-info">
-                                        <h4 class="node-name">{{ follow.followed.nickname }}</h4>
-                                        <div class="node-meta">
-                                            <span class="meta-item"><i class="fas fa-calendar-alt"></i> 关注于 {{ follow.created_at|date:"Y/m/d" }}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="connection-line"></div>
-                            </a>
-                        </div>
-                    {% endfor %}
-                </div>
-
             {% else %}
-                <!-- 个人信息 -->
-                <div class="row info-section">
-                    <div class="col-md-6">
-                        <dl class="row">
-                            <dt class="col-sm-4">用户名</dt>
-                            <dd class="col-sm-8">{{ profile_user.username }}</dd>
-
-                            <dt class="col-sm-4">性别</dt>
-                            <dd class="col-sm-8">{{ profile_user.get_sex_display }}</dd>
-                        </dl>
-                    </div>
-                    <div class="col-md-6">
-                        <dl class="row">
-                            <dt class="col-sm-4">注册时间</dt>
-                            <dd class="col-sm-8">{{ profile_user.reg_time|date:"Y-m-d" }}</dd>
-
-                            <dt class="col-sm-4">生日</dt>
-                            <dd class="col-sm-8">{{ profile_user.birthday|default:"未设置" }}</dd>
-                        </dl>
-                    </div>
+                <div class="text-center mt-4 mb-4">
+                    <p>暂无文章发布</p>
                 </div>
             {% endif %}
         </div>
     </div>
-</main>
-
-<footer class="glass-effect">
-    <div class="footer-content">
-        <div class="footer-logo">OUC<span>博客网</span></div>
-        <p>版权信息: Made By IT Studio</p>
-        <p>联系信息: 114514-1919-810</p>
+    
+    <!-- 收藏文章内容 -->
+    <div id="collections" class="tab-content">
+        <div class="content-card glass-effect">
+            <h3><i class="fas fa-star me-2"></i>收藏的文章</h3>
+            
+            {% if collections %}
+                {% for article in collections %}
+                    <div class="article-card" onclick="window.location.href='{% url 'article:detail' article.id %}';">
+                        <div class="article-image">
+                            <img src="{{ article.head_img.url }}" alt="文章图片">
+                        </div>
+                        <div class="article-content">
+                            <h3>{{ article.title }}</h3>
+                            <p>作者: {{ article.author }}</p>
+                            <div class="article-meta">
+                                <span class="meta-item">
+                                    <i class="far fa-eye meta-icon"></i>
+                                    {{ article.looks }}
+                                </span>
+                                <span class="meta-item">
+                                    <i class="fas fa-heart meta-icon"></i>
+                                    {{ article.likes }}
+                                </span>
+                                <span class="meta-item">
+                                    <i class="far fa-comment meta-icon"></i>
+                                    {{ article.comments.count }}
+                                </span>
+                                <span class="meta-item">
+                                    <i class="far fa-calendar meta-icon"></i>
+                                    {{ article.created_time|date:"Y/m/d H:i" }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="text-center mt-4 mb-4">
+                    <p>暂无收藏文章</p>
+                </div>
+            {% endif %}
+        </div>
     </div>
-</footer>
+    
+    <!-- 关注内容 -->
+    <div id="following" class="tab-content">
+        <div class="content-card glass-effect">
+            <h3><i class="fas fa-user-friends me-2"></i>我关注的人</h3>
+            
+            {% if following %}
+                {% for user in following %}
+                    <div class="user-card">
+                        <img src="{{ user.avatar.url }}" alt="头像" class="user-avatar">
+                        <div class="user-info">
+                            <div class="user-name">{{ user.nickname }}</div>
+                            <div class="user-bio">{{ user.intro|default:"这个人很懒，还没有写简介"|truncatechars:50 }}</div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="text-center mt-4 mb-4">
+                    <p>暂无关注用户</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- 粉丝内容 -->
+    <div id="followers" class="tab-content">
+        <div class="content-card glass-effect">
+            <h3><i class="fas fa-users me-2"></i>我的粉丝</h3>
+            
+            {% if followers %}
+                {% for user in followers %}
+                    <div class="user-card">
+                        <img src="{{ user.avatar.url }}" alt="头像" class="user-avatar">
+                        <div class="user-info">
+                            <div class="user-name">{{ user.nickname }}</div>
+                            <div class="user-bio">{{ user.intro|default:"这个人很懒，还没有写简介"|truncatechars:50 }}</div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="text-center mt-4 mb-4">
+                    <p>暂无粉丝</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- 个人信息内容 -->
+    <div id="info" class="tab-content">
+        <div class="content-card glass-effect">
+            <h3><i class="fas fa-info-circle me-2"></i>个人详细资料</h3>
+            
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <p><strong>昵称:</strong> {{ user.nickname }}</p>
+                    <p><strong>简介:</strong> {{ user.intro|default:"暂无简介" }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>生日:</strong> {{ user.birthday|date:"Y-m-d"|default:"未设置" }}</p>
+                    <p><strong>性别:</strong> {{ user.get_sex_display|default:"未设置" }}</p>
+                </div>
+            </div>
+            
+            {% if is_self %}
+                <div class="text-center mt-4">
+                    <a href="{% url 'user:profile' %}" class="btn btn-primary">
+                        <i class="fas fa-edit me-2"></i>编辑个人资料
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
 
-<script src="{% static 'js/HubJs.js' %}"></script>
+    <!-- 底部按钮 -->
+    <div class="bottom-buttons">
+        <div class="button-container">
+            <a href="/article/my" class="btn-myarticles">
+                <i class="fas fa-file-alt me-2"></i>我的文章
+            </a>
+            <a href="/" class="btn-home">
+                <i class="fas fa-home me-2"></i>返回主界面
+            </a>
+            {% if user.is_authenticated %}
+            <a href="/user/logout" class="btn-logout">
+                <i class="fas fa-sign-out-alt me-2"></i>退出登录
+            </a>
+            {% else %}
+            <a href="/user/login" class="btn-logout">
+                <i class="fas fa-sign-in-alt me-2"></i>登录/注册
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- 引入 Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="{% static 'js/NavbarJs.js' %}"></script>
 <script src="{% static 'js/layout-helpers.js' %}"></script>
 <script src="{% static 'js/back-to-top.js' %}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 标签切换功能
+        const navItems = document.querySelectorAll('.profile-nav-item');
+        const tabContents = document.querySelectorAll('.tab-content');
+        
+        navItems.forEach(item => {
+            item.addEventListener('click', function() {
+                // 移除所有标签的active类
+                navItems.forEach(nav => nav.classList.remove('active'));
+                // 为当前标签添加active类
+                this.classList.add('active');
+                
+                // 隐藏所有内容
+                tabContents.forEach(content => content.classList.remove('active'));
+                // 显示对应的内容
+                const tabId = this.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+        
+        // 通知铃铛功能
+        const notificationIcon = document.querySelector('.notification-icon');
+        const notificationPopover = document.querySelector('.notification-popover');
+        
+        if (notificationIcon) {
+            notificationIcon.addEventListener('click', function(e) {
+                e.stopPropagation();
+                notificationPopover.style.display = notificationPopover.style.display === 'block' ? 'none' : 'block';
+            });
+            
+            document.addEventListener('click', function(e) {
+                if (!notificationIcon.contains(e.target) && !notificationPopover.contains(e.target)) {
+                    notificationPopover.style.display = 'none';
+                }
+            });
+        }
+    });
+</script>
 </body>
 </html>
