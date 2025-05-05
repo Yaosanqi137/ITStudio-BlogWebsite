@@ -8,211 +8,212 @@
     <!-- 引入 Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="{% static 'css/ProfileStyles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/SharedStyles.css' %}">
     <link rel="stylesheet" href="{% static 'css/NavbarStyles.css' %}">
     <link rel="stylesheet" href="{% static 'css/back-to-top.css' %}">
-    <style>
-        body {
-            background-color: #f8f9fa;
-        }
-        .container {
-            max-width: 800px;
-            margin-top: 20px;
-        }
-        .profile-preview img {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            margin-bottom: 20px;
-        }
-        .bottom-buttons {
-            margin-top: 30px;
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-        }
-        .bottom-buttons a {
-            color: white;
-            text-decoration: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-        }
-        .bottom-buttons .btn-myarticles {
-            background-color: #4CAF50;
-        }
-        .bottom-buttons .btn-space {
-            background-color: #39C5bb;
-        }
-        .bottom-buttons .btn-home {
-            background-color: #2196F3;
-        }
-        .bottom-buttons .btn-logout {
-            background-color: #f44336;
-        }
-        .error-message {
-            color: #dc3545;
-            font-size: 16px;
-            font-weight: bold;
-            margin: 10px 0;
-            display: block;
-        }
-
-        /* 修改预览卡片容器 */
-        .col-md-6 .card {
-            aspect-ratio: 3 / 1;
-            width: 250%;
-            position: relative;
-            overflow: hidden; /* 防止内容溢出 */
-        }
-
-        /* 调整卡片内容区域 */
-        .card-body {
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        /* 调整头像位置 */
-        .profile-preview {
-            margin-bottom: 10px; /* 缩小与下方文字的间距 */
-        }
-
-        /* 调整文本间距 */
-        .card-body p {
-            margin-bottom: 8px;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 20px 0 50px 100px; /* 上右下左，将左边距设为20px */
-        }
-    </style>
 </head>
 <body>
-<div class="container">
-    <h2 class="mb-4">个人设置</h2>
-
-    <div class="row">
-        <div class="col-md-6">
-            <form method="POST" enctype="multipart/form-data">
-                {% csrf_token %}
-
-                <!-- 昵称 -->
-                <div class="mb-3">
-                    <label for="{{ profile_form.nickname.id_for_label }}" class="form-label">昵称</label>
-                    {{ profile_form.nickname }}
-                    {% if profile_form.nickname.errors %}
-                        <div class="invalid-feedback">
-                            {% for error in profile_form.nickname.errors %}
-                                {{ error }}
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                </div>
-
-                <!-- 头像 -->
-                <div class="mb-3">
-                    <label for="{{ profile_form.avatar.id_for_label }}" class="form-label">头像</label>
-                    <div class="input-group">
-                        <input type="file" class="form-control" id="{{ profile_form.avatar.id_for_label }}" name="{{ profile_form.avatar.name }}">
-                    </div>
-                    <div class="form-text">
-                        支持上传 JPG/PNG 格式的图片，尺寸将自动调整为 160x160 像素。
-                    </div>
-                    {% if profile_form.avatar.errors %}
-                        <div class="invalid-feedback">
-                            {% for error in profile_form.avatar.errors %}
-                                {{ error }}
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                </div>
-
-                <!-- 背景图 -->
-                <div class="mb-3">
-                    <label for="{{ profile_form.backimg.id_for_label }}" class="form-label">背景图</label>
-                    <div class="input-group">
-                        <input type="file" class="form-control" id="{{ profile_form.backimg.id_for_label }}" name="{{ profile_form.backimg.name }}">
-                    </div>
-                    <div class="form-text">
-                        支持上传 JPG/PNG 格式的图片，尺寸将自动调整为 960x320 像素。
-                    </div>
-                    {% if profile_form.backimg.errors %}
-                        <div class="invalid-feedback">
-                            {% for error in profile_form.backimg.errors %}
-                                {{ error }}
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                </div>
-
-
-                <!-- 简介 -->
-                <div class="mb-3">
-                    <label for="{{ profile_form.intro.id_for_label }}" class="form-label">简介</label>
-                    {{ profile_form.intro }}
-                    <div class="form-text">
-                        简单介绍一下自己吧！
-                    </div>
-                    {% if profile_form.intro.errors %}
-                        <div class="invalid-feedback">
-                            {% for error in profile_form.intro.errors %}
-                                {{ error }}
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                </div>
-
-                <!-- 生日 -->
-                <div class="mb-3">
-                    <label for="{{ profile_form.birthday.id_for_label }}" class="form-label">生日</label>
-                    {{ profile_form.birthday }}
-                    <div class="form-text">
-                        格式：YYYY-MM-DD
-                    </div>
-                    {% if profile_form.birthday.errors %}
-                        <div class="invalid-feedback">
-                            {% for error in profile_form.birthday.errors %}
-                                {{ error }}
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                </div>
-
-                <!-- 性别 -->
-                <div class="mb-3">
-                    <label for="{{ profile_form.sex.id_for_label }}" class="form-label">性别</label>
-                    {{ profile_form.sex }}
-                    {% if profile_form.sex.errors %}
-                        <div class="invalid-feedback">
-                            {% for error in profile_form.sex.errors %}
-                                {{ error }}
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                </div>
-
-                {% if error %}
-                    <div class="error-message">{{ error }}</div>
-                {% endif %}
-
-                <!-- 提交按钮 -->
-                <button type="submit" class="btn btn-primary">保存更改</button>
-            </form>
+<!-- GitHub风格通知铃铛 -->
+{% if user.is_authenticated %}
+    <div class="github-notification" id="githubNotification">
+        <div class="notification-icon">
+            <i class="fas fa-bell"></i>
+            {% if messages.count > 0 %}
+                <span class="notification-counter">{{ messages.count }}</span>
+            {% endif %}
         </div>
 
-        <div class="col-md-6 mt-4">
-            <h4 class="mb-3">当前资料预览</h4>
-            <div class="card" style="{% if profile_form.instance.backimg %}background-image: url('{{ profile_form.instance.backimg.url }}'); background-size: cover; background-position: center;{% endif %}">
-                <div class="card-body">
-                    <div class="text-center mb-3">
-                        <img src="{{ profile_form.instance.avatar.url }}" alt="头像" class="rounded-circle profile-preview">
+        <!-- 消息弹窗 -->
+        <div class="notification-popover">
+            <div class="popover-header">
+                <span>未读消息</span>
+            </div>
+            <div class="popover-body">
+                {% for message in messages %}
+                    <div class="message-item"
+                         data-id="{{ message.id }}"
+                         data-url="{{ message.redirect_url|default:'#' }}">
+                        <div class="message-text">{{ message.content }}</div>
+                        <div class="message-meta">
+                            <time>{{ message.created_at|date:"Y-m-d H:i" }}</time>
+                        </div>
                     </div>
-                    <p><strong>昵称:</strong> {{ profile_form.instance.nickname }}</p>
-                    <p><strong>简介:</strong> {{ profile_form.instance.intro }}</p>
-                    <p><strong>生日:</strong> {{ profile_form.instance.birthday|default:"未设置" }}</p>
-                    <p><strong>性别:</strong> {{ profile_form.instance.sex }}</p>
+                {% empty %}
+                    <div class="empty-message">暂无新消息</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+<!-- 顶部格子背景 -->
+<div class="profile-header-bg"></div>
+
+<!-- 个人信息卡片 -->
+<div class="profile-card glass-effect">
+    <div class="profile-info-container">
+        <img src="{{ profile_form.instance.avatar.url }}" alt="头像" class="profile-avatar-large">
+        <div class="profile-details">
+            <h2 class="profile-username">{{ profile_form.instance.nickname }}</h2>
+            <div class="profile-uid">UID: {{ request.user.id }}</div>
+            <p>{{ profile_form.instance.intro|default:"暂无简介" }}</p>
+            
+            <div class="stats-header">
+                <div class="stats-header-item">
+                    <i class="fas fa-file-alt"></i>
+                    <span>编辑个人资料</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 导航栏 -->
+    <div class="profile-nav">
+        <a href="#" class="profile-nav-item active">个人资料</a>
+        <a href="{% url 'user:profile_prew' request.user.username%}" class="profile-nav-item">个人空间</a>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="form-container glass-effect">
+                <h3 class="mb-4">编辑个人资料</h3>
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <!-- 昵称 -->
+                    <div class="mb-3">
+                        <label for="{{ profile_form.nickname.id_for_label }}" class="form-label">
+                            <i class="fas fa-user me-2"></i>昵称
+                        </label>
+                        {{ profile_form.nickname }}
+                        {% if profile_form.nickname.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in profile_form.nickname.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- 头像 -->
+                    <div class="mb-3">
+                        <label for="{{ profile_form.avatar.id_for_label }}" class="form-label">
+                            <i class="fas fa-image me-2"></i>头像
+                        </label>
+                        <div class="input-group">
+                            <input type="file" class="form-control" id="{{ profile_form.avatar.id_for_label }}" name="{{ profile_form.avatar.name }}">
+                        </div>
+                        <div class="form-text">
+                            支持上传 JPG/PNG 格式的图片，尺寸将自动调整为 160x160 像素。
+                        </div>
+                        {% if profile_form.avatar.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in profile_form.avatar.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- 背景图 -->
+                    <div class="mb-3">
+                        <label for="{{ profile_form.backimg.id_for_label }}" class="form-label">
+                            <i class="fas fa-image me-2"></i>背景图
+                        </label>
+                        <div class="input-group">
+                            <input type="file" class="form-control" id="{{ profile_form.backimg.id_for_label }}" name="{{ profile_form.backimg.name }}">
+                        </div>
+                        <div class="form-text">
+                            支持上传 JPG/PNG 格式的图片，尺寸将自动调整为 960x320 像素。
+                        </div>
+                        {% if profile_form.backimg.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in profile_form.backimg.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+
+                    <!-- 简介 -->
+                    <div class="mb-3">
+                        <label for="{{ profile_form.intro.id_for_label }}" class="form-label">
+                            <i class="fas fa-info-circle me-2"></i>简介
+                        </label>
+                        {{ profile_form.intro }}
+                        <div class="form-text">
+                            简单介绍一下自己吧！
+                        </div>
+                        {% if profile_form.intro.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in profile_form.intro.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- 生日 -->
+                    <div class="mb-3">
+                        <label for="{{ profile_form.birthday.id_for_label }}" class="form-label">
+                            <i class="fas fa-birthday-cake me-2"></i>生日
+                        </label>
+                        {{ profile_form.birthday }}
+                        <div class="form-text">
+                            格式：YYYY-MM-DD
+                        </div>
+                        {% if profile_form.birthday.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in profile_form.birthday.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- 性别 -->
+                    <div class="mb-3">
+                        <label for="{{ profile_form.sex.id_for_label }}" class="form-label">
+                            <i class="fas fa-venus-mars me-2"></i>性别
+                        </label>
+                        {{ profile_form.sex }}
+                        {% if profile_form.sex.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in profile_form.sex.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    {% if error %}
+                        <div class="error-message">{{ error }}</div>
+                    {% endif %}
+
+                    <!-- 提交按钮 -->
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-2"></i>保存更改
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="form-container glass-effect">
+                <h3 class="mb-4">资料预览</h3>
+                <div class="preview-card" style="{% if profile_form.instance.backimg %}background-image: url('{{ profile_form.instance.backimg.url }}'); background-size: cover; background-position: center;{% endif %}">
+                    <div class="preview-card-body">
+                        <div class="text-center">
+                            <img src="{{ profile_form.instance.avatar.url }}" alt="头像" class="preview-avatar">
+                        </div>
+                        <p><strong>昵称:</strong> {{ profile_form.instance.nickname }}</p>
+                        <p><strong>简介:</strong> {{ profile_form.instance.intro }}</p>
+                        <p><strong>生日:</strong> {{ profile_form.instance.birthday|default:"未设置" }}</p>
+                        <p><strong>性别:</strong> {{ profile_form.instance.sex }}</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -220,16 +221,22 @@
 
     <!-- 底部按钮 -->
     <div class="bottom-buttons">
-        <a href="/article/my" class="btn-myarticles">我的文章</a>
-        <a href="{% url 'user:profile_prew' request.user.username%}" class="btn-space">我的空间</a>
-        <a href="/" class="btn-home">返回主界面</a>
-        <a href="/user/logout" class="btn-logout">退出登录</a>
+        <div class="button-container">
+            <a href="{% url 'user:profile_prew' request.user.username%}" class="btn-space">
+                <i class="fas fa-user me-2"></i>我的空间
+            </a>
+            <a href="/" class="btn-home">
+                <i class="fas fa-home me-2"></i>返回主界面
+            </a>
+            <a href="/user/logout" class="btn-logout">
+                <i class="fas fa-sign-out-alt me-2"></i>退出登录
+            </a>
+        </div>
     </div>
 </div>
 
 <!-- 引入 Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="{% static 'js/ProfileJs.js' %}"></script>
 <script src="{% static 'js/NavbarJs.js' %}"></script>
 <script src="{% static 'js/layout-helpers.js' %}"></script>
 <script src="{% static 'js/back-to-top.js' %}"></script>
@@ -237,7 +244,7 @@
     document.addEventListener('DOMContentLoaded', function() {
         // 获取背景图输入元素和预览卡片
         const backimgInput = document.getElementById('{{ profile_form.backimg.id_for_label }}');
-        const previewCard = document.querySelector('.col-md-6 .card');
+        const previewCard = document.querySelector('.preview-card');
 
         // 监听文件选择变化
         backimgInput.addEventListener('change', function(e) {
@@ -253,6 +260,23 @@
                 reader.readAsDataURL(file);
             }
         });
+        
+        // 通知铃铛功能
+        const notificationIcon = document.querySelector('.notification-icon');
+        const notificationPopover = document.querySelector('.notification-popover');
+        
+        if (notificationIcon) {
+            notificationIcon.addEventListener('click', function(e) {
+                e.stopPropagation();
+                notificationPopover.style.display = notificationPopover.style.display === 'block' ? 'none' : 'block';
+            });
+            
+            document.addEventListener('click', function(e) {
+                if (!notificationIcon.contains(e.target) && !notificationPopover.contains(e.target)) {
+                    notificationPopover.style.display = 'none';
+                }
+            });
+        }
     });
 </script>
 </body>
