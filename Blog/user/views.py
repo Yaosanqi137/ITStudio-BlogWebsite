@@ -118,7 +118,7 @@ def register_view(request):
             return redirect('/user/login')
         else:
             return render(request, 'Register.html',{
-                'error': '用户名已存在，请选择其他用户名',
+                'error': '用户名或者邮箱已存在，请选择其他用户名',
                 'reg_form': reg_form,
                 'captcha': captcha,
             })
@@ -242,7 +242,7 @@ def profile_prew_view(request, username):
         ).exists()
 
     context = {
-        'profile_user': user,
+        'user': user,
         'articles': articles_page,
         'followers': followers,
         'following': following,
