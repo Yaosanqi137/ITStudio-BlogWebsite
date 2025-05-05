@@ -10,4 +10,7 @@ urlpatterns = [
     path('create', views.create_view, name='create'),
     path('delete/<int:id>', views.delete_view, name='delete'),
     path('my', views.my_view, name='my'),
+    path('like/<int:id>', views.likes_view, name='like'),
+    path('collect/<int:id>', views.collect_view, name='collect'),
+    path('collect/status/<int:id>', views.collect_status_view, name='collect_status')
 ]

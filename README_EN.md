@@ -19,8 +19,8 @@ This is the ITStudio 24th batch collaboration project. The project team consists
 ## 📕 Project Plan
 
 - [x] Basic registration, login, logout login, logout functions
-- [ ] Personal information editing, such as profile picture, nickname, introduction, spatial background and other personal information editing function
-- [ ] Article editing, article display, article push algorithm, article search algorithm
+- [x] Personal information editing, such as profile picture, nickname, introduction, spatial background and other personal information editing function
+- [x] Article editing, article display, article push algorithm, article search algorithm
 - [ ] Management, audit and other administrator control modules
 - [ ] Perfect every detail and finish it off🎉
 

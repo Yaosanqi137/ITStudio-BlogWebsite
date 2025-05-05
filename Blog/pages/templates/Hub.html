@@ -79,6 +79,23 @@
                 <a href="user/profile"><i class="fa fa-gear"></i></a>
                 <a href="user/logout"><i class="fa  fa-warning"></i></a>
             </div>
+
+                <div class="follow-stats">
+                    <div class="stat-item">
+                        <i class="fas fa-user-plus"></i>
+                        <span>关注: {{ followed_count }}</span>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-users"></i>
+                        <span>粉丝: {{ followers_count }}</span>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-star"></i>
+                        <span>收藏的文章: {{ collections }}</span>
+                    </div>
+                </div>
+        <pre>
+</pre>
         </div>
     </section>
     {% endif %}

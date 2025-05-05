@@ -197,7 +197,7 @@ def profile_view(request):
         if profile_form.is_valid():
             profile_form.save()
         if (BlogUser.objects.filter(nickname=profile_form.data['nickname'])
-                    .exclude(id=request.user.id).exists()):
+                    .exclude(pk=request.user.pk).exists()):
             return render(request, "Profile.html", {
                 "profile_form": profile_form,
                 "error": "已经有人叫这个名字了！"
@@ -208,16 +208,19 @@ def profile_view(request):
         return render(request, "Profile.html", {"profile_form": profile_form})
 
 @login_required(login_url="/user/login")
-def follow_user(request,user_id):
-    user_to_follow =User.objects.get(id=user_id)
-    if request.user !=user_to_follow:
-        Follow.objects.create(follower=request.user,followed=user_to_follow)
-        # send_follow_message(user_to_follow, request.user)
-    return redirect(request.META.get('HTTP_REFERER','/'))
+def follow_user(request, user_id):
+    user_to_follow = get_object_or_404(BlogUser, id=user_id)
+    follower_user = get_object_or_404(BlogUser, id=request.user.id)  # 因为 request.user 本身也是 BlogUser
+
+    if follower_user != user_to_follow:
+        Follow.objects.get_or_create(follower=follower_user, followed=user_to_follow)
+        # send_follow_message(user_to_follow, follower_user)
+    return redirect(request.META.get('HTTP_REFERER', '/'))
 
 @login_required(login_url="/user/login")
-def unfollow_user(request,user_id):
-    user_to_unfollow=User.objects.get(id=user_id)
-    Follow.objects.filter(follower=request.user,followed=user_to_unfollow).delete()
-    # send_unfollow_message(user_to_unfollow, request.user)
-    return redirect(request.META.get('HTTP_REFERER','/'))
+def unfollow_user(request, user_id):
+    user_to_unfollow = get_object_or_404(BlogUser, id=user_id)
+    follower_user = get_object_or_404(BlogUser, id=request.user.id)
+    Follow.objects.filter(follower=follower_user, followed=user_to_unfollow).delete()
+    # send_unfollow_message(user_to_unfollow, follower_user)
+    return redirect(request.META.get('HTTP_REFERER', '/'))
