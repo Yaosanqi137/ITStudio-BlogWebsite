@@ -32,11 +32,13 @@ def homepage_view(request):
             user.avatar = get_random_avatars()
         followers = Follow.objects.filter(followed=user).select_related('follower')
         followed_users = Follow.objects.filter(follower=user).select_related('followed')
+        collections = Collection.objects.filter(collector=user)
 
         context['user'] = user
         context['messages'] = messages
-        context['followers'] = followers
-        context['followed_users'] = followed_users
+        context['followers_count'] = followers.count()
+        context['followed_count'] = followed_users.count()
+        context['collections'] = collections.count()
         return render(request, "Hub.html", context)
     else:
         return render(request, "Hub.html", context)

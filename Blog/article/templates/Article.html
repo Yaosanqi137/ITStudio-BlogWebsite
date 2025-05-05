@@ -65,6 +65,66 @@
         #like-btn.liked:hover {
             background-color: #45a049;
         }
+
+        /* 关注按钮样式优化 */
+        .author form button[type="submit"] {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            display: inline-block;
+        }
+
+        /* 关注状态 */
+        .author form button[type="submit"] {
+            background-color: #4285f4;
+            color: white;
+        }
+
+        /* 取消关注状态 */
+        .author form button[type="submit"]:contains("取消关注") {
+            background-color: #f44336;
+        }
+
+        /* 悬停效果 */
+        .author form button[type="submit"]:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        /* 点击效果 */
+        .author form button[type="submit"]:active {
+            transform: translateY(0);
+        }
+
+        /* 图标样式 */
+        .author form button[type="submit"] i {
+            margin-right: 5px;
+        }
+
+        /* 收藏按钮样式 */
+        .collect-section {
+            margin-top: 10px;
+        }
+
+        #collect-btn {
+            padding: 5px 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        #collect-btn.collected {
+            background-color: #ff9800;
+            color: white;
+        }
+        #collect-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 
@@ -106,24 +166,35 @@
             发布时间: {{ article.created_time }}<br>
             最后更新时间: {{ article.updated_time }}
 
-            <!-- 添加关注按钮 -->
-       {% if request.user.is_authenticated and request.user != article.author %}
-            <form method="post" action="{% if is_following_author %}
-                                          {% url 'user:unfollow_user' article.author.id %}
-                                      {% else %}
-                                          {% url 'user:follow_user' article.author.id %}
-                                      {% endif %}">
-                {% csrf_token %}
-                <button type="submit" class="glass-effect">
-                    {% if is_following_author %}
-                        取消关注
-                    {% else %}
-                        关注
-                    {% endif %}
-                </button>
-            </form>
+        {% if request.user.is_authenticated and request.user.username != article.author.username %}
+        <!-- 添加关注按钮 -->
+        <form method="post" action="{% if is_following_author %}
+                    {% url 'user:unfollow_user' article.author.id %}
+                  {% else %}
+                    {% url 'user:follow_user' article.author.id %}
+                  {% endif %}">
+            {% csrf_token %}
+            <button type="submit" class="glass-effect">
+                {% if is_following_author %}
+                    <i class="fas fa-user-minus"></i> 取消关注
+                {% else %}
+                    <i class="fas fa-user-plus"></i> 关注
+                {% endif %}
+            </button>
+        </form>
         {% endif %}
         {% if request.user.is_authenticated %}
+            <div class="collect-section">
+                {% if is_collected %}
+                    <button id="collect-btn" class="glass-effect collected" data-article-id="{{ article.id }}">
+                        <i class="fas fa-star"></i> 已收藏 (<span id="collect-count">{{ article.collect }}</span>)
+                    </button>
+                {% else %}
+                    <button id="collect-btn" class="glass-effect" data-article-id="{{ article.id }}">
+                        <i class="fas fa-star"></i> 收藏 (<span id="collect-count">{{ article.collect }}</span>)
+                    </button>
+                {% endif %}
+            </div>
             <div class="like-section">
                 <button id="like-btn" class="glass-effect" data-article-id="{{ article.id }}">
                     <i class="fas fa-thumbs-up"></i> 点赞 (<span id="like-count">{{ article.likes }}</span>)
@@ -214,6 +285,52 @@ document.addEventListener('DOMContentLoaded', function() {
                 target.classList.remove('highlight');
             }, 5000);
         }
+    }
+
+    document.getElementById('collect-btn').addEventListener('click', function() {
+        const articleId = this.dataset.articleId;
+        const collectBtn = this;
+
+        // 禁用按钮防止重复点击
+        collectBtn.disabled = true;
+
+        fetch(`/article/collect/${articleId}`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'Accept': 'application/json'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if(data.status === 'success') {
+                    // 使用更安全的元素选择方式
+                    const countElement = document.getElementById('collect-count');
+                    if(countElement) {
+                        countElement.textContent = data.collect;
+                    }
+                    collectBtn.innerHTML = data.is_collected ?
+                        `<i class="fas fa-star"></i> 已收藏 (${data.collect})` :
+                        `<i class="fas fa-star"></i> 收藏 (${data.collect})`;
+                    collectBtn.classList.toggle('collected', data.is_collected);
+                }
+            })
+            .catch(error => console.error('Error:', error))
+            .finally(() => {
+                collectBtn.disabled = false;
+            });
+    });
+
+    if(articleId) {
+        fetch(`/collect/status/${articleId}`)
+            .then(response => response.json())
+            .then(data => {
+                const btn = document.getElementById('collect-btn');
+                if(data.is_collected) {
+                    btn.classList.add('collected');
+                    btn.innerHTML = `<i class="fas fa-star"></i> 已收藏 (${data.collect})`;
+                }
+            });
     }
 });
 CKEDITOR.replace('id_body', {

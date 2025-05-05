@@ -28,7 +28,6 @@ class BlogUser(User, models.Model):
     def get_avatar(self):
         return MEDIA_ADDR + str(self.avatar)
 
-
 class Follow(models.Model):
     follower=models.ForeignKey(BlogUser,related_name='following',on_delete=models.CASCADE)
     followed=models.ForeignKey(BlogUser,related_name='followers',on_delete=models.CASCADE)

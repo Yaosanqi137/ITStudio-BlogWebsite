@@ -197,7 +197,7 @@ def profile_view(request):
         if profile_form.is_valid():
             profile_form.save()
         if (BlogUser.objects.filter(nickname=profile_form.data['nickname'])
-                    .exclude(id=request.user.id).exists()):
+                    .exclude(pk=request.user.pk).exists()):
             return render(request, "Profile.html", {
                 "profile_form": profile_form,
                 "error": "已经有人叫这个名字了！"
