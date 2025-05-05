@@ -179,7 +179,7 @@
     }
 
     .article .title {
-        height: 75px;
+        height: 90px;
         margin-top: 10px;
         margin-bottom: 15px;
         line-height: 75px;
@@ -193,9 +193,15 @@
         top: 15px;
         right: 60px;
         width: 305px;
-        height: 75px;
+        height: 90px;
         line-height: 20px;
         font-size: 13px;
+    }
+
+    .authorName {
+        display: inline-block;
+        line-height: 30px;
+        font-size: 15px;
     }
 
     .author img {
@@ -204,10 +210,16 @@
         height: 75px;
     }
 
-    .delete,
-    .edit {
+    .follow {
         display: inline-block;
-        width: 100px;
+        margin-left: 10px;
+    }
+
+    .delete,
+    .edit,
+    .follow button {
+        display: inline-block;
+        width: 80px;
         height: 30px;
         line-height: 30px;
         text-align: center;
@@ -216,8 +228,16 @@
         font-weight: 700;
     }
 
+    .follow button {
+        height: 25px;
+        line-height: 25px;
+        box-shadow: none;
+
+    }
+
     .delete:hover,
-    .edit:hover {
+    .edit:hover,
+    .follow button:hover {
         transform: translateY(0);
     }
 
@@ -263,11 +283,28 @@
         margin: 10px 3px;
     }
 
-    .comments img {
+    .comment-item {
+        min-height: 80px;
+        border-bottom: 1px solid gray;
+        margin-bottom: 5px;
+    }
+
+    .comments .img {
         float: left;
         width: 70px;
         height: 70px;
         margin-right: 20px;
+        border-radius: 50%;
+    }
+
+    .comment-item::after {
+        content: "";
+        display: block;
+        clear: both;
+    }
+
+    .comments .commentContent {
+        margin-left: 70px;
     }
 
     /* 响应式设计 */
@@ -311,8 +348,17 @@
         animation: glow 1.5s ease-in-out;
         box-shadow: 0 0 10px 5px rgba(255, 215, 0, 0.7);
     }
+
     @keyframes glow {
-        0% { box-shadow: 0 0 5px 2px rgba(255, 215, 0, 0.5); }
-        50% { box-shadow: 0 0 15px 7px rgba(255, 215, 0, 0.9); }
-        100% { box-shadow: 0 0 10px 5px rgba(255, 215, 0, 0.7); }
+        0% {
+            box-shadow: 0 0 5px 2px rgba(255, 215, 0, 0.5);
+        }
+
+        50% {
+            box-shadow: 0 0 15px 7px rgba(255, 215, 0, 0.9);
+        }
+
+        100% {
+            box-shadow: 0 0 10px 5px rgba(255, 215, 0, 0.7);
+        }
     }
