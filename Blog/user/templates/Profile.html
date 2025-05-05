@@ -13,308 +13,290 @@
     <link rel="stylesheet" href="{% static 'css/back-to-top.css' %}">
 </head>
 <body>
-<div class="main-container">
-    <!-- 个人信息头部 -->
-    <div class="profile-header glass-effect">
-        <img src="{{ profile_form.instance.avatar.url }}" alt="头像" class="profile-avatar">
-        <div class="profile-info">
-            <h2>{{ profile_form.instance.nickname }}</h2>
-            <p class="profile-bio">{{ profile_form.instance.info|default:"暂无简介" }}</p>
-            <div class="profile-meta">
-                <div class="meta-item">
+<!-- GitHub风格通知铃铛 -->
+{% if user.is_authenticated %}
+    <div class="github-notification" id="githubNotification">
+        <div class="notification-icon">
+            <i class="fas fa-bell"></i>
+            {% if messages.count > 0 %}
+                <span class="notification-counter">{{ messages.count }}</span>
+            {% endif %}
+        </div>
+
+        <!-- 消息弹窗 -->
+        <div class="notification-popover">
+            <div class="popover-header">
+                <span>未读消息</span>
+            </div>
+            <div class="popover-body">
+                {% for message in messages %}
+                    <div class="message-item"
+                         data-id="{{ message.id }}"
+                         data-url="{{ message.redirect_url|default:'#' }}">
+                        <div class="message-text">{{ message.content }}</div>
+                        <div class="message-meta">
+                            <time>{{ message.created_at|date:"Y-m-d H:i" }}</time>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="empty-message">暂无新消息</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+<!-- 顶部格子背景 -->
+<div class="profile-header-bg"></div>
+
+<!-- 个人信息卡片 -->
+<div class="profile-card glass-effect">
+    <div class="profile-info-container">
+        <img src="{{ profile_form.instance.avatar.url }}" alt="头像" class="profile-avatar-large">
+        <div class="profile-details">
+            <h2 class="profile-username">{{ profile_form.instance.nickname }}</h2>
+            <div class="profile-uid">UID: 1457</div>
+            <p>{{ profile_form.instance.intro|default:"暂无简介" }}</p>
+            
+            <div class="stats-header">
+                <div class="stats-header-item">
                     <i class="fas fa-file-alt"></i>
                     <span>主题数: 0</span>
                 </div>
-                <div class="meta-item">
+                <div class="stats-header-item">
                     <i class="fas fa-comment"></i>
                     <span>帖子数: 0</span>
                 </div>
-                <div class="meta-item">
-                    <i class="fas fa-id-card"></i>
-                    <span>UID: 1457</span>
+                <div class="stats-header-item">
+                    <i class="fas fa-star"></i>
+                    <span>收藏: 1</span>
                 </div>
             </div>
         </div>
     </div>
+    
+    <!-- 导航栏 -->
+    <div class="profile-nav">
+        <a href="#" class="profile-nav-item active">个人资料</a>
+        <a href="#" class="profile-nav-item">论坛帖子</a>
+        <a href="#" class="profile-nav-item">红人馆</a>
+        <a href="#" class="profile-nav-item">关注标签</a>
+        <a href="#" class="profile-nav-item">关注</a>
+        <a href="#" class="profile-nav-item">消息</a>
+        <a href="#" class="profile-nav-item">邀请码</a>
+    </div>
+</div>
 
-    <!-- 导航标签 -->
-    <ul class="nav nav-tabs" id="profileTabs" role="tablist">
-        <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="basic-tab" data-bs-toggle="tab" data-bs-target="#basic" type="button" role="tab">
-                <i class="fas fa-user-circle me-2"></i>基本资料
-            </button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" id="security-tab" data-bs-toggle="tab" data-bs-target="#security" type="button" role="tab">
-                <i class="fas fa-lock me-2"></i>密码
-            </button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" id="avatar-tab" data-bs-toggle="tab" data-bs-target="#avatar" type="button" role="tab">
-                <i class="fas fa-image me-2"></i>头像
-            </button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" id="custom-tab" data-bs-toggle="tab" data-bs-target="#custom" type="button" role="tab">
-                <i class="fas fa-paint-brush me-2"></i>个性化
-            </button>
-        </li>
-    </ul>
+<div class="container">
+    <!-- 内容区标签 -->
+    <div class="tab-navigation">
+        <button class="tab-navigation-item active">基本资料</button>
+        <button class="tab-navigation-item">密码</button>
+        <button class="tab-navigation-item">头像</button>
+        <button class="tab-navigation-item">封面图</button>
+        <button class="tab-navigation-item">个性化</button>
+    </div>
 
-    <!-- 标签内容 -->
-    <div class="tab-content" id="profileTabsContent">
-        <!-- 基本资料 -->
-        <div class="tab-pane fade show active" id="basic" role="tabpanel" aria-labelledby="basic-tab">
-            <div class="content-card glass-effect">
-                <!-- 统计数据 -->
-                <div class="stat-row">
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-file-alt"></i>
-                        </div>
-                        <div class="stat-content">
-                            <h4>0</h4>
-                            <p>主题数</p>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-comment"></i>
-                        </div>
-                        <div class="stat-content">
-                            <h4>0</h4>
-                            <p>帖子数</p>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-user-friends"></i>
-                        </div>
-                        <div class="stat-content">
-                            <h4>0</h4>
-                            <p>关注</p>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-star"></i>
-                        </div>
-                        <div class="stat-content">
-                            <h4>1</h4>
-                            <p>收藏</p>
-                        </div>
-                    </div>
+    <div class="row mt-4">
+        <!-- 统计卡片 -->
+        <div class="stats-cards">
+            <div class="stats-card">
+                <div class="stats-card-icon blue">
+                    <i class="fas fa-file-alt"></i>
                 </div>
+                <div class="stats-card-content">
+                    <h4>0</h4>
+                    <p>主题数</p>
+                </div>
+            </div>
+            <div class="stats-card">
+                <div class="stats-card-icon green">
+                    <i class="fas fa-comment"></i>
+                </div>
+                <div class="stats-card-content">
+                    <h4>0</h4>
+                    <p>帖子数</p>
+                </div>
+            </div>
+            <div class="stats-card">
+                <div class="stats-card-icon red">
+                    <i class="fas fa-user-friends"></i>
+                </div>
+                <div class="stats-card-content">
+                    <h4>0</h4>
+                    <p>关注</p>
+                </div>
+            </div>
+            <div class="stats-card">
+                <div class="stats-card-icon yellow">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="stats-card-content">
+                    <h4>1</h4>
+                    <p>收藏</p>
+                </div>
+            </div>
+        </div>
 
-                <!-- 表单 -->
-                <div class="content-section">
-                    <h3 class="section-title">基本资料</h3>
-                    <form method="POST" enctype="multipart/form-data">
-                        {% csrf_token %}
+        <div class="col-md-6">
+            <div class="form-container">
+                <h3 class="mb-4">编辑个人资料</h3>
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
 
-                        <!-- 昵称 -->
-                        <div class="mb-3">
-                            <label for="{{ profile_form.nickname.id_for_label }}" class="form-label">
-                                <i class="fas fa-user me-2"></i>昵称
-                            </label>
-                            {{ profile_form.nickname }}
-                            {% if profile_form.nickname.errors %}
-                                <div class="invalid-feedback">
-                                    {% for error in profile_form.nickname.errors %}
-                                        {{ error }}
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                        </div>
-
-                        <!-- 简介 -->
-                        <div class="mb-3">
-                            <label for="{{ profile_form.info.id_for_label }}" class="form-label">
-                                <i class="fas fa-info-circle me-2"></i>简介
-                            </label>
-                            {{ profile_form.info }}
-                            <div class="form-text">
-                                简单介绍一下自己吧！
+                    <!-- 昵称 -->
+                    <div class="mb-3">
+                        <label for="{{ profile_form.nickname.id_for_label }}" class="form-label">
+                            <i class="fas fa-user me-2"></i>昵称
+                        </label>
+                        {{ profile_form.nickname }}
+                        {% if profile_form.nickname.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in profile_form.nickname.errors %}
+                                    {{ error }}
+                                {% endfor %}
                             </div>
-                            {% if profile_form.info.errors %}
-                                <div class="invalid-feedback">
-                                    {% for error in profile_form.info.errors %}
-                                        {{ error }}
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                        </div>
-
-                        <!-- 生日 -->
-                        <div class="mb-3">
-                            <label for="{{ profile_form.birthday.id_for_label }}" class="form-label">
-                                <i class="fas fa-birthday-cake me-2"></i>生日
-                            </label>
-                            {{ profile_form.birthday }}
-                            <div class="form-text">
-                                格式：YYYY-MM-DD
-                            </div>
-                            {% if profile_form.birthday.errors %}
-                                <div class="invalid-feedback">
-                                    {% for error in profile_form.birthday.errors %}
-                                        {{ error }}
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                        </div>
-
-                        <!-- 性别 -->
-                        <div class="mb-3">
-                            <label for="{{ profile_form.sex.id_for_label }}" class="form-label">
-                                <i class="fas fa-venus-mars me-2"></i>性别
-                            </label>
-                            {{ profile_form.sex }}
-                            {% if profile_form.sex.errors %}
-                                <div class="invalid-feedback">
-                                    {% for error in profile_form.sex.errors %}
-                                        {{ error }}
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                        </div>
-
-                        {% if error %}
-                            <div class="error-message">{{ error }}</div>
                         {% endif %}
+                    </div>
 
-                        <!-- 提交按钮 -->
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save me-2"></i>保存更改
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        <!-- 密码 -->
-        <div class="tab-pane fade" id="security" role="tabpanel" aria-labelledby="security-tab">
-            <div class="content-card glass-effect">
-                <h3 class="section-title">密码设置</h3>
-                <p class="profile-bio">在此更改您的账号密码，定期更换密码可以提高账号安全性。</p>
-                
-                <div class="mb-3">
-                    <label for="current-password" class="form-label">当前密码</label>
-                    <input type="password" class="form-control" id="current-password" placeholder="请输入当前密码">
-                </div>
-                
-                <div class="mb-3">
-                    <label for="new-password" class="form-label">新密码</label>
-                    <input type="password" class="form-control" id="new-password" placeholder="请输入新密码">
-                    <div class="form-text">密码长度不少于8位，包含字母和数字</div>
-                </div>
-                
-                <div class="mb-3">
-                    <label for="confirm-password" class="form-label">确认新密码</label>
-                    <input type="password" class="form-control" id="confirm-password" placeholder="请再次输入新密码">
-                </div>
-                
-                <button type="button" class="btn btn-primary">
-                    <i class="fas fa-key me-2"></i>修改密码
-                </button>
-            </div>
-        </div>
-
-        <!-- 头像 -->
-        <div class="tab-pane fade" id="avatar" role="tabpanel" aria-labelledby="avatar-tab">
-            <div class="content-card glass-effect">
-                <h3 class="section-title">头像设置</h3>
-                
-                <div class="row">
-                    <div class="col-md-6">
-                        <form method="POST" enctype="multipart/form-data">
-                            {% csrf_token %}
-                            
-                            <div class="mb-4">
-                                <label for="{{ profile_form.avatar.id_for_label }}" class="form-label">
-                                    <i class="fas fa-image me-2"></i>上传新头像
-                                </label>
-                                <div class="input-group">
-                                    <input type="file" class="form-control" id="{{ profile_form.avatar.id_for_label }}" name="{{ profile_form.avatar.name }}">
-                                </div>
-                                <div class="form-text">
-                                    支持上传 JPG/PNG 格式的图片，尺寸将自动调整为 160x160 像素。
-                                </div>
-                                {% if profile_form.avatar.errors %}
-                                    <div class="invalid-feedback">
-                                        {% for error in profile_form.avatar.errors %}
-                                            {{ error }}
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
+                    <!-- 头像 -->
+                    <div class="mb-3">
+                        <label for="{{ profile_form.avatar.id_for_label }}" class="form-label">
+                            <i class="fas fa-image me-2"></i>头像
+                        </label>
+                        <div class="input-group">
+                            <input type="file" class="form-control" id="{{ profile_form.avatar.id_for_label }}" name="{{ profile_form.avatar.name }}">
+                        </div>
+                        <div class="form-text">
+                            支持上传 JPG/PNG 格式的图片，尺寸将自动调整为 160x160 像素。
+                        </div>
+                        {% if profile_form.avatar.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in profile_form.avatar.errors %}
+                                    {{ error }}
+                                {% endfor %}
                             </div>
-                            
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-upload me-2"></i>上传头像
-                            </button>
-                        </form>
+                        {% endif %}
                     </div>
-                    
-                    <div class="col-md-6 text-center">
-                        <h5 class="preview-title">当前头像</h5>
-                        <img src="{{ profile_form.instance.avatar.url }}" alt="头像" class="avatar-preview">
+
+                    <!-- 背景图 -->
+                    <div class="mb-3">
+                        <label for="{{ profile_form.backimg.id_for_label }}" class="form-label">
+                            <i class="fas fa-image me-2"></i>背景图
+                        </label>
+                        <div class="input-group">
+                            <input type="file" class="form-control" id="{{ profile_form.backimg.id_for_label }}" name="{{ profile_form.backimg.name }}">
+                        </div>
+                        <div class="form-text">
+                            支持上传 JPG/PNG 格式的图片，尺寸将自动调整为 960x320 像素。
+                        </div>
+                        {% if profile_form.backimg.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in profile_form.backimg.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
                     </div>
-                </div>
+
+
+                    <!-- 简介 -->
+                    <div class="mb-3">
+                        <label for="{{ profile_form.intro.id_for_label }}" class="form-label">
+                            <i class="fas fa-info-circle me-2"></i>简介
+                        </label>
+                        {{ profile_form.intro }}
+                        <div class="form-text">
+                            简单介绍一下自己吧！
+                        </div>
+                        {% if profile_form.intro.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in profile_form.intro.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- 生日 -->
+                    <div class="mb-3">
+                        <label for="{{ profile_form.birthday.id_for_label }}" class="form-label">
+                            <i class="fas fa-birthday-cake me-2"></i>生日
+                        </label>
+                        {{ profile_form.birthday }}
+                        <div class="form-text">
+                            格式：YYYY-MM-DD
+                        </div>
+                        {% if profile_form.birthday.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in profile_form.birthday.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- 性别 -->
+                    <div class="mb-3">
+                        <label for="{{ profile_form.sex.id_for_label }}" class="form-label">
+                            <i class="fas fa-venus-mars me-2"></i>性别
+                        </label>
+                        {{ profile_form.sex }}
+                        {% if profile_form.sex.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in profile_form.sex.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    {% if error %}
+                        <div class="error-message">{{ error }}</div>
+                    {% endif %}
+
+                    <!-- 提交按钮 -->
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-2"></i>保存更改
+                    </button>
+                </form>
             </div>
         </div>
 
-        <!-- 个性化 -->
-        <div class="tab-pane fade" id="custom" role="tabpanel" aria-labelledby="custom-tab">
-            <div class="content-card glass-effect">
-                <h3 class="section-title">个性化设置</h3>
-                
-                <div class="mb-3">
-                    <label class="form-label">选择主题色</label>
-                    <div class="d-flex gap-3">
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="themeColor" id="theme1" checked>
-                            <label class="form-check-label form-label" for="theme1">
-                                默认渐变
-                            </label>
+        <div class="col-md-6">
+            <div class="form-container">
+                <h3 class="mb-4">资料预览</h3>
+                <div class="preview-card" style="{% if profile_form.instance.backimg %}background-image: url('{{ profile_form.instance.backimg.url }}'); background-size: cover; background-position: center;{% endif %}">
+                    <div class="preview-card-body">
+                        <div class="text-center">
+                            <img src="{{ profile_form.instance.avatar.url }}" alt="头像" class="preview-avatar">
                         </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="themeColor" id="theme2">
-                            <label class="form-check-label form-label" for="theme2">
-                                清新绿
-                            </label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="themeColor" id="theme3">
-                            <label class="form-check-label form-label" for="theme3">
-                                热情红
-                            </label>
-                        </div>
+                        <p><strong>昵称:</strong> {{ profile_form.instance.nickname }}</p>
+                        <p><strong>简介:</strong> {{ profile_form.instance.intro }}</p>
+                        <p><strong>生日:</strong> {{ profile_form.instance.birthday|default:"未设置" }}</p>
+                        <p><strong>性别:</strong> {{ profile_form.instance.sex }}</p>
                     </div>
                 </div>
-                
-                <div class="mb-4">
-                    <label class="form-label">封面图设置</label>
-                    <input type="file" class="form-control" id="coverImage">
-                    <div class="form-text">建议尺寸 1200x300 像素</div>
-                </div>
-                
-                <button type="button" class="btn btn-primary">
-                    <i class="fas fa-paint-brush me-2"></i>保存个性化设置
-                </button>
             </div>
         </div>
     </div>
 
     <!-- 底部按钮 -->
-    <div class="action-buttons">
-        <a href="/article/my" class="btn btn-primary">
-            <i class="fas fa-file-alt me-2"></i>我的文章
-        </a>
-        <a href="/" class="btn btn-outline">
-            <i class="fas fa-home me-2"></i>返回主界面
-        </a>
-        <a href="/user/logout" class="btn btn-danger">
-            <i class="fas fa-sign-out-alt me-2"></i>退出登录
-        </a>
+    <div class="bottom-buttons">
+        <div class="button-container">
+            <a href="/article/my" class="btn-myarticles">
+                <i class="fas fa-file-alt me-2"></i>我的文章
+            </a>
+            <a href="{% url 'user:profile_prew' request.user.username%}" class="btn-space">
+                <i class="fas fa-user me-2"></i>我的空间
+            </a>
+            <a href="/" class="btn-home">
+                <i class="fas fa-home me-2"></i>返回主界面
+            </a>
+            <a href="/user/logout" class="btn-logout">
+                <i class="fas fa-sign-out-alt me-2"></i>退出登录
+            </a>
+        </div>
     </div>
 </div>
 
@@ -324,5 +306,52 @@
 <script src="{% static 'js/NavbarJs.js' %}"></script>
 <script src="{% static 'js/layout-helpers.js' %}"></script>
 <script src="{% static 'js/back-to-top.js' %}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 获取背景图输入元素和预览卡片
+        const backimgInput = document.getElementById('{{ profile_form.backimg.id_for_label }}');
+        const previewCard = document.querySelector('.preview-card');
+
+        // 监听文件选择变化
+        backimgInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    // 设置预览卡片的背景图
+                    previewCard.style.backgroundImage = `url(${e.target.result})`;
+                    previewCard.style.backgroundSize = 'cover';
+                    previewCard.style.backgroundPosition = 'center';
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        // 标签切换功能
+        const tabButtons = document.querySelectorAll('.tab-navigation-item');
+        
+        tabButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+        
+        // 通知铃铛功能
+        const notificationIcon = document.querySelector('.notification-icon');
+        const notificationPopover = document.querySelector('.notification-popover');
+        
+        notificationIcon.addEventListener('click', function(e) {
+            e.stopPropagation();
+            notificationPopover.style.display = notificationPopover.style.display === 'block' ? 'none' : 'block';
+        });
+        
+        document.addEventListener('click', function(e) {
+            if (!notificationIcon.contains(e.target) && !notificationPopover.contains(e.target)) {
+                notificationPopover.style.display = 'none';
+            }
+        });
+    });
+</script>
 </body>
 </html>
