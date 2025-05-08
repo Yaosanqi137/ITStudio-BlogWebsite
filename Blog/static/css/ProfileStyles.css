@@ -451,10 +451,6 @@ body::before {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-.btn-profile {
-    background: #39C5bb;
-}
-
 .bottom-buttons a:hover {
     transform: translateY(-3px);
     box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
