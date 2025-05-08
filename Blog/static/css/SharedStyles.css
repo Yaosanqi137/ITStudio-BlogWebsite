@@ -399,6 +399,10 @@ body::before {
     background-color: #f44336;
 }
 
+.bottom-buttons .btn-profile {
+    background: #39C5bb;
+}
+
 /* GitHub风格通知铃铛样式 */
 .github-notification {
     position: fixed;

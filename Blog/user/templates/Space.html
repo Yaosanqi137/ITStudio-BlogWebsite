@@ -13,38 +13,6 @@
     <link rel="stylesheet" href="{% static 'css/back-to-top.css' %}">
 </head>
 <body>
-<!-- GitHub风格通知铃铛 -->
-{% if user.is_authenticated %}
-    <div class="github-notification" id="githubNotification">
-        <div class="notification-icon">
-            <i class="fas fa-bell"></i>
-            {% if messages.count > 0 %}
-                <span class="notification-counter">{{ messages.count }}</span>
-            {% endif %}
-        </div>
-
-        <!-- 消息弹窗 -->
-        <div class="notification-popover">
-            <div class="popover-header">
-                <span>未读消息</span>
-            </div>
-            <div class="popover-body">
-                {% for message in messages %}
-                    <div class="message-item"
-                         data-id="{{ message.id }}"
-                         data-url="{{ message.redirect_url|default:'#' }}">
-                        <div class="message-text">{{ message.content }}</div>
-                        <div class="message-meta">
-                            <time>{{ message.created_at|date:"Y-m-d H:i" }}</time>
-                        </div>
-                    </div>
-                {% empty %}
-                    <div class="empty-message">暂无新消息</div>
-                {% endfor %}
-            </div>
-        </div>
-    </div>
-{% endif %}
 
 <!-- 顶部格子背景 -->
 <div class="profile-header-bg"></div>
@@ -56,10 +24,25 @@
         <div class="profile-details">
             <h2 class="profile-username">
                 {{ user.nickname }}
-                {% if is_self %}
+                {% if request.user.is_authenticated and request.user.username == user.username %}
                 <a href="{% url 'user:profile' %}" class="btn-edit">
                     <i class="fas fa-edit"></i> 编辑资料
                 </a>
+                {% endif %}
+                <!-- 添加关注按钮 -->
+                {% if request.user.is_authenticated and request.user.username != user.username %}
+                    <form method="post"
+                          action="{% if is_following %}{% url 'user:unfollow_user' user.id %}{% else %}{% url 'user:follow_user' user.id %}{% endif %}"
+                          class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn {% if is_following %}btn-outline-danger{% else %}btn-primary{% endif %}">
+                            {% if is_following %}
+                                <i class="fas fa-user-minus"></i> 取消关注
+                            {% else %}
+                                <i class="fas fa-user-plus"></i> 关注
+                            {% endif %}
+                        </button>
+                    </form>
                 {% endif %}
             </h2>
             <div class="profile-uid">UID: {{ user.id }}</div>
@@ -68,19 +51,19 @@
             <div class="stats-header">
                 <div class="stats-header-item">
                     <i class="fas fa-file-alt"></i>
-                    <span>文章数: {{ article_count }}</span>
+                    <span>文章数: {{ articles.paginator.count }}</span>
                 </div>
                 <div class="stats-header-item">
                     <i class="fas fa-user-friends"></i>
-                    <span>关注: {{ following_count }}</span>
+                    <span>关注: {{ following.count }}</span>
                 </div>
                 <div class="stats-header-item">
                     <i class="fas fa-users"></i>
-                    <span>粉丝: {{ follower_count }}</span>
+                    <span>粉丝: {{ followers.count }}</span>
                 </div>
                 <div class="stats-header-item">
                     <i class="fas fa-star"></i>
-                    <span>收藏: {{ collection_count }}</span>
+                    <span>收藏: {{ collection.count }}</span>
                 </div>
             </div>
         </div>
@@ -144,31 +127,31 @@
         <div class="content-card glass-effect">
             <h3><i class="fas fa-star me-2"></i>收藏的文章</h3>
             
-            {% if collections %}
-                {% for article in collections %}
-                    <div class="article-card" onclick="window.location.href='{% url 'article:detail' article.id %}';">
+            {% if collection %}
+                {% for collect in collection %}
+                    <div class="article-card" onclick="window.location.href='{% url 'article:detail' collect.article.id %}';">
                         <div class="article-image">
-                            <img src="{{ article.head_img.url }}" alt="文章图片">
+                            <img src="{{ collect.article.head_img.url }}" alt="文章图片">
                         </div>
                         <div class="article-content">
-                            <h3>{{ article.title }}</h3>
-                            <p>作者: {{ article.author }}</p>
+                            <h3>{{ collect.article.title }}</h3>
+                            <p>作者: {{ collect.article.author }}</p>
                             <div class="article-meta">
                                 <span class="meta-item">
                                     <i class="far fa-eye meta-icon"></i>
-                                    {{ article.looks }}
+                                    {{ collect.article.looks }}
                                 </span>
                                 <span class="meta-item">
                                     <i class="fas fa-heart meta-icon"></i>
-                                    {{ article.likes }}
+                                    {{ collect.article.likes }}
                                 </span>
                                 <span class="meta-item">
                                     <i class="far fa-comment meta-icon"></i>
-                                    {{ article.comments.count }}
+                                    {{ collect.article.comments.count }}
                                 </span>
                                 <span class="meta-item">
                                     <i class="far fa-calendar meta-icon"></i>
-                                    {{ article.created_time|date:"Y/m/d H:i" }}
+                                    {{ collect.article.created_time|date:"Y/m/d H:i" }}
                                 </span>
                             </div>
                         </div>
@@ -188,12 +171,12 @@
             <h3><i class="fas fa-user-friends me-2"></i>我关注的人</h3>
             
             {% if following %}
-                {% for user in following %}
-                    <div class="user-card">
-                        <img src="{{ user.avatar.url }}" alt="头像" class="user-avatar">
+                {% for following in following %}
+                    <div class="user-card" onclick="window.location.href='{% url 'user:profile_prew' following.follower.username %}'">
+                        <img src="{{ following.follower.avatar.url }}" alt="头像" class="user-avatar">
                         <div class="user-info">
-                            <div class="user-name">{{ user.nickname }}</div>
-                            <div class="user-bio">{{ user.intro|default:"这个人很懒，还没有写简介"|truncatechars:50 }}</div>
+                            <div class="user-name">{{ following.follower.nickname }}</div>
+                            <div class="user-bio">{{ following.follower.intro|default:"这个人很懒，还没有写简介"|truncatechars:50 }}</div>
                         </div>
                     </div>
                 {% endfor %}
@@ -211,12 +194,12 @@
             <h3><i class="fas fa-users me-2"></i>我的粉丝</h3>
             
             {% if followers %}
-                {% for user in followers %}
-                    <div class="user-card">
-                        <img src="{{ user.avatar.url }}" alt="头像" class="user-avatar">
+                {% for follower in followers %}
+                    <div class="user-card" onclick="window.location.href='{% url 'user:profile_prew' follower.follower.username %}'">
+                        <img src="{{ follower.follower.avatar.url }}" alt="头像" class="user-avatar">
                         <div class="user-info">
-                            <div class="user-name">{{ user.nickname }}</div>
-                            <div class="user-bio">{{ user.intro|default:"这个人很懒，还没有写简介"|truncatechars:50 }}</div>
+                            <div class="user-name">{{ follower.follower.nickname }}</div>
+                            <div class="user-bio">{{ follower.follower.intro }}</div>
                         </div>
                     </div>
                 {% endfor %}
@@ -266,6 +249,9 @@
             {% if user.is_authenticated %}
             <a href="/user/logout" class="btn-logout">
                 <i class="fas fa-sign-out-alt me-2"></i>退出登录
+            </a>
+            <a href="/user/profile" class="btn-profile">
+                <i class="fas fa-user me-2"></i>编辑简介
             </a>
             {% else %}
             <a href="/user/login" class="btn-logout">
