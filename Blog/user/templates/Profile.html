@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="{% static 'css/SharedStyles.css' %}">
     <link rel="stylesheet" href="{% static 'css/NavbarStyles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/ProfileStyles.css' %}">
     <link rel="stylesheet" href="{% static 'css/back-to-top.css' %}">
 </head>
 <body>
@@ -79,43 +80,43 @@
         <div class="col-md-6">
             <div class="form-container glass-effect">
                 <h3 class="mb-4">编辑个人资料</h3>
-                <form method="POST" enctype="multipart/form-data">
-                    {% csrf_token %}
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
 
-                    <!-- 昵称 -->
-                    <div class="mb-3">
+                <!-- 昵称 -->
+                <div class="mb-3">
                         <label for="{{ profile_form.nickname.id_for_label }}" class="form-label">
                             <i class="fas fa-user me-2"></i>昵称
                         </label>
-                        {{ profile_form.nickname }}
-                        {% if profile_form.nickname.errors %}
-                            <div class="invalid-feedback">
-                                {% for error in profile_form.nickname.errors %}
-                                    {{ error }}
-                                {% endfor %}
-                            </div>
-                        {% endif %}
-                    </div>
+                    {{ profile_form.nickname }}
+                    {% if profile_form.nickname.errors %}
+                        <div class="invalid-feedback">
+                            {% for error in profile_form.nickname.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
 
-                    <!-- 头像 -->
-                    <div class="mb-3">
+                <!-- 头像 -->
+                <div class="mb-3">
                         <label for="{{ profile_form.avatar.id_for_label }}" class="form-label">
                             <i class="fas fa-image me-2"></i>头像
                         </label>
-                        <div class="input-group">
-                            <input type="file" class="form-control" id="{{ profile_form.avatar.id_for_label }}" name="{{ profile_form.avatar.name }}">
-                        </div>
-                        <div class="form-text">
-                            支持上传 JPG/PNG 格式的图片，尺寸将自动调整为 160x160 像素。
-                        </div>
-                        {% if profile_form.avatar.errors %}
-                            <div class="invalid-feedback">
-                                {% for error in profile_form.avatar.errors %}
-                                    {{ error }}
-                                {% endfor %}
-                            </div>
-                        {% endif %}
+                    <div class="input-group">
+                        <input type="file" class="form-control" id="{{ profile_form.avatar.id_for_label }}" name="{{ profile_form.avatar.name }}">
                     </div>
+                    <div class="form-text">
+                        支持上传 JPG/PNG 格式的图片，尺寸将自动调整为 160x160 像素。
+                    </div>
+                    {% if profile_form.avatar.errors %}
+                        <div class="invalid-feedback">
+                            {% for error in profile_form.avatar.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
 
                     <!-- 背景图 -->
                     <div class="mb-3">
@@ -138,82 +139,87 @@
                     </div>
 
 
-                    <!-- 简介 -->
-                    <div class="mb-3">
+                <!-- 简介 -->
+                <div class="mb-3">
                         <label for="{{ profile_form.intro.id_for_label }}" class="form-label">
                             <i class="fas fa-info-circle me-2"></i>简介
                         </label>
                         {{ profile_form.intro }}
-                        <div class="form-text">
-                            简单介绍一下自己吧！
-                        </div>
-                        {% if profile_form.intro.errors %}
-                            <div class="invalid-feedback">
-                                {% for error in profile_form.intro.errors %}
-                                    {{ error }}
-                                {% endfor %}
-                            </div>
-                        {% endif %}
+                    <div class="form-text">
+                        简单介绍一下自己吧！
                     </div>
+                        {% if profile_form.intro.errors %}
+                        <div class="invalid-feedback">
+                                {% for error in profile_form.intro.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
 
-                    <!-- 生日 -->
-                    <div class="mb-3">
+                <!-- 生日 -->
+                <div class="mb-3">
                         <label for="{{ profile_form.birthday.id_for_label }}" class="form-label">
                             <i class="fas fa-birthday-cake me-2"></i>生日
                         </label>
-                        {{ profile_form.birthday }}
-                        <div class="form-text">
-                            格式：YYYY-MM-DD
-                        </div>
-                        {% if profile_form.birthday.errors %}
-                            <div class="invalid-feedback">
-                                {% for error in profile_form.birthday.errors %}
-                                    {{ error }}
-                                {% endfor %}
-                            </div>
-                        {% endif %}
+                    {{ profile_form.birthday }}
+                    <div class="form-text">
+                        格式：YYYY-MM-DD
                     </div>
+                    {% if profile_form.birthday.errors %}
+                        <div class="invalid-feedback">
+                            {% for error in profile_form.birthday.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
 
-                    <!-- 性别 -->
-                    <div class="mb-3">
+                <!-- 性别 -->
+                <div class="mb-3">
                         <label for="{{ profile_form.sex.id_for_label }}" class="form-label">
                             <i class="fas fa-venus-mars me-2"></i>性别
                         </label>
-                        {{ profile_form.sex }}
-                        {% if profile_form.sex.errors %}
-                            <div class="invalid-feedback">
-                                {% for error in profile_form.sex.errors %}
-                                    {{ error }}
-                                {% endfor %}
-                            </div>
-                        {% endif %}
-                    </div>
-
-                    {% if error %}
-                        <div class="error-message">{{ error }}</div>
+                    {{ profile_form.sex }}
+                    {% if profile_form.sex.errors %}
+                        <div class="invalid-feedback">
+                            {% for error in profile_form.sex.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
                     {% endif %}
+                </div>
 
-                    <!-- 提交按钮 -->
+                {% if error %}
+                    <div class="error-message">{{ error }}</div>
+                {% endif %}
+
+                <!-- 提交按钮 -->
                     <button type="submit" class="btn btn-primary">
                         <i class="fas fa-save me-2"></i>保存更改
                     </button>
-                </form>
+            </form>
             </div>
         </div>
 
         <div class="col-md-6">
             <div class="form-container glass-effect">
                 <h3 class="mb-4">资料预览</h3>
+                <!-- 只显示头像和背景的预览卡片 -->
                 <div class="preview-card" style="{% if profile_form.instance.backimg %}background-image: url('{{ profile_form.instance.backimg.url }}'); background-size: cover; background-position: center;{% endif %}">
                     <div class="preview-card-body">
-                        <div class="text-center">
+                        <div class="preview-avatar-container">
                             <img src="{{ profile_form.instance.avatar.url }}" alt="头像" class="preview-avatar">
                         </div>
-                        <p><strong>昵称:</strong> {{ profile_form.instance.nickname }}</p>
-                        <p><strong>简介:</strong> {{ profile_form.instance.intro }}</p>
-                        <p><strong>生日:</strong> {{ profile_form.instance.birthday|default:"未设置" }}</p>
-                        <p><strong>性别:</strong> {{ profile_form.instance.sex }}</p>
                     </div>
+                </div>
+                
+                <!-- 个人信息移到预览卡片下方 -->
+                <div class="preview-info">
+                    <p><strong>昵称:</strong> {{ profile_form.instance.nickname }}</p>
+                    <p><strong>简介:</strong> {{ profile_form.instance.intro }}</p>
+                    <p><strong>生日:</strong> {{ profile_form.instance.birthday|default:"未设置" }}</p>
+                    <p><strong>性别:</strong> {{ profile_form.instance.sex }}</p>
                 </div>
             </div>
         </div>
