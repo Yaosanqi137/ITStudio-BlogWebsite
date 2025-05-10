@@ -14,38 +14,6 @@
     <link rel="stylesheet" href="{% static 'css/back-to-top.css' %}">
 </head>
 <body>
-<!-- GitHub风格通知铃铛 -->
-{% if user.is_authenticated %}
-    <div class="github-notification" id="githubNotification">
-        <div class="notification-icon">
-            <i class="fas fa-bell"></i>
-            {% if messages.count > 0 %}
-                <span class="notification-counter">{{ messages.count }}</span>
-            {% endif %}
-        </div>
-
-        <!-- 消息弹窗 -->
-        <div class="notification-popover">
-            <div class="popover-header">
-                <span>未读消息</span>
-            </div>
-            <div class="popover-body">
-                {% for message in messages %}
-                    <div class="message-item"
-                         data-id="{{ message.id }}"
-                         data-url="{{ message.redirect_url|default:'#' }}">
-                        <div class="message-text">{{ message.content }}</div>
-                        <div class="message-meta">
-                            <time>{{ message.created_at|date:"Y-m-d H:i" }}</time>
-                        </div>
-                    </div>
-                {% empty %}
-                    <div class="empty-message">暂无新消息</div>
-                {% endfor %}
-            </div>
-        </div>
-    </div>
-{% endif %}
 
 <!-- 顶部格子背景 -->
 <div class="profile-header-bg"></div>
@@ -283,6 +251,68 @@
                 }
             });
         }
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // 背景图预览逻辑（原有代码）
+        const backimgInput = document.getElementById('{{ profile_form.backimg.id_for_label }}');
+        const previewCard = document.querySelector('.preview-card');
+        backimgInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewCard.style.backgroundImage = `url(${e.target.result})`;
+                    previewCard.style.backgroundSize = 'cover';
+                    previewCard.style.backgroundPosition = 'center';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // 新增头像预览逻辑
+        const avatarInput = document.getElementById('{{ profile_form.avatar.id_for_label }}');
+        const previewAvatar = document.querySelector('.preview-avatar');
+        avatarInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewAvatar.src = e.target.result; // 更新头像预览图的src
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // 昵称实时预览
+        const nicknameInput = document.getElementById('{{ profile_form.nickname.id_for_label }}');
+        const previewNickname = document.querySelector('.preview-info p:nth-child(1)');
+        nicknameInput.addEventListener('input', function(e) {
+            previewNickname.textContent = `昵称: ${e.target.value}`;
+        });
+
+        // 简介实时预览
+        const introInput = document.getElementById('{{ profile_form.intro.id_for_label }}');
+        const previewIntro = document.querySelector('.preview-info p:nth-child(2)');
+        introInput.addEventListener('input', function(e) {
+            previewIntro.textContent = `简介: ${e.target.value}`;
+        });
+
+        // 生日实时预览
+        const birthdayInput = document.getElementById('{{ profile_form.birthday.id_for_label }}');
+        const previewBirthday = document.querySelector('.preview-info p:nth-child(3)');
+        birthdayInput.addEventListener('change', function(e) {
+            previewBirthday.textContent = `生日: ${e.target.value || "未设置"}`;
+        });
+
+        // 性别实时预览
+        const sexInput = document.getElementById('{{ profile_form.sex.id_for_label }}');
+        const previewSex = document.querySelector('.preview-info p:nth-child(4)');
+        sexInput.addEventListener('change', function(e) {
+            previewSex.textContent = `性别: ${e.target.options[e.target.selectedIndex].text}`;
+        });
     });
 </script>
 </body>
