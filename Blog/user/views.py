@@ -218,7 +218,7 @@ def profile_view(request):
         profile_form = ProfileForm(instance=user)
         return render(request, "Profile.html", {"profile_form": profile_form})
 
-def profile_prew_view(request, username):
+def profile_prev_view(request, username):
     user = get_object_or_404(BlogUser, username=username)
     current_tab = request.GET.get('tab', 'articles')  # 获取当前选中的标签
 

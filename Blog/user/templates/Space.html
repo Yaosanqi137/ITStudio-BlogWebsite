@@ -172,11 +172,11 @@
             
             {% if following %}
                 {% for following in following %}
-                    <div class="user-card" onclick="window.location.href='{% url 'user:profile_prew' following.follower.username %}'">
-                        <img src="{{ following.follower.avatar.url }}" alt="头像" class="user-avatar">
+                    <div class="user-card" onclick="window.location.href='{% url 'user:profile_prev' following.followed.username %}'">
+                        <img src="{{ following.followed.avatar.url }}" alt="头像" class="user-avatar">
                         <div class="user-info">
-                            <div class="user-name">{{ following.follower.nickname }}</div>
-                            <div class="user-bio">{{ following.follower.intro|default:"这个人很懒，还没有写简介"|truncatechars:50 }}</div>
+                            <div class="user-name">{{ following.followed.nickname }}</div>
+                            <div class="user-bio">{{ following.followed.intro|truncatechars:50 }}</div>
                         </div>
                     </div>
                 {% endfor %}
@@ -195,7 +195,7 @@
             
             {% if followers %}
                 {% for follower in followers %}
-                    <div class="user-card" onclick="window.location.href='{% url 'user:profile_prew' follower.follower.username %}'">
+                    <div class="user-card" onclick="window.location.href='{% url 'user:profile_prev' follower.follower.username %}'">
                         <img src="{{ follower.follower.avatar.url }}" alt="头像" class="user-avatar">
                         <div class="user-info">
                             <div class="user-name">{{ follower.follower.nickname }}</div>

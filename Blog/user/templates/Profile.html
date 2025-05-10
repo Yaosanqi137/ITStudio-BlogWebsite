@@ -39,7 +39,7 @@
     <!-- 导航栏 -->
     <div class="profile-nav">
         <a href="#" class="profile-nav-item active">个人资料</a>
-        <a href="{% url 'user:profile_prew' request.user.username%}" class="profile-nav-item">个人空间</a>
+        <a href="{% url 'user:profile_prev' request.user.username%}" class="profile-nav-item">个人空间</a>
     </div>
 </div>
 
@@ -196,7 +196,7 @@
     <!-- 底部按钮 -->
     <div class="bottom-buttons">
         <div class="button-container">
-            <a href="{% url 'user:profile_prew' request.user.username%}" class="btn-space">
+            <a href="{% url 'user:profile_prev' request.user.username%}" class="btn-space">
                 <i class="fas fa-user me-2"></i>我的空间
             </a>
             <a href="/" class="btn-home">
