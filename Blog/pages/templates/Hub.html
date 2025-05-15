@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="{% static 'css/HubStyles.css' %}">
     <link rel="stylesheet" href="{% static 'css/NavbarStyles.css' %}">
     <link rel="stylesheet" href="{% static 'css/back-to-top.css' %}">
+    <link rel="stylesheet" href="{% static 'css/darkmode.css' %}">
 </head>
 <body>
 <!-- GitHub风格通知铃铛 -->
@@ -62,6 +63,7 @@
             {% if not user.is_authenticated %}
             <li><a href="{% url 'user:login' %}">登录/注册</a></li>
             {% endif %}
+            <li><a href="#" id="themeToggle" class="theme-toggle"><i class="fas fa-moon"></i></a></li>
         </ul>
     </nav>
 </header>
@@ -208,5 +210,7 @@
 <script src="{% static 'js/NavbarJs.js' %}"></script>
 <script src="{% static 'js/layout-helpers.js' %}"></script>
 <script src="{% static 'js/back-to-top.js' %}"></script>
+<!-- 引入暗黑模式JS -->
+<script src="{% static 'js/darkmode.js' %}"></script>
 </body>
 </html>
