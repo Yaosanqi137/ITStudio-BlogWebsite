@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="{% static 'css/ArticleListStyles.css' %}">
     <link rel="stylesheet" href="{% static 'css/NavbarStyles.css' %}">
     <link rel="stylesheet" href="{% static 'css/back-to-top.css' %}">
+    <link rel="stylesheet" href="{% static 'css/darkmode.css' %}">
 </head>
 <body>
 <div class="background-gradient"></div>
@@ -22,17 +23,18 @@
             <input type="search" class="search-box" id="searchBox" placeholder="搜索文章、评论、用户...">
         </div>
         <ul class="nav-links">
-            <li><a href="/" class="active"><i class="fas fa-home"></i> 主页</a></li>
+            <li><a href="/"><i class="fas fa-home"></i> 主页</a></li>
             {% if user.is_authenticated %}
                 <li><a href="{% url 'article:create' %}">发表文章</a></li>
                 <li><a href="{% url 'article:my' %}">我的文章</a></li>
             {% endif %}
-            <li><a href="{% url 'article:list' %}">文章列表</a></li>
+            <li><a href="{% url 'article:list' %}" class="active">文章列表</a></li>
             <li><a href="{% url 'comment:cafe' %}">咖啡馆</a></li>
             <li><a href="https://github.com/Yaosanqi137/ITStudio-BlogWebsite">我们的 GitHub</a></li>
             {% if not user.is_authenticated %}
                 <li><a href="{% url 'user:login' %}">登录/注册</a></li>
             {% endif %}
+            <li><a href="#" id="themeToggle" class="theme-toggle"><i class="fas fa-moon"></i></a></li>
         </ul>
     </nav>
 </header>
@@ -147,5 +149,6 @@
 <script src="{% static 'js/NavbarJs.js' %}"></script>
 <script src="{% static 'js/layout-helpers.js' %}"></script>
 <script src="{% static 'js/back-to-top.js' %}"></script>
+<script src="{% static 'js/darkmode.js' %}"></script>
 </body>
 </html>

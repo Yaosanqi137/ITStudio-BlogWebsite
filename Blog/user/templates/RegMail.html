@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -6,6 +7,8 @@
     <link rel="icon" href="https://img.fastmirror.net/s/2024/08/16/66bf44708b1e7.png">
     <title>邮箱验证</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../../static/css/RegMailStyles.css">
+    <link rel="stylesheet" href="{% static 'css/darkmode.css' %}">
     <style>
         body {
             font-family: 'Microsoft YaHei', Arial, sans-serif;
@@ -137,6 +140,9 @@
         <p>此邮件由系统自动发送，请勿回复。</p>
     </div>
 </div>
+
+<button id="themeToggle" class="theme-toggle"><i class="fas fa-moon"></i></button>
+<script src="{% static 'js/darkmode.js' %}"></script>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {

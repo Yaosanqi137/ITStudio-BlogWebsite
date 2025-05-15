@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css">
     <link rel="stylesheet" href="{% static 'css/ArticlePostStyles.css' %}">
     <link rel="stylesheet" href="{% static 'css/back-to-top.css' %}">
+    <link rel="stylesheet" href="{% static 'css/darkmode.css' %}">
 </head>
 
 <body>
@@ -35,6 +36,7 @@
             {% if not user.is_authenticated %}
                 <li><a href="{% url 'user:login' %}">登录/注册</a></li>
             {% endif %}
+            <li><a href="#" id="themeToggle" class="theme-toggle"><i class="fas fa-moon"></i></a></li>
         </ul>
     </nav>
 </header>
@@ -230,5 +232,6 @@
 <script src="{% static 'js/ArticlePostJs.js' %}"></script>
 <script src="{% static 'js/layout-helpers.js' %}"></script>
 <script src="{% static 'js/back-to-top.js' %}"></script>
+<script src="{% static 'js/darkmode.js' %}"></script>
 </body>
 </html>
