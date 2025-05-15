@@ -1,0 +1,95 @@
+/* 暗黑模式样式 */
+:root {
+    --light-bg-gradient: linear-gradient(135deg, #a2e8f1 0%, #fbc2eb 100%);
+    --dark-bg-color: #121212;
+    --light-text: #ffffff;
+    --dark-text: #333333;
+    --accent-color: #ff6b6b;
+    --light-card-bg: rgba(255, 255, 255, 0.2);
+    --dark-card-bg: rgba(255, 255, 255, 0.1);
+}
+
+/* 暗黑模式背景 */
+body.dark-mode .background-gradient {
+    background: var(--dark-bg-color);
+    opacity: 1;
+}
+
+/* 暗黑模式文字颜色 */
+body.dark-mode {
+    color: var(--light-text);
+}
+
+/* 暗黑模式导航栏 */
+body.dark-mode .nav-links a {
+    color: var(--light-text);
+}
+
+body.dark-mode .logo {
+    color: var(--light-text);
+}
+
+/* 暗黑模式下的卡片 */
+body.dark-mode .glass-effect {
+    background: var(--dark-card-bg);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* 暗黑模式下的表单元素 */
+body.dark-mode input, 
+body.dark-mode textarea, 
+body.dark-mode select {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--light-text);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+body.dark-mode input::placeholder, 
+body.dark-mode textarea::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* 暗黑模式下的搜索框 */
+body.dark-mode .search-box {
+    background: rgba(255, 255, 255, 0.2);
+    color: var(--light-text);
+}
+
+body.dark-mode .search-box::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* 暗黑模式下的按钮 */
+body.dark-mode .theme-toggle {
+    color: var(--light-text);
+}
+
+/* 暗黑模式下的文章卡片 */
+body.dark-mode .article-card {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .article-content h3,
+body.dark-mode .article-content p {
+    color: var(--light-text);
+}
+
+/* 暗黑模式下的各种文本内容 */
+body.dark-mode h1, 
+body.dark-mode h2, 
+body.dark-mode h3, 
+body.dark-mode h4, 
+body.dark-mode h5, 
+body.dark-mode h6,
+body.dark-mode p,
+body.dark-mode span,
+body.dark-mode div {
+    color: var(--light-text);
+}
+
+/* 特殊颜色保持不变 */
+body.dark-mode .logo span,
+body.dark-mode .nav-links a.active,
+body.dark-mode .nav-links a:hover {
+    color: var(--accent-color);
+} 
