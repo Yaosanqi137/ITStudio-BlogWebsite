@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -7,6 +8,7 @@
     <title>登录</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="../../static/css/LoginStyles.css">
+    <link rel="stylesheet" href="{% static 'css/darkmode.css' %}">
 </head>
 <body>
 <div class="login-container glass-effect">
@@ -90,5 +92,10 @@
 </script>
 
 <script src="../../static/js/LoginJs.js"></script>
+<script src="{% static 'js/darkmode.js' %}"></script>
+
+<!-- 添加主题切换按钮 -->
+<button id="themeToggle" class="theme-toggle"><i class="fas fa-moon"></i></button>
+
 </body>
 </html>
