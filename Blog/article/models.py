@@ -39,7 +39,6 @@ class Collection(models.Model):
 class Like(models.Model):
     user = models.ForeignKey('user.BlogUser', on_delete=models.CASCADE)
     article = models.ForeignKey(Article, on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         unique_together = ('user', 'article')  # 确保一人一篇文章只能点赞一次

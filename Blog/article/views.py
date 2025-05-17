@@ -6,7 +6,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect,get_object_or_404
 from django.shortcuts import render
 from .forms import ArticlePostForm
-from .models import Article, Collection
+from .models import Article, Collection, Like
 from user.models import BlogUser,Follow
 from django.db.models import Q
 from comment.models import Comment
@@ -71,6 +71,11 @@ def detail_view(request, id):
     if collect:
         is_collected = True
 
+    is_liked = False
+    like = Like.objects.filter(user=request.user.id, article=id).exists()
+    if like:
+        is_liked = True
+
     # 判断是否关注了作者
     is_following_author = False
     if request.user.is_authenticated and request.user.username != article.author.username:
@@ -91,6 +96,7 @@ def detail_view(request, id):
                'comments': comments,
                'comment_form': comment_form,
                'is_collected': is_collected,
+               'is_liked': is_liked,
                'is_following_author': is_following_author
                }
     return render(request, 'Article.html', context)
@@ -169,34 +175,46 @@ def my_view(request):
 
 @require_POST
 @login_required(login_url='/user/login/')
-def likes_view(request, id):
-    article =get_object_or_404(Article,id=id)
+def like_view(request, id):
     try:
-        blog_user = get_object_or_404(BlogUser, pk=request.user.pk)
-
         with transaction.atomic():
-            Like.objects.create(user=blog_user, article=article)
-            article.likes += 1
-            article.save()
+            article = get_object_or_404(Article, id=id)
+            user = get_object_or_404(BlogUser, pk=request.user.pk)
 
-        return JsonResponse({
-            'status': 'success',
-            'msg': '点赞成功',
-            'likes': article.likes
-        })
+            # 检查是否已点赞
+            like, created = Like.objects.get_or_create(
+                user=user,
+                article=article
+            )
 
-    except IntegrityError:
-        return JsonResponse({
-            'status': 'fail',
-            'msg': '您已点过赞',
-            'likes': article.likes
-        }, status=400)
+            if created:
+                # 新点赞
+                article.likes = models.F('likes') + 1
+                article.save()
+                article.refresh_from_db()
+                is_liked = True
+                message = '点赞成功'
+            else:
+                # 取消点赞
+                like.delete()
+                article.likes = models.F('likes') - 1
+                article.save()
+                article.refresh_from_db()
+                is_liked = False
+                message = '已取消点赞'
+
+            return JsonResponse({
+                'status': 'success',
+                'is_liked': is_liked,
+                'likes': article.likes,
+                'message': message
+            })
 
     except Exception as e:
         return JsonResponse({
             'status': 'error',
-            'msg': str(e)
-        }, status=500)
+            'message': str(e)
+        }, status=400)
 
 @require_POST
 @login_required(login_url='/user/login/')

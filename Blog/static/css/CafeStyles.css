@@ -1,327 +1,124 @@
-/* Base styles copied from Hub/Article styles */
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f5f5f5;
-    color: #333;
-    line-height: 1.6;
-    overflow-x: hidden;
-    position: relative;
-}
-
-body::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(135deg, #39c5bb, #bb6688);
-    opacity: 0.8;
-    z-index: -1;
-}
-
-/* Glass effect */
-.glass-effect {
-    background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    border-radius: 12px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
-}
-
-main {
-    padding-top: 100px; /* Adjust based on fixed header height */
-    padding-bottom: 30px;
-}
-
-/* Cafe specific styles */
+/* ===== 基础变量定义 ===== */
 :root {
-    --primary-color: #4a89dc;
-    --hover-color: #3b7dd8;
-    --success-color: #4CAF50;
-    --danger-color: #f44336;
-    --text-dark: #fff; /* Adjusted for glass effect */
-    --text-light: rgba(255, 255, 255, 0.8);
-    --border-color: rgba(255, 255, 255, 0.2);
-    --reply-bg: rgba(0, 0, 0, 0.1);
-    --reply-info-bg: rgba(255, 255, 255, 0.15);
+    /* 明亮模式变量 */
+    --light-bg: #f5f5f5;
+    --light-text: #333;
+    --light-card-bg: rgba(255,255,255,0.2);
+    --light-border: rgba(0,0,0,0.1);
+    --light-input-bg: #ffffff;
+    --light-btn-primary: #4299e1;
+
+    /* 暗黑模式变量 */
+    --dark-bg: #121212;
+    --dark-text: #f0f0f0;
+    --dark-card-bg: rgba(30,30,30,0.8);
+    --dark-border: rgba(255,255,255,0.15);
+    --dark-input-bg: #2d3748;
+    --dark-btn-primary: #1e88e5;
+
+    /* 动态变量（默认值） */
+    --current-bg: var(--light-bg);
+    --current-text: var(--light-text);
+    --current-card-bg: var(--light-card-bg);
+    --current-border: var(--light-border);
+    --current-input-bg: var(--light-input-bg);
+    --current-btn-primary: var(--light-btn-primary);
 }
 
-.cafe-container {
-    max-width: 900px;
-    margin: 20px auto;
-    padding: 30px;
-    color: var(--text-dark);
+/* ===== 暗黑模式应用 ===== */
+[data-theme="dark"],
+.dark-mode {
+    --current-bg: var(--dark-bg);
+    --current-text: var(--dark-text);
+    --current-card-bg: var(--dark-card-bg);
+    --current-border: var(--dark-border);
+    --current-input-bg: var(--dark-input-bg);
+    --current-btn-primary: var(--dark-btn-primary);
+
+    /* CKEditor 专用修复 */
+    .cke_contents {
+        background: var(--dark-input-bg) !important;
+        border-color: var(--dark-border) !important;
+    }
+
+    .cke_editable {
+        color: var(--dark-text) !important;
+    }
+
+    /* 修复工具栏图标 */
+    .cke_button_icon {
+        filter: invert(1) brightness(0.9) !important;
+    }
 }
 
-.cafe-container h1 {
-    color: #fff;
-    text-align: center;
-    margin-bottom: 30px;
-    font-weight: 600;
-    text-shadow: 0 1px 3px rgba(0,0,0,0.2);
-}
-
-.cafe-container h1 i {
-    margin-right: 10px;
-}
-
-/* Message card styles */
-.chat-message {
-    margin-bottom: 20px;
-    padding: 18px;
-    border: 1px solid var(--border-color);
-    border-radius: 10px;
-    background-color: rgba(255, 255, 255, 0.1);
+/* ===== 表单元素增强 ===== */
+/* 所有输入框统一风格 */
+input:not([type="checkbox"]),
+textarea,
+select,
+.cke_contents {
+    background-color: var(--current-input-bg) !important;
+    color: var(--current-text) !important;
+    border: 1px solid var(--current-border) !important;
+    padding: 10px 12px !important;
+    border-radius: 6px !important;
     transition: all 0.3s ease;
-    position: relative;
 }
 
-.chat-message:hover {
-    background-color: rgba(255, 255, 255, 0.15);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    transform: translateY(-2px);
+/* 输入框聚焦效果 */
+input:focus,
+textarea:focus,
+select:focus {
+    outline: 2px solid var(--current-btn-primary);
+    outline-offset: 2px;
 }
 
-/* Avatar system */
-.message-header {
-    display: flex;
-    align-items: center;
-    margin-bottom: 12px;
+/* 占位符文字 */
+::placeholder {
+    color: rgba(var(--current-text), 0.5) !important;
 }
 
-.user-avatar {
-    position: relative;
-    margin-right: 12px;
-}
-
-.user-avatar img {
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 3px solid rgba(255, 255, 255, 0.3);
+/* ===== 按钮增强 ===== */
+button[type="submit"],
+.comment-submit-btn,
+.save-button {
+    background: var(--current-btn-primary) !important;
+    color: white !important;
+    padding: 10px 24px !important;
+    border: none !important;
+    border-radius: 6px !important;
+    font-weight: 600 !important;
+    cursor: pointer;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     transition: all 0.3s ease;
 }
 
-.user-avatar:hover img {
-    transform: scale(1.1);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-    border-color: #ff6b6b;
-}
-
-.online-badge {
-    position: absolute;
-    bottom: 2px;
-    right: 2px;
-    width: 12px;
-    height: 12px;
-    background-color: var(--success-color);
-    border-radius: 50%;
-    border: 2px solid white;
-    z-index: 2;
-}
-
-.user-info {
-    flex-grow: 1;
-}
-
-.message-user {
-    font-weight: 600;
-    color: #ff6b6b; /* Highlight username */
-    display: flex;
-    align-items: center;
-}
-
-.message-time {
-    font-size: 12px;
-    color: var(--text-light);
-    margin-top: 2px;
-}
-
-/* Reply info styles */
-.reply-info {
-    display: flex;
-    align-items: center;
-    padding: 8px 12px;
-    background-color: var(--reply-info-bg);
-    border-radius: 20px;
-    margin: 10px 0;
-    font-size: 13px;
-    color: var(--text-light);
-}
-
-.reply-info img {
-    width: 24px;
-    height: 24px;
-    margin-right: 8px;
-    border: 2px solid white;
-}
-
-.reply-info strong {
-    color: #ff6b6b;
-    font-weight: 600;
-    margin-left: 4px;
-}
-
-/* Message content */
-.message-body {
-    margin: 15px 0;
-    padding: 0 5px;
-    color: var(--text-dark);
-}
-
-/* Reply button */
-.message-footer {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 10px;
-}
-
-.reply-btn {
-    background-color: rgba(255, 107, 107, 0.7);
-    color: white;
-    border: none;
-    padding: 6px 15px;
-    border-radius: 20px;
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 500;
-    transition: all 0.3s;
-    display: flex;
-    align-items: center;
-}
-
-.reply-btn:hover {
-    background-color: rgba(255, 107, 107, 1);
-    transform: translateY(-1px);
-}
-
-.reply-btn i {
-    margin-right: 5px;
-    font-size: 12px;
-}
-
-/* Replying-to info bar */
-#parent-info {
-    margin-bottom: 15px;
-    padding: 10px 15px;
-    background-color: rgba(0, 0, 0, 0.2);
-    border-radius: 8px;
-    display: none;
-    align-items: center;
-    justify-content: space-between;
-    color: var(--text-light);
-}
-
-#parent-info strong {
-    color: #ff6b6b;
-    margin-left: 5px;
-}
-
-#cancel-reply {
-    background-color: var(--danger-color);
-    color: white;
-    border: none;
-    padding: 3px 10px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 12px;
-    transition: background-color 0.3s ease;
-}
-
-#cancel-reply:hover {
-    background-color: #d32f2f;
-}
-
-/* Form area */
-.reply-form-container {
-    margin-top: 30px;
-    padding: 20px;
-    background-color: rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
-}
-
-.reply-form-container .form-label {
-    color: #fff;
-    font-weight: 600;
-    margin-bottom: 10px;
-}
-
-/* Style CKEditor container within the form */
-.reply-form-container #id_body_editor {
-    border-radius: 8px;
-    overflow: hidden; /* Ensures borders apply correctly */
-}
-
-/* Adjust CKEditor toolbar/editing area background */
-.reply-form-container .cke_top,
-.reply-form-container .cke_contents {
-    background: rgba(255, 255, 255, 0.9) !important; /* Light background for editor */
-    color: #333 !important; /* Dark text for editor */
-}
-.reply-form-container .cke_contents iframe {
-     background-color: rgba(255, 255, 255, 0.9);
-}
-
-.reply-form-container button[type="submit"] {
-    padding: 8px 22px;
-    background-color: var(--success-color);
-    color: white;
-    border: none;
-    border-radius: 20px;
-    cursor: pointer;
-    font-weight: 500;
-    transition: all 0.3s;
-    display: inline-flex; /* Align icon and text */
-    align-items: center;
-}
-
-.reply-form-container button[type="submit"]:hover {
-    background-color: #3d8b40;
-    transform: translateY(-1px);
+button[type="submit"]:hover,
+.comment-submit-btn:hover {
+    transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    background: var(--accent-color) !important;
 }
 
-.reply-form-container button[type="submit"] i {
-    margin-right: 8px;
+/* ===== 图片适配 ===== */
+.dark-mode img,
+[data-theme="dark"] img {
+    filter: brightness(0.85) contrast(1.1);
+    transition: filter 0.3s ease;
 }
 
-/* Child messages indentation */
-.children {
-    margin-left: 30px; /* Slightly reduced indent */
-    border-left: 2px solid rgba(255, 255, 255, 0.2);
-    padding-left: 15px;
-    margin-top: 15px;
+/* ===== 过渡动画 ===== */
+body,
+.glass-effect,
+input,
+textarea,
+select,
+button,
+img {
+    transition:
+            background-color 0.3s ease,
+            color 0.3s ease,
+            border-color 0.3s ease,
+            filter 0.3s ease,
+            transform 0.2s ease;
 }
-
-/* Responsive design */
-@media (max-width: 900px) {
-    .cafe-container {
-        max-width: 95%;
-        padding: 20px;
-    }
-}
-
-@media (max-width: 768px) {
-    .children {
-        margin-left: 20px;
-    }
-    main {
-        padding-top: 80px; /* Adjust for potentially smaller header */
-    }
-}
-
-@media (max-width: 600px) {
-    .user-avatar img {
-        width: 36px;
-        height: 36px;
-    }
-    .children {
-        margin-left: 15px;
-        padding-left: 10px;
-    }
-} 

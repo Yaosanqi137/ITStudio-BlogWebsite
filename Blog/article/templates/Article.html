@@ -303,7 +303,8 @@
                 </button>
 
                 <!-- 点赞按钮 -->
-                <button id="like-btn" class="action-btn like-btn" data-article-id="{{ article.id }}">
+                <button id="like-btn" class="action-btn like-btn {% if is_liked %}liked{% endif %}"
+                        data-article-id="{{ article.id }}">
                     <i class="fas fa-thumbs-up"></i> {{ article.likes }}
                 </button>
             </div>
@@ -366,146 +367,130 @@
             </div>
         </div>
     </div>
-
+</div>
 </body>
 <script src="{% static 'js/csrf.js' %}"></script>
 <script src="{% static 'js/layout-helpers.js' %}"></script>
 <script src="{% static 'js/back-to-top.js' %}"></script>
 <script src="{% static 'js/darkmode.js' %}"></script>
 <script>
-<!-- 添加自动滚动JS -->
-document.addEventListener('DOMContentLoaded', function() {
-    if(window.location.hash) {
-        const target = document.querySelector(window.location.hash);
-        if(target) {
-            // 添加高亮类
-            target.classList.add('highlight');
-            // 滚动到目标位置
-            target.scrollIntoView({ behavior: 'smooth' });
-            // 5秒后移除高亮
-            setTimeout(() => {
-                target.classList.remove('highlight');
-            }, 5000);
-        }
-    }
-
-    document.getElementById('collect-btn').addEventListener('click', function() {
-        const articleId = this.dataset.articleId;
-        const collectBtn = this;
-
-        // 禁用按钮防止重复点击
-        collectBtn.disabled = true;
-
-        fetch(`/article/collect/${articleId}`, {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': getCookie('csrftoken'),
-                'Accept': 'application/json'
+    document.addEventListener('DOMContentLoaded', function() {
+        // 自动滚动和高亮功能
+        if(window.location.hash) {
+            const target = document.querySelector(window.location.hash);
+            if(target) {
+                target.classList.add('highlight');
+                target.scrollIntoView({ behavior: 'smooth' });
+                setTimeout(() => {
+                    target.classList.remove('highlight');
+                }, 5000);
             }
-        })
-            .then(response => response.json())
-            .then(data => {
-                if(data.status === 'success') {
-                    // 使用更安全的元素选择方式
-                    const countElement = document.getElementById('collect-count');
-                    if(countElement) {
-                        countElement.textContent = data.collect;
+        }
+
+        // 获取CSRF Token的函数
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
                     }
-                    collectBtn.innerHTML = data.is_collected ?
-                        `<i class="fas fa-star"></i> 已收藏 (${data.collect})` :
-                        `<i class="fas fa-star"></i> 收藏 (${data.collect})`;
-                    collectBtn.classList.toggle('collected', data.is_collected);
+                }
+            }
+            return cookieValue;
+        }
+
+        // 点赞功能
+        document.getElementById('like-btn').addEventListener('click', function() {
+            const articleId = this.dataset.articleId;
+            const likeBtn = this;
+            likeBtn.disabled = true;
+
+            fetch(`/article/like/${articleId}`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'Accept': 'application/json'
                 }
             })
-            .catch(error => console.error('Error:', error))
-            .finally(() => {
-                collectBtn.disabled = false;
-            });
+                .then(response => response.json())
+                .then(data => {
+                    if(data.status === 'success') {
+                        const countElement = document.getElementById('like-count');
+                        if(countElement) {
+                            countElement.textContent = data.likes;
+                        }
+                        likeBtn.innerHTML = data.is_liked ?
+                            `<i class="fas fa-thumbs-up"></i> 已点赞 (${data.likes})` :
+                            `<i class="fas fa-thumbs-up"></i> 点赞 (${data.likes})`;
+                        likeBtn.classList.toggle('liked', data.is_liked);
+                    }
+                })
+                .catch(error => console.error('Error:', error))
+                .finally(() => {
+                    likeBtn.disabled = false;
+                });
+        });
+
+        // 收藏功能
+        document.getElementById('collect-btn').addEventListener('click', function() {
+            const articleId = this.dataset.articleId;
+            const collectBtn = this;
+            collectBtn.disabled = true;
+
+            fetch(`/article/collect/${articleId}`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'Accept': 'application/json'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if(data.status === 'success') {
+                        const countElement = document.getElementById('collect-count');
+                        if(countElement) {
+                            countElement.textContent = data.collect;
+                        }
+                        collectBtn.innerHTML = data.is_collected ?
+                            `<i class="fas fa-star"></i> 已收藏 (${data.collect})` :
+                            `<i class="fas fa-star"></i> 收藏 (${data.collect})`;
+                        collectBtn.classList.toggle('collected', data.is_collected);
+                    }
+                })
+                .catch(error => console.error('Error:', error))
+                .finally(() => {
+                    collectBtn.disabled = false;
+                });
+        });
+
+        // CKEditor配置
+        CKEDITOR.replace('id_body', {
+            smiley_images: ['regular_smile.png','sad_smile.png','wink_smile.png'],
+            smiley_columns: 8,
+            smiley_size: 24
+        });
     });
 
-    if(articleId) {
-        fetch(`/collect/status/${articleId}`)
-            .then(response => response.json())
-            .then(data => {
-                const btn = document.getElementById('collect-btn');
-                if(data.is_collected) {
-                    btn.classList.add('collected');
-                    btn.innerHTML = `<i class="fas fa-star"></i> 已收藏 (${data.collect})`;
-                }
-            });
+    // 显示Toast通知的函数
+    function showToast(message, type = 'info') {
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        toast.textContent = message;
+        document.body.appendChild(toast);
+
+        setTimeout(() => {
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    document.body.removeChild(toast);
+                }, 300);
+            }, 3000);
+        }, 100);
     }
-});
-CKEDITOR.replace('id_body', {
-    // 其他配置...
-    smiley_images: ['regular_smile.png','sad_smile.png','wink_smile.png'],
-    smiley_columns: 8,
-    smiley_size: 24  // 控制表情显示尺寸
-});
-
-document.getElementById('like-btn').addEventListener('click', function() {
-    const articleId = this.dataset.articleId;
-    const likeBtn = this;
-
-    // 禁用按钮防止重复点击
-    likeBtn.disabled = true;
-
-    fetch(`/article/like/${articleId}`, {
-        method: 'POST',
-        headers: {
-            'X-CSRFToken': getCookie('csrftoken'),
-            'Accept': 'application/json'
-        },
-        credentials: 'same-origin'
-    })
-        .then(response => {
-            if (!response.ok) {
-                return response.json().then(err => { throw err; });
-            }
-            return response.json();
-        })
-        .then(data => {
-            if (data.status === 'success') {
-                // 更新按钮状态和显示
-                likeBtn.innerHTML = `<i class="fas fa-thumbs-up"></i> 已点赞 (${data.likes})`;
-                likeBtn.classList.add('liked');
-
-                // 更新页面上的点赞数显示
-                const likeCountElements = document.querySelectorAll('.like-count');
-                likeCountElements.forEach(el => {
-                    el.textContent = data.likes;
-                });
-            } else {
-                likeBtn.disabled = false;
-                alert(data.msg || '操作失败');
-            }
-        })
-        .catch(error => {
-            likeBtn.disabled = false;
-            console.error('Error:', error);
-        });
-});
-
-// 获取CSRF Token的函数（添加到全局JS中）
-function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-}
-// 点赞后禁用按钮
-fetch(`/like/${id}`).then(res => res.json()).then(data => {
-    if(data.status === 'success') {
-        likeBtn.disabled = true;
-        likeBtn.classList.add('liked');
-    }
-});
 </script>
 </html>
