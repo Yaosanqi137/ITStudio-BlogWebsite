@@ -44,17 +44,17 @@
                 </a>
             </td>
             <td align="center">
-                <a href="https://github.com/Cccc-owo">
-                    <img src="https://avatars.githubusercontent.com/u/47687154?v=4" width="100;" alt="Cccc-owo"/>
-                    <br />
-                    <sub><b>Cccc_</b></sub>
-                </a>
-            </td>
-            <td align="center">
                 <a href="https://github.com/LZD18">
                     <img src="https://avatars.githubusercontent.com/u/203945452?v=4" width="100;" alt="LZD18"/>
                     <br />
                     <sub><b>LZD18</b></sub>
+                </a>
+            </td>
+            <td align="center">
+                <a href="https://github.com/Cccc-owo">
+                    <img src="https://avatars.githubusercontent.com/u/47687154?v=4" width="100;" alt="Cccc-owo"/>
+                    <br />
+                    <sub><b>Cccc_</b></sub>
                 </a>
             </td>
             <td align="center">
