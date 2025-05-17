@@ -170,24 +170,28 @@ def my_view(request):
 @require_POST
 @login_required(login_url='/user/login/')
 def likes_view(request, id):
+    article =get_object_or_404(Article,id=id)
     try:
-        if request.session.get(f'liked_{id}', False):
-            article = Article.objects.get(id=id)
-            return JsonResponse({
-                'status': 'fail',
-                'msg': '已点赞过',
-                'likes': article.likes  # 返回当前点赞数
-            }, status=400)
+        blog_user = get_object_or_404(BlogUser, pk=request.user.pk)
 
-        article = Article.objects.get(id=id)
-        article.likes += 1
-        article.save()
-        request.session[f'liked_{id}'] = True
+        with transaction.atomic():
+            Like.objects.create(user=blog_user, article=article)
+            article.likes += 1
+            article.save()
+
         return JsonResponse({
             'status': 'success',
             'msg': '点赞成功',
             'likes': article.likes
         })
+
+    except IntegrityError:
+        return JsonResponse({
+            'status': 'fail',
+            'msg': '您已点过赞',
+            'likes': article.likes
+        }, status=400)
+
     except Exception as e:
         return JsonResponse({
             'status': 'error',
