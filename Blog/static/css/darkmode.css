@@ -92,4 +92,94 @@ body.dark-mode .logo span,
 body.dark-mode .nav-links a.active,
 body.dark-mode .nav-links a:hover {
     color: var(--accent-color);
+}
+
+body.dark-mode .notification-popover,
+body.dark-mode .popover-header,
+body.dark-mode .message-item,
+body.dark-mode .message-text,
+body.dark-mode .message-meta time,
+body.dark-mode .empty-message,
+body.dark-mode .category-dropdown,
+body.dark-mode .category-item,
+body.dark-mode .category-title,
+body.dark-mode .sub-category-btn {
+    color: var(--dark-text) !important;
+}
+
+body.dark-mode .notification-popover {
+    background-color: #ffffff !important;
+    border-color: #d0d7de !important;
+}
+
+body.dark-mode .popover-header {
+    background-color: #f6f8fa !important;
+    border-bottom-color: #d0d7de !important; /* Ensure border is also visible */
+}
+
+body.dark-mode .category-dropdown,
+body.dark-mode .sub-category { /* Added .sub-category for nested dropdowns */
+    background-color: #ffffff !important;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1) !important; /* Maintain some shadow */
+}
+
+
+/* Ensure hover effects on dropdown items also use appropriate colors */
+body.dark-mode .message-item:hover {
+    background-color: #f6f8fa !important;
+}
+
+body.dark-mode .category-item:hover {
+     background-color: rgba(57, 197, 187, 0.1) !important; /* Light hover consistent with light mode */
+}
+body.dark-mode .category-item:hover .category-title {
+    color: var(--dark-text) !important; /* Ensure title in hovered item is dark */
+}
+
+body.dark-mode .sub-category-btn:hover {
+    background-color: #39c5bb !important;
+    color: white !important; /* Text on this specific hover can be white as background is dark */
+    border-color: #39c5bb !important;
+}
+
+/* Keep notification icon background light */
+body.dark-mode .notification-icon {
+    background: white !important;
+}
+body.dark-mode .notification-icon:hover {
+    background: #f3f4f6 !important;
+}
+body.dark-mode .notification-icon i {
+    color: #24292f !important; /* Original icon color */
+}
+
+/* Selected category and clear filter button in ArticleList */
+body.dark-mode .selected-category {
+    background-color: rgba(255, 255, 255, 0.7) !important;
+    color: #333 !important;
+}
+
+body.dark-mode .clear-filter-btn {
+    background-color: rgba(255, 255, 255, 0.8) !important;
+}
+body.dark-mode .clear-filter-btn i {
+    color: #333 !important; /* Assuming icon should be dark */
+}
+
+/* Ensure .category-btn text (which triggers dropdown) is legible in dark mode if it's not part of .nav-links */
+body.dark-mode .category-btn {
+    color: var(--light-text) !important; /* If it should be light in dark mode */
+    /* Or var(--dark-text) if it should remain dark. User didn't specify this one. */
+    /* Assuming it's outside general nav and should follow body.dark-mode general text color */
+}
+
+/* 修复下拉选择框在暗黑模式下选项不可见的问题 */
+body.dark-mode select option {
+    color: var(--dark-text) !important; /* 确保选项文字是深色 */
+    background-color: white !important; /* 确保选项背景是浅色 */
+}
+
+/* 在某些浏览器中，select本身需要保持选中值的颜色为白色以保持可见性 */
+body.dark-mode select {
+    color: var(--light-text) !important; /* 选中值在暗模式下显示为白色 */
 } 
