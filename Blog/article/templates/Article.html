@@ -3,6 +3,10 @@
 {% load static %}
 
 <head>
+    <script>
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+    </script>
     <meta charset="UTF-8">
     <title>{{ article.title }}</title>
     <link rel="stylesheet" href="{% static 'css/monokai.css' %}">

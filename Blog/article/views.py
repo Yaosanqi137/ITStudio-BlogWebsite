@@ -124,7 +124,7 @@ def delete_view(request, id):
     if request.user.username != article.author.username:
         return redirect('/')
     article.delete()
-    return redirect('/article/list')
+    return redirect('/article/my')
 
 @login_required(login_url='/user/login/')
 def edit_view(request, id):

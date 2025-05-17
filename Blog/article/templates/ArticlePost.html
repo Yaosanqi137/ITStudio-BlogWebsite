@@ -2,6 +2,10 @@
 {% load static %}
 <html lang="zh-hans">
 <head>
+    <script>
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% if article_post_form.instance.id %}编辑文章{% else %}新建文章{% endif %}</title>

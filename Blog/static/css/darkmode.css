@@ -1,185 +1,226 @@
-/* 暗黑模式样式 */
 :root {
-    --light-bg-gradient: linear-gradient(135deg, #a2e8f1 0%, #fbc2eb 100%);
-    --dark-bg-color: #121212;
-    --light-text: #ffffff;
-    --dark-text: #333333;
+    --light-bg: #f5f5f5;
+    --light-text: #333;
+    --light-card-bg: rgba(255,255,255,0.2);
+    --light-border: rgba(0,0,0,0.1);
     --accent-color: #ff6b6b;
-    --light-card-bg: rgba(255, 255, 255, 0.2);
-    --dark-card-bg: rgba(255, 255, 255, 0.1);
+
+    --dark-bg: #121212;
+    --dark-text: #f0f0f0;
+    --dark-card-bg: rgba(30,30,30,0.8);
+    --dark-border: rgba(255,255,255,0.1);
+
+    --current-bg: var(--light-bg);
+    --current-text: var(--light-text);
+    --current-card-bg: var(--light-card-bg);
+    --current-border: var(--light-border);
 }
 
-/* 暗黑模式背景 */
-body.dark-mode .background-gradient {
-    background: var(--dark-bg-color);
-    opacity: 1;
+[data-theme="dark"], .dark-mode {
+    --current-bg: var(--dark-bg);
+    --current-text: var(--dark-text);
+    --current-card-bg: var(--dark-card-bg);
+    --current-border: var(--dark-border);
 }
 
-/* 暗黑模式文字颜色 */
-body.dark-mode {
-    color: var(--light-text);
+body {
+    background-color: var(--current-bg);
+    color: var(--current-text);
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* 暗黑模式导航栏 */
-body.dark-mode .nav-links a {
-    color: var(--light-text);
+.glass-effect {
+    background: var(--current-card-bg);
+    border: 1px solid var(--current-border);
+    backdrop-filter: blur(10px);
 }
 
-body.dark-mode .logo {
-    color: var(--light-text);
+.nav-links a {
+    color: var(--current-text);
 }
 
-/* 暗黑模式下的卡片 */
-body.dark-mode .glass-effect {
-    background: var(--dark-card-bg);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+.logo, .logo span {
+    color: var(--current-text);
 }
 
-/* 暗黑模式下的表单元素 */
-body.dark-mode input, 
-body.dark-mode textarea, 
-body.dark-mode select {
-    background-color: rgba(255, 255, 255, 0.1);
-    color: var(--light-text);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-body.dark-mode input::placeholder, 
-body.dark-mode textarea::placeholder {
-    color: rgba(255, 255, 255, 0.6);
-}
-
-/* 暗黑模式下的搜索框 */
-body.dark-mode .search-box {
-    background: rgba(255, 255, 255, 0.2);
-    color: var(--light-text);
-}
-
-body.dark-mode .search-box::placeholder {
-    color: rgba(255, 255, 255, 0.6);
-}
-
-/* 暗黑模式下的按钮 */
-body.dark-mode .theme-toggle {
-    color: var(--light-text);
-}
-
-/* 暗黑模式下的文章卡片 */
-body.dark-mode .article-card {
-    background: rgba(255, 255, 255, 0.1);
-}
-
-body.dark-mode .article-content h3,
-body.dark-mode .article-content p {
-    color: var(--light-text);
-}
-
-/* 暗黑模式下的各种文本内容 */
-body.dark-mode h1, 
-body.dark-mode h2, 
-body.dark-mode h3, 
-body.dark-mode h4, 
-body.dark-mode h5, 
-body.dark-mode h6,
-body.dark-mode p,
-body.dark-mode span,
-body.dark-mode div {
-    color: var(--light-text);
-}
-
-/* 特殊颜色保持不变 */
-body.dark-mode .logo span,
-body.dark-mode .nav-links a.active,
-body.dark-mode .nav-links a:hover {
+.logo span,
+.nav-links a.active,
+.nav-links a:hover {
     color: var(--accent-color);
 }
 
-body.dark-mode .notification-popover,
-body.dark-mode .popover-header,
-body.dark-mode .message-item,
-body.dark-mode .message-text,
-body.dark-mode .message-meta time,
-body.dark-mode .empty-message,
-body.dark-mode .category-dropdown,
-body.dark-mode .category-item,
-body.dark-mode .category-title,
-body.dark-mode .sub-category-btn {
-    color: var(--dark-text) !important;
+input,
+textarea,
+select {
+    background-color: var(--current-card-bg);
+    color: var(--current-text);
+    border: 1px solid var(--current-border);
 }
 
-body.dark-mode .notification-popover {
-    background-color: #ffffff !important;
+input::placeholder,
+textarea::placeholder {
+    color: rgba(var(--current-text), 0.6);
+}
+
+.article-card {
+    background: var(--current-card-bg);
+}
+
+.article-content h3,
+.article-content p {
+    color: var(--current-text);
+}
+
+.notification-popover {
+    background-color: var(--light-bg) !important;
+    color: var(--light-text) !important;
     border-color: #d0d7de !important;
 }
 
-body.dark-mode .popover-header {
+.popover-header {
     background-color: #f6f8fa !important;
-    border-bottom-color: #d0d7de !important; /* Ensure border is also visible */
+    border-bottom-color: #d0d7de !important;
 }
 
-body.dark-mode .category-dropdown,
-body.dark-mode .sub-category { /* Added .sub-category for nested dropdowns */
-    background-color: #ffffff !important;
-    box-shadow: 0 8px 16px rgba(0,0,0,0.1) !important; /* Maintain some shadow */
+.dark-mode img,
+[data-theme="dark"] img {
+    filter: brightness(0.85) contrast(1.05);
+    transition: filter 0.3s ease;
+}
+
+.profile-edit-section {
+    color: #ffffff;
+    background-color: #2d3748;
+}
+
+.profile-input {
+    color: #f8f9fa !important;
+    background-color: rgba(255,255,255,0.1) !important;
+    border: 1px solid #4a5568 !important;
+}
+
+.profile-preview-section {
+    color: #1a202c;
+    background-color: #edf2f7;
+}
+
+.form-label {
+    font-weight: 600;
+    color: inherit;
+    opacity: 0.9;
+}
+
+.save-button {
+    color: white !important;
+    background-color: #4299e1 !important;
+    font-weight: 500;
+}
+
+::placeholder {
+    color: #a0aec0 !important;
+    opacity: 1 !important;
+}
+
+input[type="date"] {
+    color-scheme: dark;
+}
+
+/* 修复暗夜模式下的表单和文字可见性问题 */
+[data-theme="dark"] .form-control,
+[data-theme="dark"] .form-select,
+[data-theme="dark"] .select2-selection,
+.dark-mode .form-control,
+.dark-mode .form-select,
+.dark-mode .select2-selection {
+    background-color: var(--dark-card-bg) !important;
+    color: var(--dark-text) !important;
+    border-color: var(--dark-border) !important;
+}
+
+/* 修复Select2下拉菜单样式 */
+[data-theme="dark"] .select2-dropdown,
+.dark-mode .select2-dropdown {
+    background-color: var(--dark-card-bg) !important;
+    border-color: var(--dark-border) !important;
+}
+
+[data-theme="dark"] .select2-results__option,
+.dark-mode .select2-results__option {
+    color: var(--dark-text) !important;
+}
+
+[data-theme="dark"] .select2-results__option--highlighted,
+.dark-mode .select2-results__option--highlighted {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    color: var(--accent-color) !important;
+}
+
+/* 修复表单标签文字颜色 */
+[data-theme="dark"] .form-label,
+.dark-mode .form-label {
+    color: var(--dark-text) !important;
+    opacity: 0.9;
+}
+
+/* 修复输入框placeholder颜色 */
+[data-theme="dark"] input::placeholder,
+[data-theme="dark"] textarea::placeholder,
+.dark-mode input::placeholder,
+.dark-mode textarea::placeholder {
+    color: rgba(240, 240, 240, 0.6) !important;
+}
+
+/* 修复文件上传区域 */
+[data-theme="dark"] .file-upload-area,
+.dark-mode .file-upload-area {
+    background-color: var(--dark-card-bg) !important;
+    border-color: var(--dark-border) !important;
+}
+
+/* 修复Markdown编辑器预览区域 */
+[data-theme="dark"] .EasyMDEContainer .editor-preview,
+.dark-mode .EasyMDEContainer .editor-preview {
+    background-color: var(--dark-bg) !important;
+    color: var(--dark-text) !important;
+}
+
+/* 修复按钮样式 */
+[data-theme="dark"] .btn-outline-secondary,
+.dark-mode .btn-outline-secondary {
+    color: var(--dark-text) !important;
+    border-color: var(--dark-border) !important;
+}
+
+[data-theme="dark"] .btn-outline-secondary:hover,
+.dark-mode .btn-outline-secondary:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* 修复optgroup标签文字颜色 */
+[data-theme="dark"] optgroup,
+.dark-mode optgroup {
+    color: var(--dark-text) !important;
+}
+
+/* 修复option文字颜色 */
+[data-theme="dark"] option,
+.dark-mode option {
+    color: var(--dark-text) !important;
+    background-color: var(--dark-bg) !important;
+}
+[data-theme="dark"] .btn-primary.glass-effect,
+.dark-mode .btn-primary.glass-effect {
+    background-color: var(--accent-color) !important; /* 使用你的强调色 */
+    color: white !important;
+    border-color: transparent !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* 悬停状态 */
+[data-theme="dark"] .btn-primary.glass-effect:hover,
+.dark-mode .btn-primary.glass-effect:hover {
+    background-color: #ff5252 !important; /* 更亮的强调色变体 */
+    transform: translateY(-1px);
 }
 
 
-/* Ensure hover effects on dropdown items also use appropriate colors */
-body.dark-mode .message-item:hover {
-    background-color: #f6f8fa !important;
-}
-
-body.dark-mode .category-item:hover {
-     background-color: rgba(57, 197, 187, 0.1) !important; /* Light hover consistent with light mode */
-}
-body.dark-mode .category-item:hover .category-title {
-    color: var(--dark-text) !important; /* Ensure title in hovered item is dark */
-}
-
-body.dark-mode .sub-category-btn:hover {
-    background-color: #39c5bb !important;
-    color: white !important; /* Text on this specific hover can be white as background is dark */
-    border-color: #39c5bb !important;
-}
-
-/* Keep notification icon background light */
-body.dark-mode .notification-icon {
-    background: white !important;
-}
-body.dark-mode .notification-icon:hover {
-    background: #f3f4f6 !important;
-}
-body.dark-mode .notification-icon i {
-    color: #24292f !important; /* Original icon color */
-}
-
-/* Selected category and clear filter button in ArticleList */
-body.dark-mode .selected-category {
-    background-color: rgba(255, 255, 255, 0.7) !important;
-    color: #333 !important;
-}
-
-body.dark-mode .clear-filter-btn {
-    background-color: rgba(255, 255, 255, 0.8) !important;
-}
-body.dark-mode .clear-filter-btn i {
-    color: #333 !important; /* Assuming icon should be dark */
-}
-
-/* Ensure .category-btn text (which triggers dropdown) is legible in dark mode if it's not part of .nav-links */
-body.dark-mode .category-btn {
-    color: var(--light-text) !important; /* If it should be light in dark mode */
-    /* Or var(--dark-text) if it should remain dark. User didn't specify this one. */
-    /* Assuming it's outside general nav and should follow body.dark-mode general text color */
-}
-
-/* 修复下拉选择框在暗黑模式下选项不可见的问题 */
-body.dark-mode select option {
-    color: var(--dark-text) !important; /* 确保选项文字是深色 */
-    background-color: white !important; /* 确保选项背景是浅色 */
-}
-
-/* 在某些浏览器中，select本身需要保持选中值的颜色为白色以保持可见性 */
-body.dark-mode select {
-    color: var(--light-text) !important; /* 选中值在暗模式下显示为白色 */
-} 

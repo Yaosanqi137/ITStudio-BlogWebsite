@@ -1,35 +1,38 @@
-// 暗黑模式切换功能
 document.addEventListener('DOMContentLoaded', function() {
-    // 获取主题切换按钮
     const themeToggle = document.getElementById('themeToggle');
-    
-    // 检查本地存储中是否有主题设置
-    const currentTheme = localStorage.getItem('theme');
-    
-    // 如果有存储的主题设置，应用该设置
-    if (currentTheme) {
-        document.body.classList.add(currentTheme);
-        
-        // 更新按钮图标
-        if (currentTheme === 'dark-mode') {
-            themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-        } else {
-            themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
-        }
+
+    // 初始化主题（优先读取localStorage）
+    function initTheme() {
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        setTheme(savedTheme);
     }
-    
-    // 添加切换事件
-    themeToggle.addEventListener('click', function() {
-        // 切换暗黑模式
-        document.body.classList.toggle('dark-mode');
-        
-        // 根据当前模式更新图标
-        if (document.body.classList.contains('dark-mode')) {
-            this.innerHTML = '<i class="fas fa-sun"></i>';
-            localStorage.setItem('theme', 'dark-mode');
-        } else {
-            this.innerHTML = '<i class="fas fa-moon"></i>';
-            localStorage.removeItem('theme');
-        }
+
+    // 设置主题状态
+    function setTheme(theme) {
+        const isDark = theme === 'dark';
+        document.documentElement.setAttribute('data-theme', theme);
+        document.body.classList.toggle('dark-mode', isDark);
+
+        // 更新图标
+        themeToggle.innerHTML = isDark
+            ? '<i class="fas fa-sun"></i>'
+            : '<i class="fas fa-moon"></i>';
+
+        // 强制重绘解决渐变背景问题
+        document.body.style.backgroundImage = 'none';
+        setTimeout(() => {
+            document.body.style.backgroundImage = '';
+        }, 10);
+    }
+
+    // 切换主题
+    themeToggle.addEventListener('click', () => {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+        localStorage.setItem('theme', newTheme);
+        setTheme(newTheme);
     });
-}); 
+
+    initTheme();
+});
