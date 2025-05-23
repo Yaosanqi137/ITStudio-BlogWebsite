@@ -18,8 +18,11 @@ sex = {
     "保密": "保密"
 }
 
-class BlogUser(AbstractUser):  # 继承 AbstractUser
-    nickname = models.CharField("昵称", max_length=50, default=f"OUCer_{int(time.time())}", unique=True)
+def default_nickname():
+    return f"OUCer_{int(time.time())}"
+
+class BlogUser(AbstractUser):
+    nickname = models.CharField("昵称", max_length=50, default=default_nickname, unique=True)
     avatar   = ProcessedImageField(verbose_name="头像", upload_to='avatars/%Y/%m/%d', default='avatars/default.png', processors=[ResizeToFill(160, 160)])
     intro    = models.CharField("个人简介", max_length=200, default="这个用户很懒，什么都没写~")
     birthday = models.DateField("生日", null=True, blank=True)

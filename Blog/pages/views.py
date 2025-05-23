@@ -5,6 +5,7 @@ from user.models import *
 from article.models import *
 from comment.models import *
 from pages.models import *
+from django.db.models import Q
 
 @login_required(login_url='/user/login/')
 def mark_message_read(request, message_id): # 标记已读信息
@@ -12,6 +13,11 @@ def mark_message_read(request, message_id): # 标记已读信息
     message = get_object_or_404(UserMessage, id=message_id, user=user)
     message.mark_as_read()
     return JsonResponse({'status': 'success'})
+
+
+def get_random_avatars():
+    pass
+
 
 def homepage_view(request):
     context = {}
@@ -42,3 +48,22 @@ def homepage_view(request):
         return render(request, "Hub.html", context)
     else:
         return render(request, "Hub.html", context)
+
+def search_view(request):
+    query = request.GET.get('q', '')
+    article_results = []
+    user_results = []
+
+    if query:
+        article_results = Article.objects.filter(
+            Q(title__icontains=query) | Q(content__icontains=query)
+        )
+        user_results = BlogUser.objects.filter(
+            Q(username__icontains=query) | Q(nickname__icontains=query)
+        )
+
+    return render(request, 'Search.html', {
+        'query': query,
+        'article_results': article_results,
+        'user_results': user_results,
+    })

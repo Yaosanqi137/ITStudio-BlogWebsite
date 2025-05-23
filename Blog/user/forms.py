@@ -19,8 +19,11 @@ class UserRegForm(UserCreationForm):
 
     def clean_email(self):
         email = self.cleaned_data.get('email')
-        if BlogUser.objects.filter(email=email).exists():
-            raise forms.ValidationError("该邮箱已被注册")
+        try:
+            if BlogUser.objects.filter(email=email).exists():
+                raise forms.ValidationError("该邮箱已被注册")
+        except Exception as e:
+            raise forms.ValidationError(f"数据库查询失败：  {e}")
         return email
 
 

@@ -117,11 +117,17 @@ def register_view(request):
             messages.success(request, '验证邮件发送成功！已将您重定向回登录页面!')
             return redirect('/user/login')
         else:
-            return render(request, 'Register.html',{
-                'error': '用户名或者邮箱已存在，请选择其他用户名',
+            # 提取所有字段的错误信息，不含字段名
+            errors = []
+            for message in reg_form.errors.values():
+                errors.extend(message)
+
+            return render(request, 'Register.html', {
+                'error_messages': errors,
                 'reg_form': reg_form,
                 'captcha': captcha,
             })
+
     else:
         reg_form = UserRegForm(request.POST)
         captcha = CaptchaForm(request.POST)
