@@ -26,6 +26,12 @@
             <i class="fas fa-search search-icon" id="searchIcon"></i>
             <input type="search" class="search-box" id="searchBox" placeholder="搜索文章、评论、用户...">
         </div>
+        <div class="searchMode glass-effect">
+            <div class="userMode">用户</div>
+            <div class="commentMode">评论</div>
+            <div class="articleMode activeMode">文章</div>
+            <div class="allMode">全部</div>
+        </div>
         <ul class="nav-links">
             <li><a href="/"><i class="fas fa-home"></i> 主页</a></li>
             {% if user.is_authenticated %}
@@ -44,9 +50,70 @@
 </header>
 
 <main>
-    <div class="article-container">
+    <h2 class="search-title"></h2>
+    <button class="cancel-search glass-effect">取消搜索</button>
+
+    <div class="article-container tab-content">
         <div class="articles-header">
-            <h2>全部文章</h2>
+            <h2>用户</h2>
+        </div>
+        <div class="users">
+            
+            {% comment %} 下面这一个部分是重复的内容 {% endcomment %}
+            {% comment %} 需要添加跳转链接 {% endcomment %}
+            <div class="porfile-info-container glass-effect">
+                <img src="{{ profile_form.instance.avatar.url }}" alt="头像" class="profile-avatar-large">
+                <div class="profile-details">
+                    <h2 class="profile-username">{{ profile_form.instance.nickname }}</h2>
+                    <div class="profile-uid">UID: {{ request.user.id }}</div>
+                    <p class="profile-introduction">{{ profile_form.instance.intro|default:"暂无简介" }}</p>
+                </div>
+
+                <div class="stats-header">
+                    <div class="stats-header-item">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                </div>
+            </div>
+            {% comment %}  {% endcomment %}
+
+        </div>
+    </div>
+
+    <div class="article-container tab-content">
+        <div class="articles-header">
+            <h2>评论</h2>
+        </div>
+
+
+        <div class="comments">
+
+            {% comment %} 下面这一个部分是重复的内容 {% endcomment %}
+            {% comment %} 需要添加跳转链接 {% endcomment %}
+            <div class="commentInfo glass-effect">
+                <img src="{{ comment.user.avatar.url }}" class="img" alt="avatar">
+                <div class="commentContent">
+                    <p>
+                        <strong style="color: pink">
+                           {{ comment.user }}
+                        </strong> 于
+                        <span style="color: green">
+                            {{ comment.created|date:"Y-m-d H:i:s" }}
+                        </span> 时说：
+                    </p>
+                    <pre style="font-family: inherit; font-size: 1em;">你们好<br>我是123</pre>
+                </div>
+            </div>
+            {% comment %}  {% endcomment %}
+
+        </div>
+
+
+    </div>
+
+    <div class="article-container tab-content">
+        <div class="articles-header">
+            <h2 class="allOrSearch">全部文章</h2>
             <div class="flex-grow"></div>
             {% if current_category or current_subcategory %}
             <div class="selected-category">

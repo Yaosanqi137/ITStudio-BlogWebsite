@@ -1,16 +1,15 @@
 import markdown
-import json
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect,get_object_or_404
 from django.shortcuts import render
+
 from .forms import ArticlePostForm
 from .models import Article, Collection, Like
 from user.models import BlogUser,Follow
 from django.db.models import Q
 from comment.models import Comment
-from django.contrib.auth.models import User
 from comment.forms import CommentForm
 from django.views.decorators.http import require_POST
 from django.db import transaction
@@ -254,3 +253,4 @@ def collect_view(request, id):
             'status': 'error',
             'message': str(e)
         }, status=400)
+

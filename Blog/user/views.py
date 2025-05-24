@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 from django.shortcuts import render, redirect,get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.http import JsonResponse, HttpResponseRedirect
@@ -258,6 +259,21 @@ def profile_prev_view(request, username):
         'collection': collection,
     }
     return render(request, 'Space.html', context)
+
+def search_view(request):
+    search_query = request.GET.get('search', '')
+    users = BlogUser.objects.all()
+
+    if search_query:
+        users = users.filter(Q(username__icontains=search_query) | Q(nickname__icontains=search_query))
+
+    users = Paginator(users, 10)
+    page = request.GET.get('page')
+    users = users.get_page(page)
+
+    return render(request, 'ArticleList.html', {
+        'users': users,
+    })
 
 @login_required(login_url="/user/login")
 def follow_user(request, user_id):

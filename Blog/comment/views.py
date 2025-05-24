@@ -1,10 +1,11 @@
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
+from django.core.paginator import Paginator
+from django.db.models import Q
 from django.shortcuts import render, get_object_or_404, redirect
 from article.models import Article
 from .forms import CommentForm, ChatForm
 from user.models import BlogUser
-from .models import Chat
+from .models import Chat, Comment
 from pages.models import UserMessage
 
 def send_message(user, content, url):
@@ -65,3 +66,19 @@ def cafe_view(request):
                    'chats': chats,
                    }
         return render(request, 'Cafe.html', context)
+
+
+def search_view(request):
+    search_query = request.GET.get('search', '')
+    comments = Comment.objects.all()
+
+    if search_query:
+        comments = comments.filter(Q(content__icontains=search_query) | Q(user__username__icontains=search_query))
+
+    comments = Paginator(comments, 10)
+    page = request.GET.get('page')
+    comments = comments.get_page(page)
+
+    return render(request, 'ArticleList.html', {
+        'comments': comments,
+    })
