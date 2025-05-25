@@ -77,7 +77,7 @@ def search(request):
     comment_paginator = Paginator(comment_results, 10)
     comment_page = comment_paginator.get_page(request.GET.get('comment_page'))
 
-    return render(request, 'Search.html', {
+    return render(request, 'ArticleList.html', {
         'search_query': search_query,
         'articles': article_page,
         'users': user_page,

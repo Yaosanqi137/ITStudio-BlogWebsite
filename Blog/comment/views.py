@@ -73,12 +73,14 @@ def search_view(request):
     comments = Comment.objects.all()
 
     if search_query:
-        comments = comments.filter(Q(content__icontains=search_query) | Q(user__username__icontains=search_query))
+        comments = comments.filter(
+            Q(body__icontains=search_query) | Q(user__username__icontains=search_query)
+        )
 
-    comments = Paginator(comments, 10)
+    paginator = Paginator(comments, 10)
     page = request.GET.get('page')
-    comments = comments.get_page(page)
+    comments = paginator.get_page(page)
 
-    return render(request, 'ArticleList.html', {
+    return render(request, 'ArticleList.html', {  # 可根据你前端页面实际情况替换模板名
         'comments': comments,
     })
