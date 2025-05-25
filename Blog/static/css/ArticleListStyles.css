@@ -5,6 +5,10 @@ body {
     background-color: #f0f2f5;
 }
 
+a {
+    text-decoration: none;
+}
+
 .background-gradient {
     position: fixed;
     top: 0;
@@ -95,6 +99,14 @@ body {
     font-size: 1rem;
     font-weight: 700;
     color: white;
+}
+
+.articleList {
+    margin: 0 auto;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
 }
 
 .article-container {
