@@ -271,7 +271,7 @@ def search_view(request):
     page = request.GET.get('page')
     users = users.get_page(page)
 
-    return render(request, 'ArticleList.html.html', {
+    return render(request, 'ArticleList.html', {
         'users': users,
     })
 
