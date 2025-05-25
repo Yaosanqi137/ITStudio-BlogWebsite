@@ -71,7 +71,7 @@ def search(request):
 
     # 评论搜索
     comment_results = Comment.objects.filter(
-        Q(content__icontains=search_query) |
+        Q(body__icontains=search_query) |
         Q(user__username__icontains=search_query)
     ).order_by('-created') if search_query else Comment.objects.none()
     comment_paginator = Paginator(comment_results, 10)
