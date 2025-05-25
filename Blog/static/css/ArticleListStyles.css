@@ -38,7 +38,7 @@ body {
 .searchMode {
     display: flex;
     margin-right: auto;
-    width: 280px;
+    width: 200px;
     height: 40px;
     box-shadow: 0 5px 20px 0 rgba(31, 38, 135, 0.37);
     overflow: hidden;
@@ -51,14 +51,24 @@ body {
 
 .searchMode>div {
     display: inline-block;
-    width: 70px;
+    width: 50px;
     height: 40px;
     text-align: center;
-    font-size: 20px;
+    font-size: 15px;
     font-weight: 700;
     line-height: 35px;
     border-right: 1px solid gray;
     cursor: pointer;
+    transition: all ease 0.5s;
+}
+
+.searchMode>div:hover {
+    background-color: rgba(63, 152, 247, 0.201);
+    color: white
+}
+
+.searchMode .activeMode:hover {
+    background-color: rgba(63, 152, 247, 0.591);
 }
 
 .searchMode .allMode {

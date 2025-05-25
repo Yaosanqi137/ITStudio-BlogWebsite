@@ -110,26 +110,56 @@ document.addEventListener('DOMContentLoaded', function () {
     //搜索模式选择
     const modeTabs = document.querySelectorAll('.searchMode > div');
     const contentTabs = document.querySelectorAll('.tab-content');
-
-    //默认展示文章部分
     contentTabs.forEach(tab => tab.style.display = 'none');
-    contentTabs[2].style.display = 'block';
 
-    modeTabs.forEach((modeTab, index) => {
-        modeTab.addEventListener('click', () => {
-            modeTabs.forEach(tab => tab.classList.remove('activeMode'));
-            modeTab.classList.add('activeMode');
+    // 解析URL参数
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
 
-            if (index != 3) {
-                contentTabs.forEach(tab => tab.style.display = 'none');
-                contentTabs[index].style.display = 'block';
+    //根据URL选择高亮模式并展示
+    const URL = window.location.href;
+    const parts = URL.split("/");
+    let mode = parts[3]
+    console.log("mode: " + mode);
+
+    if (mode == 'user') {
+        modeTabs[0].classList.add('activeMode')
+        contentTabs[0].style.display = "block"
+        mode = 0;
+    }
+    else if (mode == 'comment') {
+        modeTabs[1].classList.add('activeMode')
+        contentTabs[1].style.display = "block"
+        mode = 1;
+    }
+    else if (mode == 'article') {
+        modeTabs[2].classList.add('activeMode')
+        contentTabs[2].style.display = "block"
+        mode = 2;
+    }
+    else if (mode == 'search') {
+        modeTabs[3].classList.add('activeMode')
+        contentTabs.forEach(tab => tab.style.display = "block")
+        mode = 3;
+    }
+
+    //获取搜索词
+    let keyword = urlParams.get('search') || '';
+    console.log("keyword: " + keyword);
+
+    const urlList = ['/user/search', '/comment/search', '/article/list', '/search/']
+    //添加点击事件
+    modeTabs.forEach((tab, index) => {
+        tab.addEventListener('click', function () {
+            if (keyword != '') {
+                console.log(urlList[index] + '?search=' + keyword)
+                window.location.href = urlList[index] + '?search=' + keyword
             }
             else {
-                contentTabs.forEach(tab => tab.style.display = 'block');
+                window.location.href = urlList[index]
             }
-
-        });
-    });
+        })
+    })
 
     // 修改搜索框交互逻辑
     const searchContainer = document.querySelector('.search-container');
@@ -149,26 +179,23 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // 解析URL参数
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
-
-    let keyword = urlParams.get('search') || '';
-    console.log("keyword: " + keyword);
-
-    // 搜索框已有内容时点击图标执行搜索
+    // 搜索内容展示
+    let title = document.querySelector('.search-title')
+    let allOrSearch = document.querySelector('.allOrSearch')
     if (keyword != '') {
-        let title = document.querySelector('.search-title')
-        let allOrSearch = document.querySelector('.allOrSearch')
         title.innerHTML = '“' + keyword + '” 的搜索结果:'
         allOrSearch.innerHTML = '文章'
+    }
+    else {
+        title.innerHTML = ''
+        allOrSearch.innerHTML = '全部文章'
     }
 
     searchIcon.addEventListener('click', function (e) {
         console.log("search!");
         if (searchBox.value.trim() !== '') {
             keyword = searchBox.value.trim();
-            window.location.href = `/article/list?search=${encodeURIComponent(keyword)}`;
+            window.location.href = urlList[mode] + `?search=${encodeURIComponent(keyword)}`;
         }
     });
 
@@ -180,7 +207,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     cancelSearch.addEventListener('click', function () {
         keyword = '';
-        window.location.href = `/article/list`;
+        window.location.href = urlList[mode];
     })
 
     //添加回车键触发搜索
