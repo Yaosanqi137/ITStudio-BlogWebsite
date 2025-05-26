@@ -5,6 +5,10 @@ body {
     background-color: #f0f2f5;
 }
 
+a {
+    text-decoration: none;
+}
+
 .background-gradient {
     position: fixed;
     top: 0;
@@ -25,9 +29,89 @@ body {
     box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
 }
 
+/* header中 搜索模式选择 的样式*/
+.search-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin-left: 20px;
+    margin-right: 10px;
+    /* 使导航栏其他元素靠右 */
+}
+
+.searchMode {
+    display: flex;
+    margin-right: auto;
+    width: 200px;
+    height: 40px;
+    box-shadow: 0 5px 20px 0 rgba(31, 38, 135, 0.37);
+    overflow: hidden;
+}
+
+.searchMode:hover,
+.cancel-search:hover {
+    transform: translateY(0);
+}
+
+.searchMode>div {
+    display: inline-block;
+    width: 50px;
+    height: 40px;
+    text-align: center;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 35px;
+    border-right: 1px solid gray;
+    cursor: pointer;
+    transition: all ease 0.5s;
+}
+
+.searchMode>div:hover {
+    background-color: rgba(63, 152, 247, 0.201);
+    color: white
+}
+
+.searchMode .activeMode:hover {
+    background-color: rgba(63, 152, 247, 0.591);
+}
+
+.searchMode .allMode {
+    border-right: none;
+}
+
+.activeMode {
+    background-color: rgba(63, 152, 247, 0.591);
+    color: white;
+}
+
+.search-title {
+    display: inline-block;
+    color: white;
+    font-size: 2rem;
+    position: relative;
+    margin-bottom: -20px;
+}
+
+.cancel-search {
+    height: 40px;
+    padding: 5px 15px;
+    box-shadow: none;
+    font-size: 1rem;
+    font-weight: 700;
+    color: white;
+}
+
+.articleList {
+    margin: 0 auto;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+}
+
 .article-container {
     max-width: 1200px;
-    margin: 30px auto;
+    margin: 20px auto;
     padding: 20px;
 }
 
@@ -84,11 +168,13 @@ body {
     margin-left: 20px;
     transition: all 0.3s ease;
     position: relative;
-    padding-right: 20px; /* 为图标留出空间 */
+    padding-right: 20px;
+    /* 为图标留出空间 */
 }
 
 .category-btn::after {
-    content: '\f0da'; /* 右三角图标 */
+    content: '\f0da';
+    /* 右三角图标 */
     font-family: 'Font Awesome 6 Free';
     font-weight: 900;
     position: absolute;
@@ -99,7 +185,8 @@ body {
 }
 
 .category-button:hover .category-btn::after {
-    content: '\f0d7'; /* 下三角图标 */
+    content: '\f0d7';
+    /* 下三角图标 */
     transform: translateY(-50%);
 }
 
@@ -128,8 +215,15 @@ body {
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .category-item {
@@ -157,7 +251,8 @@ body {
 }
 
 .category-title::after {
-    content: '\f054'; /* 右箭头 */
+    content: '\f054';
+    /* 右箭头 */
     font-family: 'Font Awesome 6 Free';
     font-weight: 900;
     position: absolute;
@@ -166,13 +261,15 @@ body {
 }
 
 .category-title.active::after {
-    transform: rotate(90deg); /* 右箭头旋转90度 */
+    transform: rotate(90deg);
+    /* 右箭头旋转90度 */
 }
 
 .sub-category {
     display: none;
     position: absolute;
-    left: 100%; /* 向右展开 */
+    left: 100%;
+    /* 向右展开 */
     top: 0;
     background-color: white;
     border-radius: 8px;
@@ -195,13 +292,27 @@ body {
 }
 
 @keyframes slideIn {
-    from { opacity: 0; transform: translateX(-10px); }
-    to { opacity: 1; transform: translateX(0); }
+    from {
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
 @keyframes slideInLeft {
-    from { opacity: 0; transform: translateX(10px); }
-    to { opacity: 1; transform: translateX(0); }
+    from {
+        opacity: 0;
+        transform: translateX(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
 .sub-category-btn {
@@ -278,16 +389,16 @@ body {
     .article-container {
         padding: 15px;
     }
-    
+
     .article-meta {
         flex-direction: column;
         gap: 5px;
     }
-    
+
     .articles-header {
         flex-wrap: wrap;
     }
-    
+
     .selected-category {
         margin: 10px 0;
     }
@@ -302,7 +413,8 @@ body {
     gap: 10px;
 }
 
-.pagination a, .pagination span {
+.pagination a,
+.pagination span {
     padding: 8px 16px;
     text-decoration: none;
     background: rgba(255, 255, 255, 0.1);
@@ -355,7 +467,7 @@ body {
     left: 10px;
     top: 50%;
     transform: translateY(-50%);
-    color: rgba(255,255,255,0.6);
+    color: rgba(255, 255, 255, 0.6);
 }
 
 .search-btn {
@@ -373,7 +485,8 @@ body {
     gap: 10px;
 }
 
-.edit-btn, .delete-btn {
+.edit-btn,
+.delete-btn {
     width: 32px;
     height: 32px;
     border-radius: 50%;
@@ -392,6 +505,126 @@ body {
     background: rgba(244, 67, 54, 0.3);
 }
 
-.edit-btn:hover, .delete-btn:hover {
+.edit-btn:hover,
+.delete-btn:hover {
     transform: scale(1.1);
+}
+
+/* 新增的搜索部分的样式 */
+.users {
+    background-color: red;
+
+}
+
+/* 个人信息卡片样式 */
+.users {
+    padding: 10px 20px;
+    margin: 0 auto;
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+}
+
+.profile-info-container {
+    position: relative;
+    margin: 20px auto;
+}
+
+.profile-avatar-large {
+    display: inline-block;
+    margin: 15px 20px;
+    width: 140px;
+    height: 140px;
+    border-radius: 50px;
+    object-fit: cover;
+    border: 5px solid rgba(255, 255, 255, 0.5);
+    background-color: white;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    vertical-align: top;
+}
+
+.profile-details {
+    display: inline-block;
+    padding-top: 30px;
+    height: 140px;
+    vertical-align: top;
+    max-height: 140px;
+}
+
+.profile-username {
+    font-size: 24px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.profile-uid {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 15px;
+    background: rgba(240, 240, 240, 0.6);
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 20px;
+}
+
+.profile-introduction {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-height: 100px;
+}
+
+/* 统计信息样式 */
+.stats-header {
+    position: absolute;
+    top: 30px;
+    right: 20px;
+    display: flex;
+    justify-content: flex-end;
+    color: #666;
+}
+
+.stats-header-item {
+    margin-left: 20px;
+    display: flex;
+    align-items: center;
+}
+
+.stats-header-item span {
+    margin-left: 5px;
+}
+
+/* 评论展示 */
+.comments {
+    margin: 0 auto;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+}
+
+.comments .commentInfo {
+    margin: 15px auto;
+    padding: 20px 20px;
+    width: 100%;
+    min-height: 180px;
+}
+
+.commentInfo .img {
+    float: left;
+    width: 140px;
+    height: 140px;
+    margin-right: 20px;
+    border-radius: 30%;
+    background-color: red;
+}
+
+.comment-item::after {
+    content: "";
+    display: block;
+    clear: both;
+}
+
+.comments .commentContent {
+    margin-left: 100px;
 }

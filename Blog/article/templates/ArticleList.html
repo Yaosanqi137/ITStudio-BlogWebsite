@@ -26,6 +26,12 @@
             <i class="fas fa-search search-icon" id="searchIcon"></i>
             <input type="search" class="search-box" id="searchBox" placeholder="搜索文章、评论、用户...">
         </div>
+        <div class="searchMode glass-effect">
+            <div class="userMode">用户</div>
+            <div class="commentMode">评论</div>
+            <div class="articleMode">文章</div>
+            <div class="allMode">全部</div>
+        </div>
         <ul class="nav-links">
             <li><a href="/"><i class="fas fa-home"></i> 主页</a></li>
             {% if user.is_authenticated %}
@@ -44,18 +50,142 @@
 </header>
 
 <main>
-    <div class="article-container">
+    <h2 class="search-title"></h2>
+    <button class="cancel-search glass-effect">取消搜索</button>
+
+    <div class="article-container tab-content">
         <div class="articles-header">
-            <h2>全部文章</h2>
+            <h2>用户</h2>
+        </div>
+        <div class="users">
+            {% for user in users %}
+                <div class="profile-info-container glass-effect">
+                    <!-- 推荐使用nickname作为URL参数（模型中unique=True） -->
+                    <a href="{% url 'user:profile_prev' username=user.username %}">
+                        <!-- 头像调用：直接使用avatar.url或模型方法get_avatar -->
+                        <img src="{{ user.avatar.url }}" alt="头像" class="profile-avatar-large">
+                        <div class="profile-details">
+                            <h2 class="profile-username">{{ user.nickname }}</h2>
+                            <div class="profile-uid">UID: {{ user.id }}</div>
+                            <p class="profile-introduction">
+                                {{ user.intro|default:"暂无简介"|linebreaksbr }} <!-- 支持换行 -->
+                            </p>
+                        </div>
+                    </a>
+
+                    <div class="stats-header">
+                        <div class="stats-header-item">
+                            <i class="fas fa-file-alt"></i>
+                            文章数: {{ user.article_set.count }}
+                        </div>
+                        <div class="stats-header-item">
+                            <i class="fas fa-users"></i>
+                            粉丝数: {{ user.followers.count }} <!-- 需根据实际粉丝模型调整 -->
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="no-articles glass-effect">
+                    <i class="fas fa-search"></i>
+                    <h3>没有找到相关用户</h3>
+                    <p>请尝试其他关键词</p>
+                </div>
+            {% endfor %}
+
+            <!-- 用户分页导航（优化参数传递格式） -->
+            {% if users.has_other_pages %}
+                <div class="pagination">
+                    {% if users.has_previous %}
+                        <a href="?search={{ search_query }}&user_page=1">« 第一页</a>
+                        <a href="?search={{ search_query }}&user_page={{ users.previous_page_number }}">上一页</a>
+                    {% endif %}
+
+                    {% for num in users.paginator.page_range %}
+                        {% if users.number == num %}
+                            <span class="current-page">{{ num }}</span>
+                        {% else %}
+                            <a href="?search={{ search_query }}&user_page={{ num }}">{{ num }}</a>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if users.has_next %}
+                        <a href="?search={{ search_query }}&user_page={{ users.next_page_number }}">下一页</a>
+                        <a href="?search={{ search_query }}&user_page={{ users.paginator.num_pages }}">最后一页 »</a>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="article-container tab-content">
+        <div class="articles-header">
+            <h2>评论</h2>
+        </div>
+
+        <div class="comments">
+            {% for comment in comments %}
+                <div class="commentInfo glass-effect">
+                    <!-- 跳转至文章详情页：通过comment.article.id获取文章ID -->
+                    <a href="{% url 'article:detail' comment.article.id %}" class="comment-link">
+                        <img src="{{ comment.user.avatar.url }}" class="img" alt="avatar" width="48" height="48">
+                        <div class="commentContent">
+                                <strong style="color: #e63946;">
+                                    {{ comment.user.nickname|default:comment.user.username }}
+                                </strong> 于
+                                <span style="color: #2a9d8f;">
+                            {{ comment.created|date:"Y-m-d H:i:s" }}
+                        </span> 评论：
+                            <pre style="white-space: pre-wrap; line-height: 1.6;">{{ comment.body|safe }}</pre>
+                        </div>
+                    </a>
+                </div>
+            {% empty %}
+                <div class="no-articles glass-effect">
+                    <i class="fas fa-search"></i>
+                    <h3>没有找到相关评论</h3>
+                    <p>请尝试其他关键词</p>
+                </div>
+            {% endfor %}
+
+            <!-- 评论分页导航 -->
+            {% if comments.has_other_pages %}
+                <div class="pagination">
+                    {% if comments.has_previous %}
+                        <a href="?search={{ search_query }}&comment_page=1">&laquo; 第一页</a>
+                        <a href="?search={{ search_query }}&comment_page={{ comments.previous_page_number }}">上一页</a>
+                    {% endif %}
+
+                    {% for num in comments.paginator.page_range %}
+                        {% if comments.number == num %}
+                            <span class="current-page">{{ num }}</span>
+                        {% else %}
+                            <a href="?search={{ search_query }}&comment_page={{ num }}">{{ num }}</a>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if comments.has_next %}
+                        <a href="?search={{ search_query }}&comment_page={{ comments.next_page_number }}">下一页</a>
+                        <a href="?search={{ search_query }}&comment_page={{ comments.paginator.num_pages }}">最后一页
+                            &raquo;</a>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+
+    <div class="article-container tab-content">
+        <div class="articles-header">
+            <h2 class="allOrSearch">全部文章</h2>
             <div class="flex-grow"></div>
             {% if current_category or current_subcategory %}
-            <div class="selected-category">
-                {% if current_category %}{{ current_category }}{% endif %}
-                {% if current_subcategory %} > {{ current_subcategory }}{% endif %}
-            </div>
-            <button class="clear-filter-btn" title="清除筛选">
-                <i class="fas fa-times"></i>
-            </button>
+                <div class="selected-category">
+                    {% if current_category %}{{ current_category }}{% endif %}
+                    {% if current_subcategory %} > {{ current_subcategory }}{% endif %}
+                </div>
+                <button class="clear-filter-btn" title="清除筛选">
+                    <i class="fas fa-times"></i>
+                </button>
             {% endif %}
             <div class="category-button">
                 <button class="category-btn">文章分类</button>
@@ -65,8 +195,10 @@
                         <div class="sub-category">
                             <button class="sub-category-btn" data-category="开发" data-subcategory="前端">前端</button>
                             <button class="sub-category-btn" data-category="开发" data-subcategory="后端">后端</button>
-                            <button class="sub-category-btn" data-category="开发" data-subcategory="移动开发">移动开发</button>
-                            <button class="sub-category-btn" data-category="开发" data-subcategory="人工智能">人工智能</button>
+                            <button class="sub-category-btn" data-category="开发" data-subcategory="移动开发">移动开发
+                            </button>
+                            <button class="sub-category-btn" data-category="开发" data-subcategory="人工智能">人工智能
+                            </button>
                         </div>
                     </div>
                     <div class="category-item">
@@ -80,9 +212,12 @@
                     <div class="category-item">
                         <span class="category-title">新闻</span>
                         <div class="sub-category">
-                            <button class="sub-category-btn" data-category="新闻" data-subcategory="校园新闻">校园新闻</button>
-                            <button class="sub-category-btn" data-category="新闻" data-subcategory="科技资讯">科技资讯</button>
-                            <button class="sub-category-btn" data-category="新闻" data-subcategory="社会热点">社会热点</button>
+                            <button class="sub-category-btn" data-category="新闻" data-subcategory="校园新闻">校园新闻
+                            </button>
+                            <button class="sub-category-btn" data-category="新闻" data-subcategory="科技资讯">科技资讯
+                            </button>
+                            <button class="sub-category-btn" data-category="新闻" data-subcategory="社会热点">社会热点
+                            </button>
                         </div>
                     </div>
                     <div class="category-item">
@@ -95,11 +230,13 @@
             </div>
         </div>
 
+        <div class="articleList">
         {% if articles %}
             {% for article in articles %}
                 <div class="article-item glass-effect">
                     <img src="{{ article.head_img.url }}" alt="文章图片" width="430" height="200">
-                    <h3 class="article-title"><a href="{% url 'article:detail' article.id %}">{{ article.title }}</a></h3>
+                    <h3 class="article-title"><a href="{% url 'article:detail' article.id %}">{{ article.title }}</a>
+                    </h3>
                     <div class="article-meta">
                         <span><i class="fas fa-user"></i> 作者: {{ article.author }}</span>
                         <span><i class="far fa-calendar"></i> 发布时间: {{ article.created_time }}</span>
@@ -111,7 +248,8 @@
                         <span><i class="far fa-eye"></i> 浏览数: {{ article.looks }}</span>
                         <span><i class="far fa-comment"></i> 评论数: {{ article.comments.count }}</span>
                         {% if article.category %}
-                        <span><i class="fas fa-tag"></i> 分类: {{ article.category }}{% if article.subcategory %} > {{ article.subcategory }}{% endif %}</span>
+                            <span><i class="fas fa-tag"></i> 分类: {{ article.category }}{% if article.subcategory %} >
+                                {{ article.subcategory }}{% endif %}</span>
                         {% endif %}
                     </div>
                 </div>
@@ -123,26 +261,44 @@
                 <p>请尝试其他分类或者清除筛选条件</p>
             </div>
         {% endif %}
+        </div>
 
         {% if articles %}
             <!-- 分页导航 -->
             <div class="pagination">
                 {% if articles.has_previous %}
-                    <a href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page=1">&laquo; 第一页</a>
-                    <a href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ articles.previous_page_number }}">上一页</a>
+                    <a href="?
+
+                            
+                            {% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page=1">&laquo;
+                        第一页</a>
+                    <a href="?
+
+                            
+                            {% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ articles.previous_page_number }}">上一页</a>
                 {% endif %}
 
                 {% for num in articles.paginator.page_range %}
                     {% if articles.number == num %}
                         <span class="current-page">{{ num }}</span>
                     {% else %}
-                        <a href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ num }}">{{ num }}</a>
+                        <a href="?
+
+                                
+                                {% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ num }}">{{ num }}</a>
                     {% endif %}
                 {% endfor %}
 
                 {% if articles.has_next %}
-                    <a href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ articles.next_page_number }}">下一页</a>
-                    <a href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ articles.paginator.num_pages }}">最后一页 &raquo;</a>
+                    <a href="?
+
+                            
+                            {% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ articles.next_page_number }}">下一页</a>
+                    <a href="?
+
+                            
+                            {% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ articles.paginator.num_pages }}">最后一页
+                        &raquo;</a>
                 {% endif %}
             </div>
         {% endif %}

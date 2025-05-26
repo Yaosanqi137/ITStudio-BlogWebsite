@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 from django.shortcuts import render, redirect,get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.http import JsonResponse, HttpResponseRedirect
@@ -117,11 +118,17 @@ def register_view(request):
             messages.success(request, '验证邮件发送成功！已将您重定向回登录页面!')
             return redirect('/user/login')
         else:
-            return render(request, 'Register.html',{
-                'error': '用户名或者邮箱已存在，请选择其他用户名',
+            # 提取所有字段的错误信息，不含字段名
+            errors = []
+            for message in reg_form.errors.values():
+                errors.extend(message)
+
+            return render(request, 'Register.html', {
+                'error_messages': errors,
                 'reg_form': reg_form,
                 'captcha': captcha,
             })
+
     else:
         reg_form = UserRegForm(request.POST)
         captcha = CaptchaForm(request.POST)
@@ -252,6 +259,21 @@ def profile_prev_view(request, username):
         'collection': collection,
     }
     return render(request, 'Space.html', context)
+
+def search_view(request):
+    search_query = request.GET.get('search', '')
+    users = BlogUser.objects.all()
+
+    if search_query:
+        users = users.filter(Q(username__icontains=search_query) | Q(nickname__icontains=search_query))
+
+    users = Paginator(users, 10)
+    page = request.GET.get('page')
+    users = users.get_page(page)
+
+    return render(request, 'ArticleList.html', {
+        'users': users,
+    })
 
 @login_required(login_url="/user/login")
 def follow_user(request, user_id):

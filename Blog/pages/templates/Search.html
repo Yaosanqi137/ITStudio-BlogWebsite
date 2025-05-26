@@ -1,0 +1,56 @@
+<h2>搜索结果：{{ search_query }}</h2>
+
+<div class="tabs">
+  <button class="tab-button" onclick="openTab(event, 'articles')">文章</button>
+  <button class="tab-button" onclick="openTab(event, 'users')">用户</button>
+</div>
+
+<div id="articles" class="tab-content">
+  {% if articles %}
+    {% for article in articles %}
+      <div>
+        <a href="{% url 'article:detail' article.id %}">{{ article.title }}</a>
+        作者: {{ article.author.nickname }}
+      </div>
+    {% empty %}
+      <p>无相关文章</p>
+    {% endfor %}
+    <!-- 分页导航可以加这里 -->
+  {% else %}
+    <p>无相关文章</p>
+  {% endif %}
+</div>
+
+<div id="users" class="tab-content" style="display:none;">
+  {% if users %}
+    {% for user in users %}
+      <div>
+        <a href="{% url 'user:profile' user.id %}">{{ user.nickname }}</a> ({{ user.username }})
+      </div>
+    {% empty %}
+      <p>无相关用户</p>
+    {% endfor %}
+  {% else %}
+    <p>无相关用户</p>
+  {% endif %}
+</div>
+
+<script>
+function openTab(evt, tabName) {
+  // 隐藏所有 tab-content
+  const tabcontents = document.querySelectorAll('.tab-content');
+  tabcontents.forEach(tc => tc.style.display = 'none');
+
+  // 移除所有按钮 active 样式
+  const tabbuttons = document.querySelectorAll('.tab-button');
+  tabbuttons.forEach(btn => btn.classList.remove('active'));
+
+  // 显示当前 tab，按钮激活
+  document.getElementById(tabName).style.display = 'block';
+  evt.currentTarget.classList.add('active');
+}
+// 默认打开文章
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelector('.tab-button').click();
+});
+</script>
