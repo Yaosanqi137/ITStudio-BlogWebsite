@@ -59,7 +59,7 @@
         </div>
         <div class="users">
             {% for user in users %}
-                <div class="porfile-info-container glass-effect">
+                <div class="profile-info-container glass-effect">
                     <!-- 推荐使用nickname作为URL参数（模型中unique=True） -->
                     <a href="{% url 'user:profile_prev' username=user.username %}">
                         <!-- 头像调用：直接使用avatar.url或模型方法get_avatar -->
@@ -118,34 +118,27 @@
     </div>
 
     <div class="article-container tab-content">
-    <div class="articles-header">
-        <h2>评论</h2>
-    </div>
+        <div class="articles-header">
+            <h2>评论</h2>
+        </div>
 
-    <div class="comments">
-        {% for comment in comments %}
-            <div class="commentInfo glass-effect">
-                <!-- 跳转至文章详情页：通过comment.article.id获取文章ID -->
-                <a href="{% url 'article:detail' comment.article.id %}" class="comment-link" style="text-decoration: none;">
-                    <img src="{{ comment.user.avatar.url }}" class="img" alt="avatar" width="48" height="48">
-                    <div class="commentContent">
-                        <p>
-                            <strong style="color: #e63946;">
-                                <!-- 显示用户昵称而非默认的User对象 -->
-                                {{ comment.user.nickname|default:comment.user.username }}
-                            </strong> 于
-                            <span style="color: #2a9d8f;">
-                                {{ comment.created|date:"Y-m-d H:i:s" }}
-                            </span> 评论：
-                        </p>
-                        <!-- 继续使用linebreaksbr过滤器，将换行符转换为<br>标签 -->
-                        <p style="white-space: pre-wrap; line-height: 1.6;">
-                            {{ comment.body|safe }} 
-                        </p>
-                    </div>
-                </a>
-            </div>
-            
+        <div class="comments">
+            {% for comment in comments %}
+                <div class="commentInfo glass-effect">
+                    <!-- 跳转至文章详情页：通过comment.article.id获取文章ID -->
+                    <a href="{% url 'article:detail' comment.article.id %}" class="comment-link">
+                        <img src="{{ comment.user.avatar.url }}" class="img" alt="avatar" width="48" height="48">
+                        <div class="commentContent">
+                                <strong style="color: #e63946;">
+                                    {{ comment.user.nickname|default:comment.user.username }}
+                                </strong> 于
+                                <span style="color: #2a9d8f;">
+                            {{ comment.created|date:"Y-m-d H:i:s" }}
+                        </span> 评论：
+                            <pre style="white-space: pre-wrap; line-height: 1.6;">{{ comment.body|safe }}</pre>
+                        </div>
+                    </a>
+                </div>
             {% empty %}
                 <div class="no-articles glass-effect">
                     <i class="fas fa-search"></i>
@@ -237,6 +230,7 @@
             </div>
         </div>
 
+        <div class="articleList">
         {% if articles %}
             {% for article in articles %}
                 <div class="article-item glass-effect">
@@ -267,6 +261,7 @@
                 <p>请尝试其他分类或者清除筛选条件</p>
             </div>
         {% endif %}
+        </div>
 
         {% if articles %}
             <!-- 分页导航 -->
