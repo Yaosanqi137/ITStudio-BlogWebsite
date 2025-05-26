@@ -45,6 +45,13 @@ This is the ITStudio 24th batch collaboration project. The project team consists
                 </a>
             </td>
             <td align="center">
+                <a href="https://github.com/ASweetBite">
+                    <img src="https://avatars.githubusercontent.com/u/178772994?v=4" width="100;" alt="ASweetBite"/>
+                    <br />
+                    <sub><b>ASweetBite</b></sub>
+                </a>
+            </td>
+            <td align="center">
                 <a href="https://github.com/LZD18">
                     <img src="https://avatars.githubusercontent.com/u/203945452?v=4" width="100;" alt="LZD18"/>
                     <br />
@@ -65,6 +72,8 @@ This is the ITStudio 24th batch collaboration project. The project team consists
                     <sub><b>Streab</b></sub>
                 </a>
             </td>
+		</tr>
+		<tr>
             <td align="center">
                 <a href="https://github.com/C-github123">
                     <img src="https://avatars.githubusercontent.com/u/178780573?v=4" width="100;" alt="C-github123"/>
@@ -72,8 +81,6 @@ This is the ITStudio 24th batch collaboration project. The project team consists
                     <sub><b>C-github123</b></sub>
                 </a>
             </td>
-		</tr>
-		<tr>
             <td align="center">
                 <a href="https://github.com/morning-glory-qu">
                     <img src="https://avatars.githubusercontent.com/u/149868617?v=4" width="100;" alt="morning-glory-qu"/>
