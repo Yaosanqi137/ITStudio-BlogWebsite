@@ -518,7 +518,7 @@ a {
 
 /* 个人信息卡片样式 */
 .users {
-    padding: 20px;
+    padding: 10px 20px;
     margin: 0 auto;
     background: rgba(255, 255, 255, 0.25);
     backdrop-filter: blur(10px);
@@ -532,7 +532,7 @@ a {
 
 .profile-avatar-large {
     display: inline-block;
-    margin: 20px 20px;
+    margin: 15px 20px;
     width: 140px;
     height: 140px;
     border-radius: 50px;
@@ -604,7 +604,7 @@ a {
 }
 
 .comments .commentInfo {
-    margin: 0 auto;
+    margin: 15px auto;
     padding: 20px 20px;
     width: 100%;
     min-height: 180px;
