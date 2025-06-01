@@ -26,19 +26,13 @@
             <i class="fas fa-search search-icon" id="searchIcon"></i>
             <input type="search" class="search-box" id="searchBox" placeholder="搜索文章、评论、用户...">
         </div>
-        <div class="searchMode glass-effect">
-            <div class="userMode">用户</div>
-            <div class="commentMode">评论</div>
-            <div class="articleMode">文章</div>
-            <div class="allMode">全部</div>
-        </div>
         <ul class="nav-links">
             <li><a href="/"><i class="fas fa-home"></i> 主页</a></li>
             {% if user.is_authenticated %}
                 <li><a href="{% url 'article:create' %}">发表文章</a></li>
                 <li><a href="{% url 'article:my' %}">我的文章</a></li>
             {% endif %}
-            <li><a href="{% url 'article:list' %}" class="active">文章列表</a></li>
+            <li><a href="{% url 'article:list' %}" class="active">全部内容</a></li>
             <li><a href="{% url 'comment:cafe' %}">咖啡馆</a></li>
             <li><a href="https://github.com/Yaosanqi137/ITStudio-BlogWebsite">我们的 GitHub</a></li>
             {% if not user.is_authenticated %}
@@ -50,8 +44,15 @@
 </header>
 
 <main>
+    <div class="searchMode glass-effect">
+        <div class="userMode">用户</div>
+        <div class="commentMode">评论</div>
+        <div class="articleMode">文章</div>
+        <div class="allMode">全部</div>
+    </div>
     <h2 class="search-title"></h2>
     <button class="cancel-search glass-effect">取消搜索</button>
+
 
     <div class="article-container tab-content">
         <div class="articles-header">

@@ -35,15 +35,16 @@ a {
     display: flex;
     align-items: center;
     margin-left: 20px;
-    margin-right: 10px;
+    margin-right: auto;
     /* 使导航栏其他元素靠右 */
 }
 
 .searchMode {
     display: flex;
-    margin-right: auto;
-    width: 200px;
-    height: 40px;
+    margin: 0 auto;
+    width: 480px;
+    height: 45px;
+    border: none;
     box-shadow: 0 5px 20px 0 rgba(31, 38, 135, 0.37);
     overflow: hidden;
 }
@@ -54,14 +55,13 @@ a {
 }
 
 .searchMode>div {
-    display: inline-block;
-    width: 50px;
-    height: 40px;
+    float: left;
+    width: 120px;
+    height: 50px;
     text-align: center;
     font-size: 15px;
     font-weight: 700;
-    line-height: 35px;
-    border-right: 1px solid gray;
+    line-height: 40px;
     cursor: pointer;
     transition: all ease 0.5s;
 }
@@ -86,6 +86,7 @@ a {
 
 .search-title {
     display: inline-block;
+    margin-top: 30px;
     color: white;
     font-size: 2rem;
     position: relative;
