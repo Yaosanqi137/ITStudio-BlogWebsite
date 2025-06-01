@@ -58,17 +58,17 @@
                 </a>
             </td>
             <td align="center">
-                <a href="https://github.com/Cccc-owo">
-                    <img src="https://avatars.githubusercontent.com/u/47687154?v=4" width="100;" alt="Cccc-owo"/>
-                    <br />
-                    <sub><b>Cccc_</b></sub>
-                </a>
-            </td>
-            <td align="center">
                 <a href="https://github.com/Streab">
                     <img src="https://avatars.githubusercontent.com/u/204110273?v=4" width="100;" alt="Streab"/>
                     <br />
                     <sub><b>Streab</b></sub>
+                </a>
+            </td>
+            <td align="center">
+                <a href="https://github.com/Cccc-owo">
+                    <img src="https://avatars.githubusercontent.com/u/47687154?v=4" width="100;" alt="Cccc-owo"/>
+                    <br />
+                    <sub><b>Cccc_</b></sub>
                 </a>
             </td>
 		</tr>
